@@ -1,0 +1,17 @@
+# Xcode
+xcuserdata/
+DerivedData/
+build/
+*.xcuserstate
+*.xcscmblueprint
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+timeline.xctimeline
+playground.xcworkspace
+.swiftpm/
+Packages/
+# macOS
+.DS_Store
