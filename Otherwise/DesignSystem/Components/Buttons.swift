@@ -4,7 +4,7 @@ import SwiftUI
 ///
 /// A dark glass capsule lit from inside by a gradient that pools along its
 /// bottom edge and spills onto the black below, like Opal's "Continue".
-/// On a book's screens the light is the book's edition; elsewhere, twilight.
+/// On a book's screens the light is the book's edition; elsewhere, the opal.
 struct PrimaryButton: View {
     let title: LocalizedStringKey
     var systemImage: String?
@@ -17,7 +17,7 @@ struct PrimaryButton: View {
     init(
         _ title: LocalizedStringKey,
         systemImage: String? = nil,
-        colors: [Color] = DS.Gradients.twilightColors,
+        colors: [Color] = DS.Gradients.opalColors,
         action: @escaping () -> Void
     ) {
         self.title = title

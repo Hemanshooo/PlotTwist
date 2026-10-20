@@ -7,7 +7,7 @@ import SwiftUI
 /// If something you need isn't here, add a token first, then use it.
 ///
 /// Plot Twist is dark only. The room is black; light comes from two places:
-/// the app's own "twilight" gradient (periwinkle → violet → orchid → rose), and the
+/// the app's own "opal" gradient (mint → aqua → periwinkle → lilac), and the
 /// books themselves, each bound in an `Edition` (cloth, foil, pattern) that
 /// glows faintly on the black. See Edition.swift.
 ///
@@ -46,14 +46,14 @@ extension DS {
 
         // MARK: Light
 
-        /// The app's own accent: pale lavender, the last light of a twilight sky.
+        /// The app's own accent: pale mint, like the light inside an opal.
         /// Used for numerals, selections and tints on screens that don't
         /// belong to a single book. Book screens use the book's `Edition.ink`.
-        static let accent = Color(hex: 0xCDBEFF)
+        static let accent = Color(hex: 0xBDF4D3)
         /// The deeper end of the accent, for glows and fills behind it.
-        static let accentDeep = Color(hex: 0x8F72FF)
+        static let accentDeep = Color(hex: 0x5ED8C4)
         /// Text drawn on top of `accent`.
-        static let onAccent = Color(hex: 0x120A26)
+        static let onAccent = Color(hex: 0x04120D)
         /// Good news: finished, saved.
         static let positive = Color(hex: 0x57D9B7)
         /// Destructive actions and warnings.
@@ -69,20 +69,20 @@ extension DS {
         static let fold = Color(hex: 0x1A1C1D)
     }
 
-    /// Twilight: the one gradient that belongs to the app rather than a book.
+    /// The opal: the one gradient that belongs to the app rather than a book.
     enum Gradients {
-        /// Periwinkle → violet → orchid → rose: the sky just after sunset.
-        static let twilightColors: [Color] = [
-            Color(hex: 0xA9B8FF),
-            Color(hex: 0x9B8CFF),
-            Color(hex: 0xD58BF2),
-            Color(hex: 0xFFA9C7),
+        /// Mint → aqua → periwinkle → lilac, the fire inside an opal.
+        static let opalColors: [Color] = [
+            Color(hex: 0xC9F7D6),
+            Color(hex: 0x7FE3D4),
+            Color(hex: 0xA3B3FF),
+            Color(hex: 0xE2B8FF),
         ]
-        static let twilight = LinearGradient(colors: twilightColors, startPoint: .leading, endPoint: .trailing)
-        /// For arcs and rings: the same light, swept around a circle.
-        static let twilightSweep = AngularGradient(colors: twilightColors + [twilightColors[0]], center: .center)
-        /// The room's ambient light on screens that don't belong to a book: deep violet.
-        static let roomGlow = Color(hex: 0x6A4CFF)
+        static let opal = LinearGradient(colors: opalColors, startPoint: .leading, endPoint: .trailing)
+        /// For arcs and rings: the same fire, swept around a circle.
+        static let opalSweep = AngularGradient(colors: opalColors + [opalColors[0]], center: .center)
+        /// The room's ambient light on screens that don't belong to a book.
+        static let roomGlow = Color(hex: 0x3FC9A8)
 
         /// A glass card's fill: lit from above.
         static let glass = LinearGradient(
@@ -322,6 +322,8 @@ extension DS {
         static let lift = Animation.spring(duration: 0.45, bounce: 0.12)
         /// Books settling back when the stack comes to rest: a soft wobble.
         static let settle = Animation.spring(duration: 0.75, bounce: 0.42)
+        /// TWIST turning over into place in the wordmark.
+        static let twist = Animation.spring(duration: 0.9, bounce: 0.28)
     }
 }
 

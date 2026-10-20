@@ -40,14 +40,6 @@ struct LibraryView: View {
             }
         }
 
-        /// One short line under the app's name, saying where you are.
-        var guidance: LocalizedStringKey {
-            switch self {
-            case .library: "Pick a book to twist"
-            case .read: "Books you’ve read"
-            case .twisted: "Stories you’ve changed"
-            }
-        }
     }
 
     private enum SearchState: Equatable {
@@ -66,9 +58,8 @@ struct LibraryView: View {
                     .navigationDestination(for: Book.self) { BookView(book: $0) }
                     .navigationDestination(for: Version.self) { StoryView(version: $0) }
                     .toolbar {
-                        // The masthead sits at the top left, level with the icons:
-                        // the name, and under it where you are. The centred
-                        // inline title is left empty.
+                        // The wordmark sits at the top left, level with the icons.
+                        // The centred inline title is left empty.
                         ToolbarItem(placement: .principal) { Color.clear.frame(width: 1, height: 1) }
                         ToolbarItem(placement: .topBarLeading) { masthead }
                             .sharedBackgroundVisibility(.hidden)
@@ -159,29 +150,10 @@ struct LibraryView: View {
         }
     }
 
-    /// PLOT TWIST, and under it one short line saying where you are, in the
-    /// same small tracked capitals: one block, aligned with the icons.
+    /// The wordmark at the top left, level with the icons: PLOT upright,
+    /// TWIST upside down beneath it, as on the app icon.
     private var masthead: some View {
-        VStack(alignment: .leading, spacing: 3) {
-            Text("Plot Twist")
-                .font(DS.Typography.masthead)
-                .tracking(DS.Tracking.masthead)
-                .foregroundStyle(DS.Colors.ink)
-                .accessibilityAddTraits(.isHeader)
-            if trimmedQuery.isEmpty {
-                Text(collection.guidance)
-                    .font(DS.Typography.subtitle)
-                    .tracking(DS.Tracking.eyebrow)
-                    .foregroundStyle(DS.Colors.inkSecondary)
-                    .contentTransition(.opacity)
-                    .id(collection)
-                    .transition(.opacity.combined(with: .offset(y: 3)))
-            }
-        }
-        .textCase(.uppercase)
-        .lineLimit(1)
-        .fixedSize()
-        .animation(DS.Motion.standard, value: collection)
+        Wordmark()
     }
 
     private var home: some View {
