@@ -7,7 +7,7 @@ import SwiftUI
 struct ArcGauge<Center: View>: View {
     /// 0…1.
     let value: Double
-    var colors: [Color] = DS.Gradients.opalColors
+    var colors: [Color] = DS.Gradients.twilightColors
     var diameter: CGFloat = DS.Size.gauge
     @ViewBuilder let center: Center
 
@@ -75,7 +75,7 @@ struct GlowPill: View {
     let title: LocalizedStringKey
     let systemImage: String
     let isSelected: Bool
-    var colors: [Color] = DS.Gradients.opalColors
+    var colors: [Color] = DS.Gradients.twilightColors
     let action: () -> Void
 
     var body: some View {

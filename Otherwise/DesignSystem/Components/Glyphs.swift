@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// Plot Twist's own icons, drawn on a 24-point grid so they share one weight
-/// and one corner radius. Each is a filled shape, so it can take the opal
+/// and one corner radius. Each is a filled shape, so it can take the twilight
 /// gradient when selected.
 enum Glyph: String, CaseIterable, Hashable {
     /// Books standing on a shelf, one leaning: the whole library.
@@ -103,7 +103,7 @@ struct TwistGlyphShape: Shape {
     }
 }
 
-/// A glyph, filled. Selected glyphs take the opal gradient and glow.
+/// A glyph, filled. Selected glyphs take the twilight gradient and glow.
 struct GlyphView: View {
     let glyph: Glyph
     var isSelected = false
@@ -112,7 +112,7 @@ struct GlyphView: View {
     var body: some View {
         glyph.shape
             .fill(
-                isSelected ? AnyShapeStyle(DS.Gradients.opal) : AnyShapeStyle(DS.Colors.inkSecondary),
+                isSelected ? AnyShapeStyle(DS.Gradients.twilight) : AnyShapeStyle(DS.Colors.inkSecondary),
                 style: FillStyle(eoFill: true)
             )
             .frame(width: size, height: size)

@@ -51,10 +51,10 @@ struct DesignSystemGallery: View {
                         }
                     }
                     Capsule()
-                        .fill(DS.Gradients.opal)
+                        .fill(DS.Gradients.twilight)
                         .frame(height: DS.Space.s)
                         .dsGlow(DS.Colors.accentDeep)
-                    Text(verbatim: "opal").font(DS.Typography.caption).foregroundStyle(DS.Colors.inkSecondary)
+                    Text(verbatim: "twilight").font(DS.Typography.caption).foregroundStyle(DS.Colors.inkSecondary)
                 }
 
                 section("Editions") {

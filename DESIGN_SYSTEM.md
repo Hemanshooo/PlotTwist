@@ -6,7 +6,7 @@ Plot Twist lets you change one moment in any book and read how the story would h
 borrowed from Opal: a near-black room with light falling in from the top, frosted glass cards
 with a lit top edge, capsule controls, light numerals, an arc that fills with light, and a
 bracket that splits one thing into several. Two sources of light, and only two: the app's own
-**opal** gradient, and each book's **edition**.
+**twilight** gradient, and each book's **edition**.
 
 Tokens live in `Otherwise/DesignSystem/Tokens/` (`DS.swift`, `Edition.swift`).
 Components live in `Otherwise/DesignSystem/Components/`. Open `DesignSystemGallery.swift`
@@ -17,7 +17,7 @@ in the Xcode canvas to see every token and component.
 1. **The story is the interface.** Prose gets the best type, the most space, and nothing competing with it.
 2. **Books are objects.** Covers, spines, ribbons, endpapers and page curls behave like the real thing. A book is drawn as one connected 3D object; it never comes apart mid-motion.
 3. **Light means something.** Glow marks what's selected, what's primary, and which book you're in. Nothing glows for decoration.
-4. **Colour belongs to the book.** On a book's screens, its edition lights the room, gauge, timeline, buttons, raised capitals and ribbons. The opal belongs to screens that belong to no single book.
+4. **Colour belongs to the book.** On a book's screens, its edition lights the room, gauge, timeline, buttons, raised capitals and ribbons. Twilight belongs to screens that belong to no single book.
 5. **No waiting.** Motion starts the frame you lift your finger, and is driven by one value, so it can't stall between steps.
 6. **One primary action per screen. One sentence of guidance at most.**
 7. **Nothing raw.** Views use tokens. Cover lettering is the one exception: it's illustration, so it uses fixed sizes like a printed cover.
@@ -35,15 +35,15 @@ in the Xcode canvas to see every token and component.
 | `ink` | `#F2F5F4` | Primary text and icons |
 | `inkSecondary` | `#A2A9A7` | Authors, descriptions, guidance, unselected icons |
 | `inkTertiary` | `#646B69` | Placeholders, footnotes, tracks |
-| `accent` | `#BDF4D3` | Pale mint: numerals, selection, tints off a book |
-| `accentDeep` | `#5ED8C4` | The glow behind the accent |
+| `accent` | `#CDBEFF` | Pale lavender: numerals, selection, tints off a book |
+| `accentDeep` | `#8F72FF` | The glow behind the accent |
 | `positive` / `caution` | `#57D9B7` / `#FF7383` | Good news / destructive actions |
 | `page` / `pageInk` | `#0D0E0F` / `#E8E4DC` | Reader pages and their warm cream text |
 | `fold` | `#1A1C1D` | Dog-ears and gutters |
 
-**Opal gradient** (`Gradients.opal`, `opalSweep` for arcs): mint `#C9F7D6` → aqua `#7FE3D4` → periwinkle `#A3B3FF` → lilac `#E2B8FF`.
+**Twilight gradient** (`Gradients.twilight`, `twilightSweep` for arcs): periwinkle `#A9B8FF` → violet `#9B8CFF` → orchid `#D58BF2` → rose `#FFA9C7`, the sky just after sunset.
 
-**Ambient light** (`AmbientBackground`): an elliptical glow from the top of the screen, 34% of the tint at the edge of the screen falling to nothing ~60% of the way down. Off a book it's `roomGlow` (`#3FC9A8`); in a book it's the edition's `glow`. Every screen gets it through `.dsScreen(glow:tint:)`.
+**Ambient light** (`AmbientBackground`): an elliptical glow from the top of the screen, 34% of the tint at the edge of the screen falling to nothing ~60% of the way down. Off a book it's `roomGlow`, a deep violet (`#6A4CFF`); in a book it's the edition's `glow`. Every screen gets it through `.dsScreen(glow:tint:)`.
 
 The whole app runs dark: `UIUserInterfaceStyle = Dark` in the Info.plist and `.dsDarkOnly()` at the root.
 
@@ -117,7 +117,7 @@ Page turns use the system page curl. Every custom motion falls back to a fade un
 
 | Element | Behaviour |
 |---|---|
-| Top bar | PLOT TWIST (`masthead`) on the left; on the right a glass capsule of three custom icons (`GlyphSwitcher`), like Opal's tab bar: **Library** (books on a shelf, one leaning), **Read** (a ribbon bookmark), **Twisted** (a path forking into two beads). The selected icon is filled with the opal and glows; a lit pill slides to it. Hidden while searching. |
+| Top bar | PLOT TWIST (`masthead`) on the left; on the right a glass capsule of three custom icons (`GlyphSwitcher`), like Opal's tab bar: **Library** (books on a shelf, one leaning), **Read** (a ribbon bookmark), **Twisted** (a path forking into two beads). The selected icon is filled with twilight and glows; a lit pill slides to it. Hidden while searching. |
 | Masthead | One block at the top left, level with the icons: PLOT TWIST, and under it, in `subtitle` capitals, where you are: "Pick a book to twist" / "Books you’ve read" / "Stories you’ve changed". It cross-fades when you switch. |
 | `BookStack` | Full-width slabs, after the Dumbling.FM stack: each book lies flat with its spine toward you and its cover tipping into view behind. The spine is panelled like a real one: the pattern on two end panels, foil bands, and a plain centre panel where the title and author are stamped in `Edition.lettering` (the foil, pushed lighter or darker until it reads at 4.5:1). A ribbon lies across the spine if you're partway, a seal if you've finished; nothing hangs outside the book. Books near the top lie flat (spine only); lower books show more cover; distant books sit in shadow. Each pools its colour on the black beneath it. **Library** is endless (classics, your books, then Open Library); **Read** is your books. |
 | Scrolling | The books answer the scroll: as the stack starts to move on, their covers lift open a few degrees (as if riffled); moving back, they lie flatter; when it comes to rest they settle with a soft wobble. Each book moves on its own beat, top to bottom, so the lift and the settle ripple down the stack. Off under Reduce Motion. |
@@ -138,11 +138,18 @@ Page turns use the system page curl. Every custom motion falls back to a fade un
 
 ## Components
 
-`PrimaryButton` (glass lit from inside by the opal or an edition: `GlowButtonStyle`), `SecondaryButton`, `GlassIconButton`, `PressableButtonStyle`,
+`PrimaryButton` (glass lit from inside by twilight or an edition: `GlowButtonStyle`), `SecondaryButton`, `GlassIconButton`, `PressableButtonStyle`,
 `GlyphView` / `GlyphSwitcher`, `ArcGauge`, `GlowPill`, `BracketShape`, `BranchRow`,
 `ActionRow`, `ChoiceRow`, `ComposerField`, `GroupedSurface`, `InlineNotice`, `MessageView`, `WritingIndicator`,
 `Eyebrow`, `QuoteBlock`, `Hairline`, `AmbientBackground`, `BookRow`, `VersionCard`, `TwistMark`,
 `BookCover`, `FlippableCover`, `Endpaper`, `SlabBook` (`SlabCoverFace` + `SlabSpineFace`), `BookmarkRibbon`, `PageCard`, `Ornament`, `RaisedCapText`.
+
+## App icon
+
+After San Francisco Design Week's 2023 "Plot Twist" mark: **Plot** sits upright and **Twist** hangs upside down from the same line, its T under the P, so the words turn back on themselves, the way a plot twist does. Set in a bold grotesk (Inter Bold).
+
+- **Light** (the default home screen): the twilight gradient edge to edge, type in near-black `#0E0A1C`.
+- **Dark** (dark home screens): the black room with its violet glow, **Plot** in white and **Twist** lit with twilight.
 
 ## Voice
 

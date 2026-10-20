@@ -106,7 +106,7 @@ struct MessageView<Actions: View>: View {
         VStack(spacing: DS.Space.m) {
             Image(systemName: symbol)
                 .font(DS.Typography.symbol)
-                .foregroundStyle(DS.Gradients.opal)
+                .foregroundStyle(DS.Gradients.twilight)
                 .dsGlow(DS.Colors.accentDeep, radius: 18, strength: 0.4)
                 .padding(.bottom, DS.Space.xxs)
             Text(title)
