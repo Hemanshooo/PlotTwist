@@ -55,7 +55,7 @@ private struct FoldShape: Shape {
     }
 }
 
-/// A sheet of paper with a dog-eared corner. Used for "what happened in the book":
+/// A dark page with a dog-eared corner. Used for "what happened in the book":
 /// the page the reader has marked.
 struct PageCard<Content: View>: View {
     @ViewBuilder let content: Content
@@ -65,11 +65,10 @@ struct PageCard<Content: View>: View {
             .padding(DS.Space.m)
             .padding(.trailing, DS.Space.xs)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(DogEarShape().fill(DS.Colors.surface))
-            .overlay(DogEarShape().stroke(DS.Colors.hairline, lineWidth: DS.Size.hairline))
-            .overlay(FoldShape().fill(DS.Colors.fold))
+            .background(DogEarShape().fill(DS.Colors.page))
+            .overlay(DogEarShape().stroke(DS.Gradients.glassEdge, lineWidth: DS.Size.hairline))
+            .overlay(FoldShape().fill(DS.Colors.surfaceRaised))
             .overlay(FoldShape().stroke(DS.Colors.hairline, lineWidth: DS.Size.hairline))
-            .dsPageShadow()
     }
 }
 
@@ -85,7 +84,7 @@ struct RaisedCapText: View {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         if let first = trimmed.first {
             let initial = Text(String(first)).font(DS.Typography.raisedCap).foregroundStyle(ink)
-            let rest = Text(String(trimmed.dropFirst())).font(DS.Typography.reading).foregroundStyle(DS.Colors.ink)
+            let rest = Text(String(trimmed.dropFirst())).font(DS.Typography.reading).foregroundStyle(DS.Colors.pageInk)
             Text("\(initial)\(rest)")
                 .lineSpacing(DS.Leading.reading)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -129,7 +128,8 @@ struct BookmarkRibbon: View {
                     .clipShape(RibbonShape())
             )
             .frame(width: width, height: length)
-            .shadow(color: .black.opacity(0.18), radius: 1.5, x: 0, y: 1)
+            .shadow(color: .black.opacity(0.5), radius: 1.5, x: 0, y: 1)
+            .dsGlow(color, radius: 8, strength: 0.35)
             .offset(y: isPlaced ? 0 : -length - 4)
             .opacity(reduceMotion && !isPlaced ? 0 : 1)
             .animation(reduceMotion ? DS.Motion.standard : DS.Motion.ribbon, value: isPlaced)

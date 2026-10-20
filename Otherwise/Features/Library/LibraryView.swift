@@ -1,9 +1,9 @@
 import SwiftUI
 import SwiftData
 
-/// Home: a deep stack of books to pick from, switchable between the whole
-/// library and the books you've read. Your twisted books sit behind
-/// "Twisted"; searching any book replaces the stack with results.
+/// Home: a deep stack of books to pick from, switchable (with the icons at
+/// the top right) between the whole library, the books you've read, and the
+/// stories you've twisted. Searching any book replaces the stack with results.
 struct LibraryView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \ShelfEntry.updatedAt, order: .reverse) private var shelf: [ShelfEntry]
@@ -13,23 +13,30 @@ struct LibraryView: View {
     @State private var search: SearchState = .idle
     @State private var attempt = 0
     @State private var path = NavigationPath()
-    /// The book currently picked up from the stack, if any.
+    /// The book being taken from the stack and opened, if any.
     @State private var pulled: PulledBook?
     @AppStorage("home.collection") private var collection: Collection = .library
-    @State private var showVersions = false
-    @State private var pendingVersion: Version?
     /// The book being held in the stack, whose manage sheet is open.
     @State private var managing: StackItem?
     /// More books from Open Library, loaded as you scroll the library.
     @State private var feed = LibraryFeed()
 
-    enum Collection: String, CaseIterable {
-        case library, read
+    enum Collection: String, CaseIterable, Hashable {
+        case library, read, twisted
 
-        var title: LocalizedStringKey {
+        var glyph: Glyph {
+            switch self {
+            case .library: .library
+            case .read: .read
+            case .twisted: .twisted
+            }
+        }
+
+        var label: LocalizedStringKey {
             switch self {
             case .library: "Library"
             case .read: "Read"
+            case .twisted: "Twisted"
             }
         }
 
@@ -37,7 +44,8 @@ struct LibraryView: View {
         var guidance: LocalizedStringKey {
             switch self {
             case .library: "Pick a book to change its story."
-            case .read: "Pick a book you’ve read to change its story."
+            case .read: "The books you’ve read and are reading."
+            case .twisted: "Your stories that went another way."
             }
         }
     }
@@ -58,7 +66,7 @@ struct LibraryView: View {
                     .navigationDestination(for: Book.self) { BookView(book: $0) }
                     .navigationDestination(for: Version.self) { StoryView(version: $0) }
                     .toolbar {
-                        // The name sits small at the top left, level with the options;
+                        // The name sits small at the top left, level with the icons;
                         // the centred inline title is left empty.
                         ToolbarItem(placement: .principal) { Color.clear.frame(width: 1, height: 1) }
                         ToolbarItem(placement: .topBarLeading) {
@@ -71,48 +79,37 @@ struct LibraryView: View {
                                 .accessibilityAddTraits(.isHeader)
                         }
                         .sharedBackgroundVisibility(.hidden)
-                        if trimmedQuery.isEmpty || !versions.isEmpty {
-                            ToolbarItem(placement: .topBarTrailing) { navOptions }
-                                // Set straight on the paper, like a running head: no pill.
-                                .sharedBackgroundVisibility(.hidden)
+                        if trimmedQuery.isEmpty {
+                            ToolbarItem(placement: .topBarTrailing) {
+                                GlyphSwitcher(
+                                    items: Collection.allCases.map { GlyphSwitcher<Collection>.Item(id: $0, glyph: $0.glyph, label: $0.label) },
+                                    selection: $collection
+                                )
+                            }
+                            .sharedBackgroundVisibility(.hidden)
                         }
                     }
                     .sheet(item: $managing) { BookActionsSheet(book: $0.book) }
-                    .sheet(isPresented: $showVersions, onDismiss: {
-                        if let pendingVersion {
-                            path.append(pendingVersion)
-                            self.pendingVersion = nil
-                        }
-                    }) {
-                        VersionsSheet { pendingVersion = $0 }
-                    }
                     .dsScreen()
             }
             .tint(DS.Colors.accent)
 
             if let pulled {
-                BookPullOut(
-                    pulled: pulled,
-                    onOpen: { open(pulled.book) },
-                    onPutBack: putBack
-                )
-                .transition(.asymmetric(insertion: .identity, removal: .opacity))
+                BookOpening(pulled: pulled) {
+                    // The page fills the screen: put the book's screen beneath it, without a slide.
+                    var instant = Transaction()
+                    instant.disablesAnimations = true
+                    withTransaction(instant) { path.append(pulled.book) }
+                } onFinished: {
+                    self.pulled = nil
+                }
                 .zIndex(1)
             }
         }
+        .dsDarkOnly()
     }
 
-    // MARK: Picking books
-
-    private func open(_ book: Book) {
-        path.append(book)
-        withAnimation(DS.Motion.standard) { pulled = nil }
-    }
-
-    /// The book is back in its place: the others fade back in around it.
-    private func putBack() {
-        withAnimation(DS.Motion.standard) { pulled = nil }
-    }
+    // MARK: Books
 
     /// Every book you can pick: the mapped classics, then any others on your shelf.
     private var libraryItems: [StackItem] {
@@ -147,6 +144,7 @@ struct LibraryView: View {
             switch search {
             case .idle, .loading:
                 ProgressView()
+                    .tint(DS.Colors.accent)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             case .results(let books) where books.isEmpty:
                 MessageView(
@@ -170,22 +168,14 @@ struct LibraryView: View {
 
     private var home: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // The masthead's second line, under the name: small tracked
-            // capitals, then a hairline rule across the page.
-            VStack(alignment: .leading, spacing: DS.Space.s) {
-                Text(collection.guidance)
-                    .font(DS.Typography.subtitle)
-                    .tracking(DS.Tracking.eyebrow)
-                    .textCase(.uppercase)
-                    .foregroundStyle(DS.Colors.inkSecondary)
-                    .contentTransition(.opacity)
-                Rectangle()
-                    .fill(DS.Colors.hairline)
-                    .frame(height: DS.Size.hairline)
-                    .accessibilityHidden(true)
-            }
-            .padding(.horizontal, DS.Space.screen)
-            .padding(.bottom, DS.Space.m)
+            Text(collection.guidance)
+                .font(DS.Typography.subtitle)
+                .tracking(DS.Tracking.eyebrow)
+                .textCase(.uppercase)
+                .foregroundStyle(DS.Colors.inkSecondary)
+                .contentTransition(.opacity)
+                .padding(.horizontal, DS.Space.screen)
+                .padding(.bottom, DS.Space.s)
 
             ZStack {
                 switch collection {
@@ -194,58 +184,29 @@ struct LibraryView: View {
                 case .read:
                     if readItems.isEmpty {
                         MessageView(
-                            symbol: "books.vertical",
+                            symbol: "bookmark",
                             title: "Nothing read yet",
                             message: "Open any book in the library and say how far you’ve read. It will appear here."
                         ) {
-                            SecondaryButton("Browse the library", systemImage: "books.vertical") {
-                                withAnimation(DS.Motion.standard) { collection = .library }
+                            SecondaryButton("Browse the library") {
+                                withAnimation(DS.Motion.select) { collection = .library }
                             }
                         }
+                        .transition(.opacity)
                     } else {
                         stack(readItems)
                     }
+                case .twisted:
+                    TwistedList { path.append($0) }
+                        .transition(.opacity.combined(with: .offset(y: DS.Space.l)))
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .animation(DS.Motion.standard, value: collection)
         }
-        .sensoryFeedback(.selection, trigger: collection)
         // The first page of the endless library loads right away, so the
         // stack never seems to stop at the classics.
         .task { if feed.books.isEmpty { await feed.loadMore() } }
-    }
-
-    /// LIBRARY  READ  TWISTED, in small tracked capitals at the top right.
-    /// The collection you're in is set in the accent; the rest in grey.
-    private var navOptions: some View {
-        HStack(spacing: DS.Space.m) {
-            if trimmedQuery.isEmpty {
-                ForEach(Collection.allCases, id: \.self) { item in
-                    let isSelected = collection == item
-                    navOption(item.title, color: isSelected ? DS.Colors.accent : DS.Colors.inkSecondary) {
-                        withAnimation(DS.Motion.standard) { collection = item }
-                    }
-                    .accessibilityAddTraits(isSelected ? .isSelected : [])
-                }
-            }
-            if !versions.isEmpty {
-                navOption("Twisted", color: DS.Colors.inkSecondary) { showVersions = true }
-                    .accessibilityLabel("Your twisted books")
-            }
-        }
-    }
-
-    private func navOption(_ title: LocalizedStringKey, color: Color, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Text(title)
-                .font(DS.Typography.eyebrow)
-                .tracking(DS.Tracking.eyebrow)
-                .textCase(.uppercase)
-                .foregroundStyle(color)
-                .frame(minHeight: DS.Size.touch)
-                .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
     }
 
     private func stack(_ items: [StackItem], endless: Bool = false) -> some View {
@@ -253,13 +214,10 @@ struct LibraryView: View {
         return BookStack(
             items: items,
             pickedID: pulled?.book.id,
-            onPick: { item, frame, tilt in
-                pulled = PulledBook(
-                    book: item.book,
-                    progress: item.progress,
-                    source: frame,
-                    sourceTilt: tilt
-                )
+            onPick: { item, pose in
+                // One book at a time, and only from the library itself.
+                guard pulled == nil, path.isEmpty else { return }
+                pulled = PulledBook(book: item.book, progress: item.progress, pose: pose)
             },
             onHold: { item in managing = item },
             onNearEnd: loadMore,
@@ -267,14 +225,17 @@ struct LibraryView: View {
             loadFailed: feed.failed
         )
         .id(collection)
-        .transition(.opacity.combined(with: .offset(y: DS.Space.xl)))
+        .transition(.opacity.combined(with: .offset(y: DS.Space.l)))
     }
 
     private func resultList(_ books: [Book]) -> some View {
         List(books) { book in
-            NavigationLink(value: book) {
+            Button {
+                path.append(book)
+            } label: {
                 BookRow(book: book)
             }
+            .buttonStyle(PressableButtonStyle())
             .dsListRow()
         }
         .dsList()
@@ -318,13 +279,14 @@ struct LibraryView: View {
     }
 }
 
-/// Your saved versions, each marked with its book's ribbon. Tap one to read
-/// it; hold one to read or remove it. "Clear all" empties the section.
-private struct VersionsSheet: View {
-    let onPick: (Version) -> Void
+// MARK: - Twisted
+
+/// Your twisted stories, newest first. Tap one to read it; hold one to read
+/// or remove it. "Clear all" sits at the end.
+private struct TwistedList: View {
+    let onOpen: (Version) -> Void
 
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.dismiss) private var dismiss
     @Query(sort: \Version.createdAt, order: .reverse) private var versions: [Version]
     /// The story being held, whose manage sheet is open.
     @State private var managing: Version?
@@ -332,66 +294,60 @@ private struct VersionsSheet: View {
     @State private var holds = 0
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: DS.Space.s) {
-                    ForEach(versions) { version in
-                        VersionCard(version: version)
-                            .onTapGesture {
-                                onPick(version)
-                                dismiss()
-                            }
-                            .onLongPressGesture(minimumDuration: 0.45) {
-                                holds += 1
-                                managing = version
-                            }
-                            .accessibilityAddTraits(.isButton)
-                            .accessibilityAction(named: "Manage story") { managing = version }
-                            .transition(.opacity)
+        Group {
+            if versions.isEmpty {
+                MessageView(
+                    symbol: "arrow.triangle.branch",
+                    title: "No twisted stories yet",
+                    message: "Open a book, pick a moment, and change what happens. Your versions are kept here."
+                )
+            } else {
+                ScrollView {
+                    VStack(spacing: DS.Space.s) {
+                        ForEach(versions) { version in
+                            VersionCard(version: version)
+                                .onTapGesture { onOpen(version) }
+                                .onLongPressGesture(minimumDuration: 0.45) {
+                                    holds += 1
+                                    managing = version
+                                }
+                                .accessibilityAddTraits(.isButton)
+                                .accessibilityAction(named: "Manage story") { managing = version }
+                                .transition(.opacity.combined(with: .scale(scale: 0.96)))
+                        }
+                        Button("Clear all", role: .destructive) { confirmClear = true }
+                            .font(DS.Typography.label)
+                            .foregroundStyle(DS.Colors.caution)
+                            .frame(minHeight: DS.Size.touch)
+                            .padding(.top, DS.Space.s)
                     }
+                    .padding(.horizontal, DS.Space.screen)
+                    .padding(.vertical, DS.Space.s)
+                    // Clear of the search field floating at the bottom.
+                    .padding(.bottom, DS.Space.xxl * 2)
                 }
-                .padding(.horizontal, DS.Space.screen)
-                .padding(.vertical, DS.Space.s)
-            }
-            .navigationTitle("Twisted books")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close", systemImage: "xmark") { dismiss() }
-                }
-                ToolbarItem(placement: .primaryAction) {
-                    Button("Clear all", role: .destructive) { confirmClear = true }
-                        .tint(DS.Colors.accent)
-                }
-            }
-            .dsScreen()
-            .sensoryFeedback(.impact(weight: .medium), trigger: holds)
-            .sheet(item: $managing) { version in
-                VersionActionsSheet(version: version) {
-                    managing = nil
-                    onPick(version)
-                    dismiss()
-                } onRemove: {
-                    managing = nil
-                    remove([version])
-                }
-            }
-            .confirmationDialog(
-                "Clear all twisted stories?",
-                isPresented: $confirmClear,
-                titleVisibility: .visible
-            ) {
-                Button("Clear all", role: .destructive) { remove(versions) }
-                Button("Keep", role: .cancel) {}
-            } message: {
-                Text("All \(versions.count) stories will be deleted. Your books stay in your library. This can’t be undone.")
+                .scrollIndicators(.hidden)
             }
         }
-        .presentationDetents([.medium, .large])
-        .presentationBackground(DS.Colors.canvas)
-        // Nothing left to show: close the section.
-        .onChange(of: versions.isEmpty) { _, isEmpty in
-            if isEmpty { dismiss() }
+        .sensoryFeedback(.impact(weight: .medium), trigger: holds)
+        .sheet(item: $managing) { version in
+            VersionActionsSheet(version: version) {
+                managing = nil
+                onOpen(version)
+            } onRemove: {
+                managing = nil
+                remove([version])
+            }
+        }
+        .confirmationDialog(
+            "Clear all twisted stories?",
+            isPresented: $confirmClear,
+            titleVisibility: .visible
+        ) {
+            Button("Clear all", role: .destructive) { remove(versions) }
+            Button("Keep", role: .cancel) {}
+        } message: {
+            Text("All \(versions.count) stories will be deleted. Your books stay in your library. This can’t be undone.")
         }
     }
 

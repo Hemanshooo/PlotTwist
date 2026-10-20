@@ -30,7 +30,7 @@ struct StoryMapView: View {
                     Eyebrow("Where it begins")
                     Text(map.premise)
                         .font(DS.Typography.reading)
-                        .foregroundStyle(DS.Colors.inkSecondary)
+                        .foregroundStyle(DS.Colors.pageInk.opacity(0.75))
                         .lineSpacing(DS.Leading.relaxed)
                 }
                 .padding(.vertical, DS.Space.xs)
@@ -64,7 +64,7 @@ struct StoryMapView: View {
                     .frame(minHeight: DS.Size.touch)
                     .overlay {
                         RoundedRectangle(cornerRadius: DS.Radius.m, style: .continuous)
-                            .strokeBorder(DS.Colors.inkTertiary, style: StrokeStyle(lineWidth: DS.Size.hairline, dash: [5, 4]))
+                            .strokeBorder(edition.ink.opacity(0.45), style: StrokeStyle(lineWidth: DS.Size.hairline, dash: [5, 4]))
                     }
                     .contentShape(Rectangle())
                 }
@@ -99,11 +99,11 @@ private struct TimelineRow<Content: View>: View {
                 ZStack(alignment: .top) {
                     VStack(spacing: 0) {
                         Rectangle()
-                            .fill(isFirst ? .clear : ink.opacity(0.35))
-                            .frame(width: DS.Size.rule, height: nodeY)
+                            .fill(isFirst ? .clear : ink.opacity(0.3))
+                            .frame(width: DS.Size.rule * 0.75, height: nodeY)
                         Rectangle()
-                            .fill(isLast ? .clear : ink.opacity(0.35))
-                            .frame(width: DS.Size.rule)
+                            .fill(isLast ? .clear : ink.opacity(0.3))
+                            .frame(width: DS.Size.rule * 0.75)
                             .frame(maxHeight: .infinity)
                     }
                     nodeView
@@ -121,9 +121,11 @@ private struct TimelineRow<Content: View>: View {
             Circle().strokeBorder(ink, lineWidth: DS.Size.rule)
                 .background(Circle().fill(DS.Colors.canvas))
                 .frame(width: size, height: size)
+                .dsGlow(ink, radius: 6, strength: 0.6)
         case .moment:
             Circle().fill(ink)
                 .frame(width: size, height: size)
+                .dsGlow(ink, radius: 8, strength: 0.8)
         case .sealed:
             Circle().fill(DS.Colors.canvas)
                 .overlay(Circle().strokeBorder(ink.opacity(0.4), style: StrokeStyle(lineWidth: 1.5, dash: [2, 2])))
@@ -133,6 +135,7 @@ private struct TimelineRow<Content: View>: View {
                 .font(.system(size: size + 4))
                 .foregroundStyle(ink)
                 .background(Circle().fill(DS.Colors.canvas))
+                .dsGlow(ink, radius: 8, strength: 0.6)
         }
     }
 }
@@ -165,11 +168,7 @@ private struct MomentCard: View {
                     .foregroundStyle(DS.Colors.inkTertiary)
             }
             .padding(DS.Space.m)
-            .background(DS.Colors.surface, in: RoundedRectangle(cornerRadius: DS.Radius.m, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: DS.Radius.m, style: .continuous)
-                    .strokeBorder(DS.Colors.hairline, lineWidth: DS.Size.hairline)
-            }
+            .dsGlass()
             .contentShape(Rectangle())
         }
         .buttonStyle(PressableButtonStyle())
@@ -190,6 +189,7 @@ private struct SealedCard: View {
                     Image(systemName: "seal.fill")
                         .font(.system(size: 30))
                         .foregroundStyle(edition.ink)
+                        .dsGlow(edition.ink, radius: 8, strength: 0.5)
                     Image(systemName: "lock.fill")
                         .font(.system(size: 11, weight: .bold))
                         .foregroundStyle(edition.onInk)
@@ -205,10 +205,14 @@ private struct SealedCard: View {
             .padding(DS.Space.m)
             .background {
                 ZStack {
-                    DS.Colors.fold
-                    EditionPattern(edition: edition, tile: 14, intensity: 0.5).opacity(0.08)
+                    DS.Colors.surface
+                    EditionPattern(edition: edition, tile: 14, intensity: 0.6).opacity(0.10)
                 }
                 .clipShape(RoundedRectangle(cornerRadius: DS.Radius.m, style: .continuous))
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: DS.Radius.m, style: .continuous)
+                    .strokeBorder(DS.Colors.hairline, lineWidth: DS.Size.hairline)
             }
             .contentShape(Rectangle())
         }

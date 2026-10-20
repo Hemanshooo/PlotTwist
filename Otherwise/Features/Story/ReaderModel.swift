@@ -46,7 +46,13 @@ final class ReaderModel {
     /// (or explains why the writing stopped).
     var pages: [Page] {
         var pages: [Page] = [.title, .divergence]
-        pages += story.chapters.indices.map { .chapter($0) }
+        // A chapter with no words yet is only shown while it's being written;
+        // once the story is done, empty ones (a heading with nothing under it) are skipped.
+        pages += story.chapters.indices
+            .filter { index in
+                !story.chapters[index].text.isEmpty || (phase == .writing && index == story.chapters.count - 1)
+            }
+            .map { .chapter($0) }
         if !story.ending.isEmpty { pages.append(.ending) }
         switch phase {
         case .writing: pages.append(.writing)

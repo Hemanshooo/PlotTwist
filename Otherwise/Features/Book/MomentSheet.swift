@@ -55,12 +55,13 @@ struct MomentSheet: View {
                     Button("Close", systemImage: "xmark") { dismiss() }
                 }
             }
-            .dsScreen()
+            .dsScreen(glow: edition.glow, tint: edition.ink)
         }
         .tint(edition.ink)
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .presentationBackground(DS.Colors.canvas)
+        .dsDarkOnly()
     }
 
     // MARK: Sections
@@ -82,23 +83,31 @@ struct MomentSheet: View {
 
         VStack(alignment: .leading, spacing: DS.Space.s) {
             Eyebrow("What if, instead…", color: edition.ink)
-            ForEach(Array(moment.alternatives.enumerated()), id: \.offset) { index, alternative in
-                ChoiceRow(text: alternative, isSelected: !writingOwn && selection == index, ink: edition.ink) {
-                    withAnimation(DS.Motion.quick) {
-                        writingOwn = false
-                        selection = index
+            // Each alternative branches off the moment, like a path forking.
+            VStack(spacing: 0) {
+                ForEach(Array(moment.alternatives.enumerated()), id: \.offset) { index, alternative in
+                    let isSelected = !writingOwn && selection == index
+                    BranchRow(isLast: false, ink: edition.ink, isLit: isSelected) {
+                        ChoiceRow(text: alternative, isSelected: isSelected, ink: edition.ink) {
+                            withAnimation(DS.Motion.quick) {
+                                writingOwn = false
+                                selection = index
+                            }
+                            composing = false
+                        }
                     }
-                    composing = false
                 }
-            }
-            ChoiceRow(
-                text: String(localized: "Something else"),
-                isSelected: writingOwn,
-                ink: edition.ink,
-                systemImage: writingOwn ? "checkmark.circle.fill" : "square.and.pencil"
-            ) {
-                withAnimation(DS.Motion.quick) { writingOwn = true }
-                composing = true
+                BranchRow(isLast: true, ink: edition.ink, isLit: writingOwn) {
+                    ChoiceRow(
+                        text: String(localized: "Something else"),
+                        isSelected: writingOwn,
+                        ink: edition.ink,
+                        systemImage: writingOwn ? "checkmark.circle.fill" : "square.and.pencil"
+                    ) {
+                        withAnimation(DS.Motion.quick) { writingOwn = true }
+                        composing = true
+                    }
+                }
             }
             if writingOwn {
                 ComposerField(

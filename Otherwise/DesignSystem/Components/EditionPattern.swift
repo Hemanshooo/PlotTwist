@@ -184,5 +184,5 @@ struct EditionPattern: View {
         }
         .padding()
     }
-    .background(DS.Colors.canvas)
+    .dsScreen()
 }

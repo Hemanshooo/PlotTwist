@@ -69,7 +69,7 @@ final class PageHost: UIHostingController<AnyView> {
     init(index: Int, rootView: AnyView) {
         self.index = index
         super.init(rootView: rootView)
-        view.backgroundColor = UIColor(DS.Colors.surface)
+        view.backgroundColor = UIColor(DS.Colors.page)
     }
 
     @MainActor required dynamic init?(coder aDecoder: NSCoder) {

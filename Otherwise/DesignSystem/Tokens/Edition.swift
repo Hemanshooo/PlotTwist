@@ -3,9 +3,9 @@ import SwiftUI
 /// How a book is bound: a cloth colour, a foil colour and a stamped pattern.
 ///
 /// Inspired by clothbound classics, every book in Plot Twist gets its own
-/// edition. It is the only source of colour in the app besides the accent:
-/// covers, spines, the book screen's header, its timeline and buttons, and
-/// the reader's raised capitals all come from the book's edition.
+/// edition. On the black room it is the main source of colour: covers, spines,
+/// the glow at the top of the book's screen, its gauge, timeline and buttons,
+/// and the reader's raised capitals all come from the book's edition.
 ///
 /// Curated books have a hand-picked edition in the catalogue. Every other book
 /// gets one chosen from `palettes` by a stable hash of its title, so the same
@@ -15,7 +15,7 @@ struct Edition: Hashable {
         case dots, waves, lattice, stars, chevrons, leaves, checks, scallops, diamonds
     }
 
-    /// Cloth and foil as hex, identical in light and dark: a book is an object, not a theme.
+    /// Cloth and foil as hex: a book is an object, not a theme.
     let cloth: UInt32
     let foil: UInt32
     let pattern: Pattern
@@ -23,23 +23,24 @@ struct Edition: Hashable {
     var clothColor: Color { Color(hex: cloth) }
     var foilColor: Color { Color(hex: foil) }
 
-    /// The edition used on paper: timeline, raised capitals, rules, buttons.
-    /// The darker of the pair in light mode, the lighter in dark mode,
-    /// so it always reads against the page.
-    var ink: Color {
-        Color(light: Self.darker(cloth, foil), dark: Self.lighter(cloth, foil))
+    /// The edition's light on the black: the brighter of cloth and foil,
+    /// lifted if it's too dark to read. Used for numerals, rules, the
+    /// timeline, raised capitals and the tint of the book's screens.
+    var ink: Color { Color(hex: Self.inkHex(cloth, foil)) }
+
+    /// The glow behind a book's screen and under its spine: the cloth's own
+    /// colour, unless the cloth is nearly black, when the foil glows instead.
+    var glow: Color {
+        Color(hex: Self.luminance(cloth) < 0.035 ? foil : cloth)
     }
 
-    /// Label colour for text set on `ink` (buttons): whichever of white or ink
-    /// contrasts more. The crossover sits at a relative luminance of about 0.2.
+    /// Label colour for text set on `ink`.
     var onInk: Color {
-        let lightBg = Self.darker(cloth, foil)
-        let darkBg = Self.lighter(cloth, foil)
-        return Color(
-            light: Self.luminance(lightBg) > 0.2 ? 0x1C1A17 : 0xFFFFFF,
-            dark: Self.luminance(darkBg) > 0.2 ? 0x1C1A17 : 0xFFFFFF
-        )
+        Self.luminance(Self.inkHex(cloth, foil)) > 0.25 ? Color(hex: 0x0B0C0C) : .white
     }
+
+    /// The gradient for this book's arcs and glowing buttons.
+    var gradientColors: [Color] { [glow, ink] }
 
     // MARK: Palettes
 
@@ -80,11 +81,22 @@ struct Edition: Hashable {
             + 0.0722 * channel(hex & 0xFF)
     }
 
-    private static func darker(_ a: UInt32, _ b: UInt32) -> UInt32 {
-        luminance(a) <= luminance(b) ? a : b
+    /// The brighter of the pair, mixed toward white until it reads on black (≥ 0.2 luminance).
+    private static func inkHex(_ a: UInt32, _ b: UInt32) -> UInt32 {
+        var color = luminance(a) > luminance(b) ? a : b
+        var steps = 0
+        while luminance(color) < 0.2, steps < 10 {
+            color = mix(color, 0xFFFFFF, 0.18)
+            steps += 1
+        }
+        return color
     }
 
-    private static func lighter(_ a: UInt32, _ b: UInt32) -> UInt32 {
-        luminance(a) > luminance(b) ? a : b
+    private static func mix(_ a: UInt32, _ b: UInt32, _ t: Double) -> UInt32 {
+        func channel(_ shift: UInt32) -> UInt32 {
+            let x = Double((a >> shift) & 0xFF), y = Double((b >> shift) & 0xFF)
+            return UInt32((x + (y - x) * t).rounded()) << shift
+        }
+        return channel(16) | channel(8) | channel(0)
     }
 }

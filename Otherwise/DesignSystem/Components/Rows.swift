@@ -28,23 +28,28 @@ struct BookRow: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+            Image(systemName: "chevron.right")
+                .font(DS.Typography.captionEmphasis)
+                .foregroundStyle(DS.Colors.inkTertiary)
         }
-        .padding(.vertical, DS.Space.xs)
+        .padding(DS.Space.s)
+        .dsGlass(cornerRadius: DS.Radius.m)
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
     }
 }
 
-/// A saved version, marked with a branching path in its book's colours:
-/// the story went another way.
+/// A twisted story: its book's cover, your change, and the forking mark
+/// lit in the book's colours.
 struct VersionCard: View {
     let version: Version
 
     private var edition: Edition { Edition.of(version.book) }
 
     var body: some View {
-        HStack(alignment: .top, spacing: DS.Space.m) {
+        HStack(alignment: .center, spacing: DS.Space.m) {
             BookCover(book: version.book, size: .small)
+                .dsGlow(edition.glow, radius: 12, strength: 0.4)
             VStack(alignment: .leading, spacing: DS.Space.xxs) {
                 Eyebrow(verbatim: version.bookTitle, color: edition.ink)
                 Text(version.title.isEmpty ? version.change : version.title)
@@ -61,29 +66,27 @@ struct VersionCard: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            TwistMark(color: edition.ink)
+            TwistMark(edition: edition)
         }
         .padding(DS.Space.m)
-        .background(DS.Colors.surface, in: RoundedRectangle(cornerRadius: DS.Radius.m, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: DS.Radius.m, style: .continuous)
-                .strokeBorder(DS.Colors.hairline, lineWidth: DS.Size.hairline)
-        }
+        .dsGlass()
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
     }
 }
 
-/// The mark for a twisted story: one path splitting into two.
+/// The mark for a twisted story: the forking-path glyph, lit by its book.
 struct TwistMark: View {
-    let color: Color
+    let edition: Edition
 
     var body: some View {
-        Image(systemName: "arrow.triangle.branch")
-            .font(DS.Typography.captionEmphasis)
-            .foregroundStyle(color)
+        Glyph.twisted.shape
+            .fill(LinearGradient(colors: edition.gradientColors, startPoint: .bottomLeading, endPoint: .topTrailing))
+            .frame(width: DS.Size.twistMark * 0.58, height: DS.Size.twistMark * 0.58)
             .frame(width: DS.Size.twistMark, height: DS.Size.twistMark)
-            .background(color.opacity(0.12), in: Circle())
+            .background(edition.ink.opacity(0.10), in: Circle())
+            .overlay { Circle().strokeBorder(edition.ink.opacity(0.25), lineWidth: DS.Size.hairline) }
+            .dsGlow(edition.glow, radius: 10, strength: 0.4)
             .accessibilityHidden(true)
     }
 }

@@ -20,15 +20,23 @@ extension DS {
         #endif
     }
 
-    /// Carries the ink colour into UIKit-drawn chrome (navigation titles).
-    /// Titles use the system font, like the rest of the interface.
+    /// Carries the room's colours into UIKit-drawn chrome: navigation titles,
+    /// the search field, page indicators. The app is dark only.
     static func configureSystemAppearance() {
-        let bar = UINavigationBar.appearance()
         let ink = UIColor(DS.Colors.ink)
+        let bar = UINavigationBar.appearance()
         bar.largeTitleTextAttributes = [.foregroundColor: ink]
         bar.titleTextAttributes = [
             .font: UIFont.preferredFont(forTextStyle: .headline),
             .foregroundColor: ink,
         ]
+        UISearchTextField.appearance().tintColor = UIColor(DS.Colors.accent)
+    }
+}
+
+extension View {
+    /// The whole app runs in the dark appearance, whatever the system setting.
+    func dsDarkOnly() -> some View {
+        self.preferredColorScheme(.dark)
     }
 }

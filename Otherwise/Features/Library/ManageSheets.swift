@@ -72,7 +72,7 @@ struct BookActionsSheet: View {
         .padding(.horizontal, DS.Space.screen)
         .padding(.top, DS.Space.l)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .dsScreen()
+        .dsScreen(glow: Edition.of(book).glow, tint: Edition.of(book).ink)
         .sensoryFeedback(.success, trigger: changes)
         .confirmRemoval(of: $pendingRemoval) { version in
             withAnimation(DS.Motion.standard) { modelContext.delete(version) }
@@ -137,7 +137,7 @@ struct VersionActionsSheet: View {
         .padding(.horizontal, DS.Space.screen)
         .padding(.top, DS.Space.l)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .dsScreen()
+        .dsScreen(glow: Edition.of(version.book).glow, tint: Edition.of(version.book).ink)
         .confirmRemoval(of: $pendingRemoval) { _ in onRemove() }
         .presentationDetents([.medium])
         .presentationDragIndicator(.visible)
@@ -157,6 +157,7 @@ private struct SheetHeader: View {
     var body: some View {
         HStack(alignment: .center, spacing: DS.Space.s) {
             BookCover(book: book, size: .small)
+                .dsGlow(Edition.of(book).glow, radius: 12, strength: 0.4)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: DS.Space.xxs) {
                 title
@@ -173,15 +174,7 @@ private struct SheetHeader: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .accessibilityElement(children: .combine)
             .accessibilityAddTraits(.isHeader)
-            Button(action: onClose) {
-                Image(systemName: "xmark")
-                    .font(DS.Typography.emphasis)
-                    .frame(width: DS.Size.touch, height: DS.Size.touch)
-            }
-            .buttonStyle(.glass)
-            .buttonBorderShape(.circle)
-            .foregroundStyle(DS.Colors.ink)
-            .accessibilityLabel("Close")
+            GlassIconButton(systemImage: "xmark", label: "Close", action: onClose)
         }
     }
 }

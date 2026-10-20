@@ -17,10 +17,10 @@ struct ReaderPageView: View {
                 // The book closes on its back endpaper.
                 EditionPattern(edition: edition, tile: 20, intensity: 0.55)
             } else {
-                DS.Colors.surface
+                DS.Colors.page
             }
             // Gutter: the page curves into the spine.
-            LinearGradient(colors: [DS.Colors.fold, DS.Colors.surface.opacity(0)], startPoint: .leading, endPoint: .trailing)
+            LinearGradient(colors: [Color.black.opacity(0.6), Color.black.opacity(0)], startPoint: .leading, endPoint: .trailing)
                 .frame(width: DS.Space.l)
                 .accessibilityHidden(true)
 
@@ -96,7 +96,7 @@ struct ReaderPageView: View {
                 if !chapter.heading.isEmpty {
                     Text(chapter.heading)
                         .font(DS.Typography.chapter)
-                        .foregroundStyle(DS.Colors.ink)
+                        .foregroundStyle(DS.Colors.pageInk)
                         .multilineTextAlignment(.center)
                 }
                 Ornament(color: edition.ink)
@@ -142,7 +142,7 @@ private struct TitlePage: View {
             Eyebrow("Plot Twist", color: model.edition.ink)
             Text(model.story.title.isEmpty ? "An untitled version" : model.story.title)
                 .font(DS.Typography.display)
-                .foregroundStyle(DS.Colors.ink)
+                .foregroundStyle(DS.Colors.pageInk)
                 .multilineTextAlignment(.center)
                 .redacted(reason: model.story.title.isEmpty ? .placeholder : [])
                 .contentTransition(.opacity)
@@ -185,7 +185,7 @@ private struct DivergencePage: View {
                     Eyebrow("In the book")
                     Text(happened)
                         .font(DS.Typography.reading)
-                        .foregroundStyle(DS.Colors.inkSecondary)
+                        .foregroundStyle(DS.Colors.pageInk.opacity(0.55))
                         .lineSpacing(DS.Leading.reading)
                         .strikethrough(true, color: model.edition.ink.opacity(0.6))
                 }
@@ -246,17 +246,17 @@ private struct ColophonPage: View {
                     ShareLink(item: model.shareText) {
                         Label("Share this version", systemImage: "square.and.arrow.up")
                             .font(DS.Typography.label)
-                            .foregroundStyle(DS.Colors.ink)
+                            .foregroundStyle(DS.Colors.pageInk)
                             .frame(minHeight: DS.Size.touch)
                     }
                 }
             }
             .padding(DS.Space.l)
-            .background(DS.Colors.surface)
+            .background(DS.Colors.page)
             // A bookplate's double rule.
             .overlay(Rectangle().strokeBorder(ink, lineWidth: 1).padding(4))
             .overlay(Rectangle().strokeBorder(ink.opacity(0.4), lineWidth: DS.Size.hairline))
-            .dsPageShadow()
+            .shadow(color: .black.opacity(0.6), radius: 20, x: 0, y: 12)
             Spacer()
         }
         .padding(.horizontal, DS.Space.page)

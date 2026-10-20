@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// A raised group of rows on the surface color, separated by hairlines.
+/// A glass group of rows separated by hairlines.
 /// Used for any list that lives inside a scrolling screen.
 struct GroupedSurface<Content: View>: View {
     @ViewBuilder let content: Content
@@ -9,11 +9,7 @@ struct GroupedSurface<Content: View>: View {
         VStack(spacing: 0) {
             content
         }
-        .background(DS.Colors.surface, in: RoundedRectangle(cornerRadius: DS.Radius.m, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: DS.Radius.m, style: .continuous)
-                .strokeBorder(DS.Colors.hairline, lineWidth: DS.Size.hairline)
-        }
+        .dsGlass()
     }
 }
 
@@ -22,10 +18,11 @@ struct ComposerField: View {
     let placeholder: String
     @Binding var text: String
     var focus: FocusState<Bool>.Binding
-    /// Border colour while editing: the book's ink, or the app accent.
+    /// Edge colour while editing: the book's ink, or the app accent.
     var tint: Color = DS.Colors.accent
 
     var body: some View {
+        let shape = RoundedRectangle(cornerRadius: DS.Radius.m, style: .continuous)
         TextField(
             "What changes",
             text: $text,
@@ -39,21 +36,21 @@ struct ComposerField: View {
         .focused(focus)
         .submitLabel(.done)
         .padding(DS.Space.m)
-        .background(DS.Colors.surface, in: RoundedRectangle(cornerRadius: DS.Radius.m, style: .continuous))
+        .background(DS.Gradients.glass, in: shape)
         .overlay {
-            RoundedRectangle(cornerRadius: DS.Radius.m, style: .continuous)
-                .strokeBorder(
-                    focus.wrappedValue ? tint.opacity(0.7) : DS.Colors.hairline,
-                    lineWidth: DS.Size.hairline
-                )
+            shape.strokeBorder(
+                focus.wrappedValue ? AnyShapeStyle(tint.opacity(0.8)) : AnyShapeStyle(DS.Gradients.glassEdge),
+                lineWidth: DS.Size.hairline
+            )
         }
+        .dsGlow(tint, radius: 16, strength: focus.wrappedValue ? 0.25 : 0)
         .tint(tint)
         .animation(DS.Motion.quick, value: focus.wrappedValue)
     }
 }
 
-/// One option in a single-choice list. The chosen row is outlined in the
-/// book's ink and a ribbon bookmark drops onto it.
+/// One option in a single-choice list: a glass row that lights up in the
+/// book's ink when chosen.
 struct ChoiceRow: View {
     let text: String
     let isSelected: Bool
@@ -62,6 +59,7 @@ struct ChoiceRow: View {
     let action: () -> Void
 
     var body: some View {
+        let shape = RoundedRectangle(cornerRadius: DS.Radius.m, style: .continuous)
         Button(action: action) {
             HStack(alignment: .firstTextBaseline, spacing: DS.Space.s) {
                 Image(systemName: systemImage ?? (isSelected ? "checkmark.circle.fill" : "circle"))
@@ -69,27 +67,29 @@ struct ChoiceRow: View {
                     .contentTransition(.symbolEffect(.replace))
                 Text(text)
                     .font(DS.Typography.rowTitle)
-                    .foregroundStyle(DS.Colors.ink)
+                    .foregroundStyle(isSelected ? DS.Colors.ink : DS.Colors.ink.opacity(0.86))
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                Color.clear.frame(width: DS.Size.ribbonWidth, height: 1)
             }
             .padding(DS.Space.m)
             .frame(minHeight: DS.Size.touch)
-            .background(DS.Colors.surface, in: RoundedRectangle(cornerRadius: DS.Radius.m, style: .continuous))
+            .background {
+                ZStack {
+                    shape.fill(DS.Gradients.glass)
+                    shape.fill(ink.opacity(isSelected ? 0.10 : 0))
+                }
+            }
             .overlay {
-                RoundedRectangle(cornerRadius: DS.Radius.m, style: .continuous)
-                    .strokeBorder(isSelected ? ink : DS.Colors.hairline, lineWidth: isSelected ? 1.5 : DS.Size.hairline)
+                shape.strokeBorder(
+                    isSelected ? AnyShapeStyle(ink.opacity(0.85)) : AnyShapeStyle(DS.Gradients.glassEdge),
+                    lineWidth: isSelected ? 1.25 : DS.Size.hairline
+                )
             }
-            .overlay(alignment: .topTrailing) {
-                BookmarkRibbon(color: ink, isPlaced: isSelected, width: 12, length: 30)
-                    .frame(height: 30, alignment: .top)
-                    .clipped()
-                    .padding(.trailing, DS.Space.m)
-            }
-            .contentShape(Rectangle())
+            .dsGlow(ink, radius: 18, strength: isSelected ? 0.28 : 0)
+            .contentShape(shape)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(PressableButtonStyle())
+        .animation(DS.Motion.quick, value: isSelected)
         .sensoryFeedback(.selection, trigger: isSelected)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
@@ -106,7 +106,8 @@ struct MessageView<Actions: View>: View {
         VStack(spacing: DS.Space.m) {
             Image(systemName: symbol)
                 .font(DS.Typography.symbol)
-                .foregroundStyle(DS.Colors.inkTertiary)
+                .foregroundStyle(DS.Gradients.opal)
+                .dsGlow(DS.Colors.accentDeep, radius: 18, strength: 0.4)
                 .padding(.bottom, DS.Space.xxs)
             Text(title)
                 .font(DS.Typography.heading)
@@ -137,23 +138,22 @@ struct InlineNotice: View {
     let message: String
 
     var body: some View {
-        GroupedSurface {
-            HStack(alignment: .firstTextBaseline, spacing: DS.Space.s) {
-                Image(systemName: symbol)
+        HStack(alignment: .firstTextBaseline, spacing: DS.Space.s) {
+            Image(systemName: symbol)
+                .foregroundStyle(DS.Colors.accent)
+            VStack(alignment: .leading, spacing: DS.Space.xxs) {
+                Text(verbatim: title)
+                    .font(DS.Typography.emphasis)
+                    .foregroundStyle(DS.Colors.ink)
+                Text(verbatim: message)
+                    .font(DS.Typography.meta)
                     .foregroundStyle(DS.Colors.inkSecondary)
-                VStack(alignment: .leading, spacing: DS.Space.xxs) {
-                    Text(verbatim: title)
-                        .font(DS.Typography.emphasis)
-                        .foregroundStyle(DS.Colors.ink)
-                    Text(verbatim: message)
-                        .font(DS.Typography.meta)
-                        .foregroundStyle(DS.Colors.inkSecondary)
-                        .lineSpacing(DS.Leading.relaxed)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                    .lineSpacing(DS.Leading.relaxed)
             }
-            .padding(DS.Space.m)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .padding(DS.Space.m)
+        .dsGlass()
         .accessibilityElement(children: .combine)
     }
 }
@@ -161,7 +161,7 @@ struct InlineNotice: View {
 /// Quiet signal that the model is still writing.
 struct WritingIndicator: View {
     var label: LocalizedStringKey = "Writing"
-    var color: Color = DS.Colors.inkTertiary
+    var color: Color = DS.Colors.inkSecondary
 
     var body: some View {
         HStack(spacing: DS.Space.xs) {
@@ -183,6 +183,7 @@ struct WritingIndicator: View {
             ComposerField(placeholder: "Elizabeth accepts Mr. Collins.", text: $text, focus: $focused)
             ChoiceRow(text: "Darcy never writes the letter", isSelected: true) {}
             ChoiceRow(text: "Lydia is found before Wickham marries her", isSelected: false) {}
+            InlineNotice(symbol: "apple.intelligence", title: "Turn on Apple Intelligence", message: "Plot Twist writes every story on your iPhone.")
             WritingIndicator()
         }
         .padding(DS.Space.screen)

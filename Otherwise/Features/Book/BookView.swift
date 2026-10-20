@@ -1,8 +1,11 @@
 import SwiftUI
 import SwiftData
 
-/// One book: its cover on a band of its own cloth, how far you've read,
-/// and the story map you change it from.
+/// Inside a book: its title page, how far you've read (on a gauge), and the
+/// story map you change it from. The room glows in the book's own cloth.
+///
+/// Opening a book from the stack ends on this screen: the first page grows
+/// to fill the screen, becomes this background, and the content arrives.
 struct BookView: View {
     let book: Book
     private let edition: Edition
@@ -12,12 +15,13 @@ struct BookView: View {
 
     @State private var map: MapState = .loading
     @State private var sessionProgress: ReadingProgress?
-    @State private var editingProgress = false
     @State private var revealAll = false
     @State private var confirmReveal = false
     @State private var choice: MomentChoice?
     @State private var pendingRequest: StoryRequest?
     @State private var request: StoryRequest?
+    @State private var arrived = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private enum MapState: Equatable {
         case loading
@@ -45,21 +49,23 @@ struct BookView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: DS.Space.xl) {
-                header
-                VStack(alignment: .leading, spacing: DS.Space.xl) {
-                    progressSection
-                    if progress != nil, !editingProgress {
-                        mapSection
-                            .transition(.opacity.combined(with: .move(edge: .bottom)))
-                    }
+            VStack(spacing: DS.Space.xxl) {
+                titlePage
+                    .arriving(arrived, order: 0)
+                ReadingGauge(edition: edition, progress: progress, onChange: save)
+                    .arriving(arrived, order: 1)
+                if progress != nil {
+                    mapSection
+                        .transition(.opacity.combined(with: .move(edge: .bottom)))
                 }
-                .padding(.horizontal, DS.Space.screen)
-                .frame(maxWidth: DS.Space.readingWidth)
             }
+            .padding(.horizontal, DS.Space.screen)
+            .frame(maxWidth: DS.Space.readingWidth)
             .frame(maxWidth: .infinity)
+            .padding(.top, DS.Space.l)
             .padding(.bottom, DS.Space.xxl)
         }
+        .scrollIndicators(.hidden)
         .navigationBarTitleDisplayMode(.inline)
         .sheet(item: $choice, onDismiss: {
             if let pendingRequest {
@@ -80,76 +86,59 @@ struct BookView: View {
             Text("This reveals what happens later in the book.")
         }
         .task { await loadMap() }
-        .animation(DS.Motion.standard, value: editingProgress)
+        .onAppear {
+            guard !arrived else { return }
+            if reduceMotion { arrived = true } else { withAnimation { arrived = true } }
+        }
         .animation(DS.Motion.standard, value: progress)
-        .dsScreen()
-        .tint(edition.ink)
+        .dsScreen(glow: edition.glow, tint: edition.ink)
     }
 
-    // MARK: Header
+    // MARK: Title page
 
-    /// The cover stands on a band of its own patterned cloth, which fades into the page.
-    private var header: some View {
-        VStack(spacing: DS.Space.l) {
-            FlippableCover(book: book, blurb: blurb)
-                .padding(.top, DS.Space.s)
-            VStack(spacing: DS.Space.xxs) {
-                Text(book.title)
-                    .font(DS.Typography.title)
-                    .foregroundStyle(DS.Colors.ink)
-                if let byline = book.byline {
-                    Text(byline)
-                        .font(DS.Typography.meta)
-                        .foregroundStyle(DS.Colors.inkSecondary)
-                }
+    /// The book's title page: what you see once the cover's open.
+    private var titlePage: some View {
+        VStack(spacing: DS.Space.m) {
+            Text(book.title)
+                .font(DS.Typography.display)
+                .foregroundStyle(DS.Colors.pageInk)
+                .multilineTextAlignment(.center)
+                .minimumScaleFactor(0.7)
+                .accessibilityAddTraits(.isHeader)
+            Ornament(color: edition.ink)
+            if let byline = book.byline {
+                Text(byline)
+                    .font(DS.Typography.meta)
+                    .foregroundStyle(DS.Colors.inkSecondary)
             }
-            .multilineTextAlignment(.center)
-            .padding(.horizontal, DS.Space.screen)
+            if let premise {
+                Text(premise)
+                    .font(DS.Typography.quote)
+                    .foregroundStyle(DS.Colors.pageInk.opacity(0.82))
+                    .lineSpacing(DS.Leading.relaxed)
+                    .multilineTextAlignment(.center)
+                    .padding(.top, DS.Space.xs)
+                    .transition(.opacity)
+            }
         }
         .frame(maxWidth: .infinity)
-        .background(alignment: .top) {
-            // Larger tiles and a softer stamp than the cover, so the book stands out from its band.
-            EditionPattern(edition: edition, tile: 34, intensity: 0.28)
-                .frame(height: DS.Size.coverLarge.height + 260)
-                .mask(
-                    LinearGradient(
-                        stops: [.init(color: .black, location: 0), .init(color: .black, location: 0.55), .init(color: .clear, location: 1)],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
-                .offset(y: -200)
-                .accessibilityHidden(true)
-        }
+        .padding(.horizontal, DS.Space.xs)
+        .animation(DS.Motion.reveal, value: premise)
+    }
+
+    private var premise: String? {
+        if case .ready(let storyMap) = map { return storyMap.premise }
+        return nil
     }
 
     /// The map to change from; a bare one when none could be drawn, so off-map changes still work.
     private var currentMap: StoryMap {
         if case .ready(let storyMap) = map { return storyMap }
+        let blurb = [book.title, book.byline].compactMap { $0 }.joined(separator: "\n")
         return StoryMap(premise: blurb, moments: [], isCurated: false)
     }
 
-    private var blurb: String {
-        if case .ready(let storyMap) = map { return storyMap.premise }
-        return [book.title, book.byline].compactMap { $0 }.joined(separator: "\n")
-    }
-
     // MARK: Progress
-
-    @ViewBuilder private var progressSection: some View {
-        if progress == nil || editingProgress {
-            ReadingProgressCard(edition: edition, initial: progress) { newProgress in
-                save(newProgress)
-                editingProgress = false
-            }
-            .transition(.opacity)
-        } else if let progress {
-            ReadingProgressChip(edition: edition, progress: progress) {
-                editingProgress = true
-            }
-            .frame(maxWidth: .infinity)
-        }
-    }
 
     private func save(_ newProgress: ReadingProgress) {
         if let entry = shelfEntries.first {
@@ -225,9 +214,21 @@ struct BookView: View {
     }
 }
 
+extension View {
+    /// Content arriving on a screen: it rises a little and fades in, each
+    /// piece just after the one before.
+    func arriving(_ arrived: Bool, order: Int) -> some View {
+        self
+            .opacity(arrived ? 1 : 0)
+            .offset(y: arrived ? 0 : DS.Space.l)
+            .animation(DS.Motion.arrive(order), value: arrived)
+    }
+}
+
 #Preview {
     NavigationStack {
         BookView(book: Catalog.entries[1].book)
     }
     .modelContainer(for: [Version.self, ShelfEntry.self], inMemory: true)
+    .dsDarkOnly()
 }

@@ -1,7 +1,7 @@
 import SwiftUI
 
-/// One action in a sheet: an icon, a title and a line of detail on a paper card.
-/// Destructive actions are set in the accent, so they read as final.
+/// One action in a sheet: an icon, a title and a line of detail on a glass card.
+/// Destructive actions are set in the caution colour, so they read as final.
 struct ActionRow: View {
     let title: Text
     let systemImage: String
@@ -17,15 +17,16 @@ struct ActionRow: View {
         self.action = action
     }
 
-    private var tint: Color { isDestructive ? DS.Colors.accent : DS.Colors.ink }
+    private var tint: Color { isDestructive ? DS.Colors.caution : DS.Colors.ink }
 
     var body: some View {
         Button(action: action) {
-            HStack(alignment: .firstTextBaseline, spacing: DS.Space.s) {
+            HStack(alignment: .center, spacing: DS.Space.s) {
                 Image(systemName: systemImage)
                     .font(DS.Typography.label)
                     .foregroundStyle(tint)
-                    .frame(width: DS.Space.l)
+                    .frame(width: DS.Size.touch - DS.Space.xs, height: DS.Size.touch - DS.Space.xs)
+                    .background(tint.opacity(0.10), in: Circle())
                 VStack(alignment: .leading, spacing: DS.Space.xxs) {
                     title
                         .font(DS.Typography.label)
@@ -40,15 +41,11 @@ struct ActionRow: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding(.horizontal, DS.Space.m)
+            .padding(.horizontal, DS.Space.s)
             .padding(.vertical, DS.Space.s)
             .frame(minHeight: DS.Size.touch)
-            .background(DS.Colors.surface, in: RoundedRectangle(cornerRadius: DS.Radius.s, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: DS.Radius.s, style: .continuous)
-                    .strokeBorder(DS.Colors.hairline, lineWidth: DS.Size.hairline)
-            )
-            .contentShape(RoundedRectangle(cornerRadius: DS.Radius.s, style: .continuous))
+            .dsGlass(cornerRadius: DS.Radius.m)
+            .contentShape(RoundedRectangle(cornerRadius: DS.Radius.m, style: .continuous))
         }
         .buttonStyle(PressableButtonStyle())
     }
@@ -60,5 +57,6 @@ struct ActionRow: View {
         ActionRow(Text("Daisy never comes to tea"), systemImage: "trash", detail: Text("“Daisy stays in Louisville”"), isDestructive: true) {}
     }
     .padding()
-    .background(DS.Colors.canvas)
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .dsScreen()
 }

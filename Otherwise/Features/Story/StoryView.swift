@@ -49,7 +49,7 @@ struct StoryView: View {
                 if hasOpening { openCover() }
             }
             .sensoryFeedback(.success, trigger: model.isSaved)
-            .background(DS.Colors.surface.ignoresSafeArea())
+            .background(DS.Colors.page.ignoresSafeArea())
             .tint(model.edition.ink)
     }
 

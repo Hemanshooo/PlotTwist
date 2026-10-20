@@ -217,9 +217,9 @@ struct Endpaper: View {
 
     var body: some View {
         ZStack {
-            DS.Colors.surface
-            EditionPattern(edition: edition, tile: 16, intensity: 0.35)
-                .opacity(0.35)
+            DS.Colors.page
+            EditionPattern(edition: edition, tile: 16, intensity: 0.5)
+                .opacity(0.4)
             VStack(spacing: DS.Space.xs) {
                 Text("Ex libris")
                     .font(DS.Typography.folio)
@@ -229,7 +229,7 @@ struct Endpaper: View {
             .foregroundStyle(edition.ink)
             .padding(.horizontal, DS.Space.l)
             .padding(.vertical, DS.Space.m)
-            .background(DS.Colors.surface)
+            .background(DS.Colors.page)
             .overlay(Rectangle().strokeBorder(edition.ink, lineWidth: 1).padding(3))
         }
     }
@@ -297,5 +297,6 @@ struct CardFlip<Front: View, Back: View>: View, Animatable {
         Endpaper(book: book).frame(width: 150, height: 225)
     }
     .padding()
-    .background(DS.Colors.canvas)
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .dsScreen()
 }

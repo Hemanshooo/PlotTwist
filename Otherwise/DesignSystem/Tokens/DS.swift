@@ -3,11 +3,13 @@ import SwiftUI
 /// Plot Twist Design System.
 ///
 /// Every visual decision in the app resolves to a token in this namespace.
-/// Views never use raw colors, font sizes, paddings, radii or animations.
+/// Views never use raw colours, font sizes, paddings, radii or animations.
 /// If something you need isn't here, add a token first, then use it.
 ///
-/// The interface is paper and ink. Colour comes from the books themselves:
-/// every book is bound in an `Edition` (cloth, foil, pattern), see Edition.swift.
+/// Plot Twist is dark only. The room is black; light comes from two places:
+/// the app's own "opal" gradient (mint → aqua → periwinkle → lilac), and the
+/// books themselves, each bound in an `Edition` (cloth, foil, pattern) that
+/// glows faintly on the black. See Edition.swift.
 ///
 /// See DESIGN_SYSTEM.md at the project root for the rules behind each token.
 enum DS {}
@@ -15,33 +17,85 @@ enum DS {}
 // MARK: - Color
 
 extension DS {
-    /// The paper-and-ink palette. Light and dark are defined together
-    /// so the two themes can never drift apart.
     enum Colors {
-        /// Screen background. Soft bone paper in light, near-black in dark.
-        static let canvas = Color(light: 0xF4F1EB, dark: 0x111110)
-        /// Raised surfaces: pages, fields, cards.
-        static let surface = Color(light: 0xFBFAF7, dark: 0x1B1A19)
+        // MARK: The room
+
+        /// Screen background: near-black, so OLED screens all but switch off.
+        static let canvas = Color(hex: 0x030404)
+        /// Cards and fields, at rest.
+        static let surface = Color(hex: 0x111414)
+        /// Cards and controls lifted toward you: pressed states, selections.
+        static let surfaceRaised = Color(hex: 0x1B1F1F)
+        /// The top of a glass card, where the light catches it.
+        static let glassTop = Color(hex: 0x181C1C)
+        /// The bottom of a glass card.
+        static let glassBottom = Color(hex: 0x0C0F0F)
+        /// Separators, tracks and quiet outlines.
+        static let hairline = Color.white.opacity(0.09)
+        /// The lit top edge of glass.
+        static let rim = Color.white.opacity(0.16)
+
+        // MARK: Ink
+
         /// Primary text and icons.
-        static let ink = Color(light: 0x171615, dark: 0xEEEBE5)
+        static let ink = Color(hex: 0xF2F5F4)
         /// Supporting text: authors, metadata, descriptions.
-        static let inkSecondary = Color(light: 0x6B675F, dark: 0xA6A29B)
-        /// Placeholders, footnotes, page numbers.
-        static let inkTertiary = Color(light: 0x9C978F, dark: 0x6F6B65)
-        /// Separators and 1pt borders.
-        static let hairline = Color(light: 0xE3DED5, dark: 0x2A2927)
-        /// The app's own accent: ink blue, like a fountain pen in the margin.
-        /// Used on screens that don't belong to a single book (home, search).
-        /// Book screens use the book's `Edition.ink` instead.
-        static let accent = Color(light: 0x2B4C8C, dark: 0x8EAAE6)
-        /// Text drawn on top of `accent` (≥ 4.5:1 in both themes).
-        static let onAccent = Color(light: 0xFFFFFF, dark: 0x0E1424)
-        /// The shelf plank books stand on.
-        static let shelf = Color(light: 0xD9CFBE, dark: 0x34302B)
-        /// The shadowed front edge of the shelf.
-        static let shelfEdge = Color(light: 0xBBAE98, dark: 0x24211D)
+        static let inkSecondary = Color(hex: 0xA2A9A7)
+        /// Placeholders, footnotes, page numbers, unselected icons.
+        static let inkTertiary = Color(hex: 0x646B69)
+
+        // MARK: Light
+
+        /// The app's own accent: pale mint, like the light inside an opal.
+        /// Used for numerals, selections and tints on screens that don't
+        /// belong to a single book. Book screens use the book's `Edition.ink`.
+        static let accent = Color(hex: 0xBDF4D3)
+        /// The deeper end of the accent, for glows and fills behind it.
+        static let accentDeep = Color(hex: 0x5ED8C4)
+        /// Text drawn on top of `accent`.
+        static let onAccent = Color(hex: 0x04120D)
+        /// Good news: finished, saved.
+        static let positive = Color(hex: 0x57D9B7)
+        /// Destructive actions and warnings.
+        static let caution = Color(hex: 0xFF7383)
+
+        // MARK: Inside the books
+
+        /// A page in the reader: the darkest warm grey, so it reads as paper, not void.
+        static let page = Color(hex: 0x0D0E0F)
+        /// Reading text on `page`: warm cream rather than white, for long reading.
+        static let pageInk = Color(hex: 0xE8E4DC)
         /// The fold of a dog-eared page and the gutter shadow of a spread.
-        static let fold = Color(light: 0xE8E3D9, dark: 0x272523)
+        static let fold = Color(hex: 0x1A1C1D)
+    }
+
+    /// The opal: the one gradient that belongs to the app rather than a book.
+    enum Gradients {
+        /// Mint → aqua → periwinkle → lilac, the fire inside an opal.
+        static let opalColors: [Color] = [
+            Color(hex: 0xC9F7D6),
+            Color(hex: 0x7FE3D4),
+            Color(hex: 0xA3B3FF),
+            Color(hex: 0xE2B8FF),
+        ]
+        static let opal = LinearGradient(colors: opalColors, startPoint: .leading, endPoint: .trailing)
+        /// For arcs and rings: the same fire, swept around a circle.
+        static let opalSweep = AngularGradient(colors: opalColors + [opalColors[0]], center: .center)
+        /// The room's ambient light on screens that don't belong to a book.
+        static let roomGlow = Color(hex: 0x3FC9A8)
+
+        /// A glass card's fill: lit from above.
+        static let glass = LinearGradient(
+            colors: [Colors.glassTop, Colors.glassBottom],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        /// A glass card's edge: bright at the top, gone by the bottom.
+        static let glassEdge = LinearGradient(
+            colors: [Colors.rim, Color.white.opacity(0.04), Color.white.opacity(0.02)],
+            startPoint: .top,
+            endPoint: .bottom
+        )
     }
 }
 
@@ -52,20 +106,20 @@ extension DS {
     /// Newsreader (serif, bundled in Resources/Fonts and registered at launch)
     /// is the type *inside the books*: covers, title pages, chapters, prose.
     /// San Francisco (the system font) is the *interface*: titles, lists,
-    /// controls, metadata. Every interface style is a Dynamic Type text style.
+    /// controls, numerals, metadata. Every interface style is a Dynamic Type style.
     enum Typography {
         // MARK: Inside the books (Newsreader)
 
         /// A book's or a story's title page.
-        static let display = serif(.display, 30, relativeTo: .title)
-        /// Book title on the book screen, moment titles.
-        static let title = serif(.heading, 22, relativeTo: .title2)
+        static let display = serif(.display, 34, relativeTo: .largeTitle)
+        /// Moment titles and sheet titles that belong to a book.
+        static let title = serif(.heading, 24, relativeTo: .title2)
         /// Chapter headings in the reader; the bookplate on an endpaper.
         static let chapter = serif(.heading, 20, relativeTo: .title3)
         /// Long-form reading text.
         static let reading = serif(.text, 17, relativeTo: .body)
         /// The raised initial that opens every chapter.
-        static let raisedCap = serif(.display, 40, relativeTo: .largeTitle)
+        static let raisedCap = serif(.display, 44, relativeTo: .largeTitle)
         /// The user's change, quoted; a book's blurb.
         static let quote = serif(.textItalic, 17, relativeTo: .body)
         /// Running heads and page numbers.
@@ -79,6 +133,12 @@ extension DS {
         /// One line under a screen title, in tracked capitals.
         /// Always paired with `Tracking.eyebrow` and `.textCase(.uppercase)`.
         static let subtitle = Font.system(.caption2, weight: .medium)
+        /// Big numerals: the reading gauge, scores. Light, like Opal's.
+        static let gauge = Font.system(size: 52, weight: .light).monospacedDigit()
+        /// Numerals inside pills and stats.
+        static let stat = Font.system(.subheadline, weight: .semibold).monospacedDigit()
+        /// Screen titles in the interface ("Twisted", sheet titles).
+        static let screenTitle = Font.system(.title2, weight: .semibold)
         /// Sheet titles, message titles, card titles.
         static let heading = Font.system(.headline)
         /// Titles in lists, cards and the story map.
@@ -101,7 +161,7 @@ extension DS {
         static let caption = Font.system(.caption)
         /// Small print that needs a little more weight.
         static let captionEmphasis = Font.system(.caption, weight: .medium)
-        /// Uppercase labels (eyebrows, top-bar options). Always paired with `Tracking.eyebrow`.
+        /// Uppercase labels (eyebrows). Always paired with `Tracking.eyebrow`.
         static let eyebrow = Font.system(.caption2, weight: .semibold)
         /// Icons that stand alone in a message (empty and error states).
         static let symbol = Font.system(.title, weight: .light)
@@ -173,10 +233,12 @@ extension DS {
     enum Radius {
         /// Book covers and spines. Real books have almost-square corners.
         static let cover: CGFloat = 3
-        /// Small controls, pills.
-        static let s: CGFloat = 10
-        /// Fields, cards and pages.
-        static let m: CGFloat = 18
+        /// Small controls.
+        static let s: CGFloat = 14
+        /// Glass cards, fields and pages.
+        static let m: CGFloat = 24
+        /// Large panels and sheets.
+        static let l: CGFloat = 32
     }
 }
 
@@ -190,30 +252,35 @@ extension DS {
         static let coverLarge = CGSize(width: 150, height: 225)
         /// A book held up in front of you, after it's taken from the stack.
         static let coverHero = CGSize(width: 232, height: 348)
-        /// A held book set down to open: the spread (cover + first page) fits the screen.
-        static let spreadScale: CGFloat = 0.8
-        /// The book stack on the home screen: distance between books, the
-        /// margin either side, and the height of each book's title strip.
-        static let stackStride: CGFloat = 92
-        static let stackInset: CGFloat = 40
-        static let stackStrip: CGFloat = 30
-        /// Spines vary within these ranges so a shelf never looks stamped out.
-        static let spineWidth: ClosedRange<CGFloat> = 34...46
-        static let spineHeight: ClosedRange<CGFloat> = 148...184
+        /// The home stack: the margin either side of a book, the thickness of
+        /// its spine (the face you see), and the space each book takes.
+        static let slabInset: CGFloat = 22
+        static let slabSpine: CGFloat = 34
+        static let slabStride: CGFloat = 104
+        /// The custom icons in the top bar, and the capsule that holds them.
+        static let navGlyph: CGFloat = 22
+        static let navItem: CGFloat = 40
+        /// The reading gauge on a book's screen.
+        static let gauge: CGFloat = 220
+        static let gaugeLine: CGFloat = 7
+        /// Pills (choices and stats).
+        static let pill: CGFloat = 44
         /// The branching mark on a twisted story's card.
-        static let twistMark: CGFloat = 28
+        static let twistMark: CGFloat = 32
         /// Ribbon bookmarks.
         static let ribbonWidth: CGFloat = 14
         static let ribbonLength: CGFloat = 40
-        /// Shelf plank thickness.
-        static let shelf: CGFloat = 12
         /// The folded corner of a dog-eared page.
         static let fold: CGFloat = 20
         /// Story-map timeline: the spine line and its moment nodes.
         static let timelineNode: CGFloat = 12
         static let timelineGutter: CGFloat = 28
+        /// Branch lines from a moment to its alternatives.
+        static let branchGutter: CGFloat = 26
         /// Minimum interactive height (HIG: 44pt).
         static let touch: CGFloat = 44
+        /// Primary buttons.
+        static let button: CGFloat = 54
         /// Accent rule beside quotes.
         static let rule: CGFloat = 2
         static let hairline: CGFloat = 1
@@ -230,24 +297,27 @@ extension DS {
         static let standard = Animation.smooth(duration: 0.35)
         /// Direct feedback: taps, toggles, insertions.
         static let quick = Animation.snappy(duration: 0.22)
+        /// A selection sliding between options.
+        static let select = Animation.spring(duration: 0.38, bounce: 0.22)
         /// Generated text settling onto the page.
         static let reveal = Animation.easeOut(duration: 0.5)
+        /// Content arriving on a new screen, one piece after another.
+        static func arrive(_ index: Int) -> Animation {
+            .spring(duration: 0.55, bounce: 0.12).delay(0.06 * Double(index))
+        }
         /// A ribbon bookmark dropping into place.
         static let ribbon = Animation.spring(duration: 0.6, bounce: 0.35)
         /// Turning a cover over to read the back.
         static let flip = Animation.spring(duration: 0.7, bounce: 0.12)
-        /// A book cover swinging open on its spine.
+        /// A story's cover swinging open on its spine.
         static let coverOpen = Animation.spring(duration: 1.1, bounce: 0.08)
-        /// A book cover swinging shut.
-        static let coverClose = Animation.spring(duration: 0.7, bounce: 0.04)
-        /// A book sliding up out of the stack, or back down into it.
-        static let slide = Animation.snappy(duration: 0.3)
-        /// A book tipping up toward you under your finger.
-        static let tilt = Animation.spring(duration: 0.32, bounce: 0.35)
-        /// A book standing up in your hands.
-        static let pullOut = Animation.spring(duration: 0.6, bounce: 0.12)
-        /// A first page coming up to fill the screen.
-        static let unfold = Animation.spring(duration: 0.55, bounce: 0.04)
+        /// Taking a book from the stack and opening it: one continuous motion.
+        /// Its phases (lift, open, unfold) are eased inside `OpeningBook`.
+        static let openBook = Animation.linear(duration: 1.05)
+        /// The opened book handing over to its screen.
+        static let handOver = Animation.easeOut(duration: 0.22)
+        /// The gauge filling to your progress.
+        static let gauge = Animation.spring(duration: 1.0, bounce: 0.1)
     }
 }
 
@@ -256,8 +326,10 @@ extension DS {
 extension DS {
     /// Perspective for 3D tilts. Lower is flatter (a longer lens).
     enum Depth {
-        /// Books laid back in the home stack, and the book you pick from it.
-        static let stack: CGFloat = 0.32
+        /// Books lying in the home stack, and the book you lift from it.
+        static let stack: CGFloat = 0.42
+        /// A cover swinging open.
+        static let cover: CGFloat = 0.35
     }
 }
 
@@ -265,19 +337,26 @@ extension DS {
 
 extension DS {
     enum Elevation {
-        /// A book resting on paper.
+        /// A book on the black: a soft shadow under it and a faint rim of light.
         struct Cover: ViewModifier {
             func body(content: Content) -> some View {
                 content
-                    .shadow(color: .black.opacity(0.10), radius: 1, x: 0, y: 1)
-                    .shadow(color: .black.opacity(0.18), radius: 14, x: 0, y: 10)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: DS.Radius.cover, style: .continuous)
+                            .strokeBorder(Color.white.opacity(0.10), lineWidth: 0.5)
+                    }
+                    .shadow(color: .black.opacity(0.6), radius: 14, x: 0, y: 10)
             }
         }
 
-        /// A sheet of paper lifted slightly off the desk.
-        struct Page: ViewModifier {
+        /// Light spilling from something onto the black around it.
+        struct Glow: ViewModifier {
+            let color: Color
+            var radius: CGFloat = 22
+            var strength: Double = 0.35
+
             func body(content: Content) -> some View {
-                content.shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 3)
+                content.shadow(color: color.opacity(strength), radius: radius, x: 0, y: radius * 0.35)
             }
         }
     }
@@ -285,20 +364,15 @@ extension DS {
 
 extension View {
     func dsCoverShadow() -> some View { modifier(DS.Elevation.Cover()) }
-    func dsPageShadow() -> some View { modifier(DS.Elevation.Page()) }
+    func dsGlow(_ color: Color, radius: CGFloat = 22, strength: Double = 0.35) -> some View {
+        modifier(DS.Elevation.Glow(color: color, radius: radius, strength: strength))
+    }
 }
 
 // MARK: - Helpers
 
 extension Color {
-    /// A color that resolves differently in light and dark appearance.
-    init(light: UInt32, dark: UInt32) {
-        self.init(uiColor: UIColor { traits in
-            UIColor(hex: traits.userInterfaceStyle == .dark ? dark : light)
-        })
-    }
-
-    /// A color that is the same in both appearances (book cloth and foil).
+    /// A colour from a hex value. Plot Twist is dark only, so every colour is one value.
     init(hex: UInt32) {
         self.init(uiColor: UIColor(hex: hex))
     }

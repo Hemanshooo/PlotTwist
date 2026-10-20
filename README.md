@@ -12,22 +12,24 @@ Stories and maps for books outside the catalogue are written on device with Appl
 
 ## The flow
 
-1. **Home.** A stack of books to pick from, switchable between **Library** (12 classics with hand-written story maps, anything you've logged, then an endless run of books from Open Library) and **Read** (only the books you've logged). Your saved versions sit behind "Twisted" in the top bar. Search for any other book.
-   Pick a book and it slides out of the stack and opens like a real book, to its title page.
-2. **Book.** The cover stands on a band of its own patterned cloth; tap it to turn it over. Say how far you've read (*Finished*, *Partway*, *Not yet*). The story map shows the premise and the turning points you've reached. Later ones stay sealed until you choose to reveal them.
-3. **Moment.** What happened, on a dog-eared page, then three alternatives or "Something else". The app repeats your change back in one line before writing.
-4. **Story.** A clothbound cover swings open as the first words arrive. Turn the pages with a real page curl: the title page, the "edit" page, chapters with raised capitals, how it ends, and a closing bookplate. It's saved automatically; a ribbon drops to show it.
+Plot Twist is dark only, with a design language taken from Opal: a black room lit from the top, frosted glass, capsule controls, and light that means something. See DESIGN_SYSTEM.md.
+
+1. **Home.** Books lie flat in a deep stack, spines toward you, covers tipping into view as you scroll. Three icons at the top right switch between **Library** (12 classics with hand-written story maps, anything you've logged, then an endless run from Open Library), **Read** (only the books you've logged) and **Twisted** (your saved versions). Search for any other book.
+   Tap a book and, in one continuous motion, it lifts out of the stack, turns upright in your hands, swings its cover open and becomes its own screen.
+2. **Book.** The title page, then a gauge for how far you've read (Finished · Partway · Not yet), then the story map: the premise and the turning points you've reached. Later ones stay sealed until you choose to reveal them.
+3. **Moment.** What happened, on a dog-eared page, then three alternatives branching off it, or "Something else". The app repeats your change back in one line before writing.
+4. **Story.** A clothbound cover swings open as the first words arrive. Turn the dark pages with a real page curl: the title page, the "edit" page, chapters with raised capitals, how it ends, and a closing bookplate. It's saved automatically; a ribbon drops to show it.
 
 ## How it's organised
 
 ```
 Otherwise/
   App/             Entry point
-  DesignSystem/    Tokens (paper, ink, type, editions), book components, gallery → DESIGN_SYSTEM.md
+  DesignSystem/    Tokens (room, light, type, editions), glass, gauges, icons, book components, gallery → DESIGN_SYSTEM.md
   Resources/Fonts/ Newsreader (OFL), the serif used inside the books
   Models/          Book, Story, StoryMap, Catalog (12 hand-written maps), Version & ShelfEntry (SwiftData)
   Services/        OpenLibrary, StoryEngine (Foundation Models + tolerant text parser)
-  Features/        Library, Book (progress, story map, moment sheet), Story (page-curl reader)
+  Features/        Library (stack, slabs, opening), Book (gauge, story map, moment sheet), Story (page-curl reader)
 ```
 
 ## Known limits
