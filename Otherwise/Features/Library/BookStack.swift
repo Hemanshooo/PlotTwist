@@ -34,6 +34,14 @@ struct BookStack: View {
     var loadFailed = false
 
     @State private var viewport: CGRect = .zero
+    /// The books' response to scrolling: +1 while moving on through the stack
+    /// (covers lift open, as if riffled), −1 while moving back (they lie
+    /// flatter), 0 at rest. Changes only when scrolling starts, stops or
+    /// turns around, and every book animates its own way to it.
+    @State private var flutter: Double = 0
+    @State private var direction: Double = 1
+    @State private var isMoving = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         GeometryReader { proxy in
@@ -51,6 +59,7 @@ struct BookStack: View {
                             item: item,
                             length: length,
                             viewportHeight: height,
+                            flutter: flutter,
                             isPicked: pickedID == item.id,
                             isDimmed: pickedID != nil && pickedID != item.id
                         ) { hinge in
@@ -84,6 +93,18 @@ struct BookStack: View {
             .scrollIndicators(.hidden)
             .scrollEdgeEffectHidden(true, for: .bottom)
             .scrollDisabled(pickedID != nil)
+            .onScrollGeometryChange(for: CGFloat.self) { $0.contentOffset.y } action: { old, new in
+                guard abs(new - old) > 0.5 else { return }
+                let next: Double = new > old ? 1 : -1
+                guard next != direction else { return }
+                direction = next
+                if isMoving, !reduceMotion { flutter = next }
+            }
+            .onScrollPhaseChange { _, phase in
+                isMoving = phase.isScrolling
+                guard !reduceMotion else { return }
+                flutter = phase.isScrolling ? direction : 0
+            }
             .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { viewport = $0 }
         }
     }
@@ -118,6 +139,7 @@ private struct StackRow: View {
     let item: StackItem
     let length: CGFloat
     let viewportHeight: CGFloat
+    let flutter: Double
     let isPicked: Bool
     let isDimmed: Bool
     let onPick: (CGPoint) -> Void
@@ -135,7 +157,7 @@ private struct StackRow: View {
             SlabCoverFace(book: item.book, length: length)
                 .visualEffect { content, proxy in
                     let fraction = proxy.frame(in: .scrollView(axis: .vertical)).maxY / max(viewportHeight, 1)
-                    let angle = Slab.coverAngle(atScreenFraction: fraction)
+                    let angle = Slab.coverAngle(atScreenFraction: fraction, flutter: flutter)
                     return content
                         .rotation3DEffect(
                             .degrees(Slab.coverRotation(angle)),
@@ -152,7 +174,7 @@ private struct StackRow: View {
                 } action: { hinge = $0 }
                 .visualEffect { content, proxy in
                     let fraction = proxy.frame(in: .scrollView(axis: .vertical)).minY / max(viewportHeight, 1)
-                    let angle = Slab.coverAngle(atScreenFraction: fraction)
+                    let angle = Slab.coverAngle(atScreenFraction: fraction, flutter: flutter)
                     return content
                         .rotation3DEffect(
                             .degrees(Slab.spineRotation(angle)),
@@ -160,7 +182,7 @@ private struct StackRow: View {
                             anchor: .top,
                             perspective: DS.Depth.stack
                         )
-                        .brightness(Slab.fog(atScreenFraction: fraction))
+                        .brightness(Slab.fog(atScreenFraction: fraction) * Slab.spineFog)
                 }
                 // The book's colour, glowing faintly on the black beneath it.
                 .background {
@@ -174,6 +196,9 @@ private struct StackRow: View {
                 }
         }
         .frame(height: DS.Size.slabSpine + depth)
+        // Each book answers the scroll on its own beat, top to bottom, so the
+        // lift and the settle run down the stack like a ripple.
+        .animation(flutterAnimation, value: flutter)
         // Each book takes one stride; its cover reaches up behind the book above.
         .frame(height: DS.Size.slabStride, alignment: .bottom)
         .contentShape(Rectangle())
@@ -199,6 +224,12 @@ private struct StackRow: View {
         .accessibilityAddTraits(.isButton)
         .accessibilityAction { onPick(hinge) }
         .accessibilityAction(named: "Manage book") { onHold() }
+    }
+
+    /// Lifting is quick and smooth; settling back has a little bounce.
+    private var flutterAnimation: Animation {
+        let position = min(max(hinge.y / max(viewportHeight, 1), 0), 1.2)
+        return (flutter == 0 ? DS.Motion.settle : DS.Motion.lift).delay(Double(position) * 0.12)
     }
 
     private var accessibilityValue: String {

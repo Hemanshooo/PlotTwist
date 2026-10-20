@@ -40,12 +40,12 @@ struct LibraryView: View {
             }
         }
 
-        /// One line of guidance under the app's name.
+        /// One short line under the app's name, saying where you are.
         var guidance: LocalizedStringKey {
             switch self {
-            case .library: "Pick a book to change its story."
-            case .read: "The books you’ve read and are reading."
-            case .twisted: "Your stories that went another way."
+            case .library: "Pick a book to twist"
+            case .read: "Books you’ve read"
+            case .twisted: "Stories you’ve changed"
             }
         }
     }
@@ -66,19 +66,12 @@ struct LibraryView: View {
                     .navigationDestination(for: Book.self) { BookView(book: $0) }
                     .navigationDestination(for: Version.self) { StoryView(version: $0) }
                     .toolbar {
-                        // The name sits small at the top left, level with the icons;
-                        // the centred inline title is left empty.
+                        // The masthead sits at the top left, level with the icons:
+                        // the name, and under it where you are. The centred
+                        // inline title is left empty.
                         ToolbarItem(placement: .principal) { Color.clear.frame(width: 1, height: 1) }
-                        ToolbarItem(placement: .topBarLeading) {
-                            Text("Plot Twist")
-                                .font(DS.Typography.masthead)
-                                .tracking(DS.Tracking.masthead)
-                                .textCase(.uppercase)
-                                .foregroundStyle(DS.Colors.ink)
-                                .fixedSize()
-                                .accessibilityAddTraits(.isHeader)
-                        }
-                        .sharedBackgroundVisibility(.hidden)
+                        ToolbarItem(placement: .topBarLeading) { masthead }
+                            .sharedBackgroundVisibility(.hidden)
                         if trimmedQuery.isEmpty {
                             ToolbarItem(placement: .topBarTrailing) {
                                 GlyphSwitcher(
@@ -166,17 +159,33 @@ struct LibraryView: View {
         }
     }
 
+    /// PLOT TWIST, and under it one short line saying where you are, in the
+    /// same small tracked capitals: one block, aligned with the icons.
+    private var masthead: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text("Plot Twist")
+                .font(DS.Typography.masthead)
+                .tracking(DS.Tracking.masthead)
+                .foregroundStyle(DS.Colors.ink)
+                .accessibilityAddTraits(.isHeader)
+            if trimmedQuery.isEmpty {
+                Text(collection.guidance)
+                    .font(DS.Typography.subtitle)
+                    .tracking(DS.Tracking.eyebrow)
+                    .foregroundStyle(DS.Colors.inkSecondary)
+                    .contentTransition(.opacity)
+                    .id(collection)
+                    .transition(.opacity.combined(with: .offset(y: 3)))
+            }
+        }
+        .textCase(.uppercase)
+        .lineLimit(1)
+        .fixedSize()
+        .animation(DS.Motion.standard, value: collection)
+    }
+
     private var home: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(collection.guidance)
-                .font(DS.Typography.subtitle)
-                .tracking(DS.Tracking.eyebrow)
-                .textCase(.uppercase)
-                .foregroundStyle(DS.Colors.inkSecondary)
-                .contentTransition(.opacity)
-                .padding(.horizontal, DS.Space.screen)
-                .padding(.bottom, DS.Space.s)
-
             ZStack {
                 switch collection {
                 case .library:

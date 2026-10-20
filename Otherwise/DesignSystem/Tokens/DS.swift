@@ -318,6 +318,10 @@ extension DS {
         static let handOver = Animation.easeOut(duration: 0.22)
         /// The gauge filling to your progress.
         static let gauge = Animation.spring(duration: 1.0, bounce: 0.1)
+        /// Books in the stack lifting as you start to scroll.
+        static let lift = Animation.spring(duration: 0.45, bounce: 0.12)
+        /// Books settling back when the stack comes to rest: a soft wobble.
+        static let settle = Animation.spring(duration: 0.75, bounce: 0.42)
     }
 }
 

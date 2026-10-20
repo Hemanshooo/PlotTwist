@@ -42,6 +42,11 @@ struct Edition: Hashable {
     /// The gradient for this book's arcs and glowing buttons.
     var gradientColors: [Color] { [glow, ink] }
 
+    /// Foil for lettering stamped on the cloth (spines): the edition's foil,
+    /// pushed lighter or darker, keeping its hue, until it reads against the
+    /// cloth at 4.5:1.
+    var lettering: Color { Color(hex: Self.legibleFoil(foil, on: cloth)) }
+
     // MARK: Palettes
 
     /// Cloth/foil pairs for books without a curated edition.
@@ -88,6 +93,35 @@ struct Edition: Hashable {
         while luminance(color) < 0.2, steps < 10 {
             color = mix(color, 0xFFFFFF, 0.18)
             steps += 1
+        }
+        return color
+    }
+
+    static func contrast(_ a: UInt32, _ b: UInt32) -> Double {
+        let la = luminance(a), lb = luminance(b)
+        return (max(la, lb) + 0.05) / (min(la, lb) + 0.05)
+    }
+
+    /// The foil, moved away from the cloth's brightness in small steps until
+    /// the pair reaches 4.5:1.
+    private static func legibleFoil(_ foil: UInt32, on cloth: UInt32) -> UInt32 {
+        let target: UInt32 = luminance(foil) >= luminance(cloth) ? 0xFFFFFF : 0x000000
+        var color = foil
+        var steps = 0
+        while contrast(color, cloth) < 4.5, steps < 12 {
+            color = mix(color, target, 0.15)
+            steps += 1
+        }
+        // A foil darker than its cloth that still can't reach 4.5:1 (mid-tone
+        // cloth) reads better turned light.
+        if contrast(color, cloth) < 4.5 {
+            var light = foil
+            steps = 0
+            while contrast(light, cloth) < 4.5, steps < 12 {
+                light = mix(light, 0xFFFFFF, 0.15)
+                steps += 1
+            }
+            if contrast(light, cloth) > contrast(color, cloth) { color = light }
         }
         return color
     }

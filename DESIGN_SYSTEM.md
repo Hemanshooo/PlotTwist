@@ -109,6 +109,7 @@ Views never apply `.weight()`, `.bold()`, `.italic()` or `.fontDesign()` to a to
 | `openBook` | Taking a book from the stack and opening it (1.05s, linear; phases eased inside) |
 | `handOver` | The opened book fading into the book's screen |
 | `gauge` | The arc filling to your progress |
+| `lift` / `settle` | Books lifting as the stack starts to move / settling back with a soft wobble when it stops |
 
 Page turns use the system page curl. Every custom motion falls back to a fade under Reduce Motion.
 
@@ -117,8 +118,9 @@ Page turns use the system page curl. Every custom motion falls back to a fade un
 | Element | Behaviour |
 |---|---|
 | Top bar | PLOT TWIST (`masthead`) on the left; on the right a glass capsule of three custom icons (`GlyphSwitcher`), like Opal's tab bar: **Library** (books on a shelf, one leaning), **Read** (a ribbon bookmark), **Twisted** (a path forking into two beads). The selected icon is filled with the opal and glows; a lit pill slides to it. Hidden while searching. |
-| Guidance | One line of `subtitle` capitals: "Pick a book to change its story." / "The books you’ve read and are reading." / "Your stories that went another way." |
-| `BookStack` | Full-width slabs, after the Dumbling.FM stack: each book lies flat with its spine toward you (cloth, foil bands, title and author stamped on it, a ribbon hanging out if you're partway, a seal if you've finished) and its cover tipping into view behind. Books near the top lie flat (spine only); lower books show more cover; distant books sit in shadow. Each pools its colour on the black beneath it. **Library** is endless (classics, your books, then Open Library); **Read** is your books. |
+| Masthead | One block at the top left, level with the icons: PLOT TWIST, and under it, in `subtitle` capitals, where you are: "Pick a book to twist" / "Books you’ve read" / "Stories you’ve changed". It cross-fades when you switch. |
+| `BookStack` | Full-width slabs, after the Dumbling.FM stack: each book lies flat with its spine toward you and its cover tipping into view behind. The spine is panelled like a real one: the pattern on two end panels, foil bands, and a plain centre panel where the title and author are stamped in `Edition.lettering` (the foil, pushed lighter or darker until it reads at 4.5:1). A ribbon lies across the spine if you're partway, a seal if you've finished; nothing hangs outside the book. Books near the top lie flat (spine only); lower books show more cover; distant books sit in shadow. Each pools its colour on the black beneath it. **Library** is endless (classics, your books, then Open Library); **Read** is your books. |
+| Scrolling | The books answer the scroll: as the stack starts to move on, their covers lift open a few degrees (as if riffled); moving back, they lie flatter; when it comes to rest they settle with a soft wobble. Each book moves on its own beat, top to bottom, so the lift and the settle ripple down the stack. Off under Reduce Motion. |
 | Press / hold | A finger down brightens the book and its glow, with a light haptic. A tap opens it; holding (0.45s, firmer haptic) opens its manage sheet. |
 | **Opening a book** | `BookOpening`, one motion from one value: the slab rises toward you, stands up and turns upright in your hands (spine swinging out of sight) while the room fills with the book's light; the cover swings open onto its endpaper; the first page comes up to fill the screen and becomes the book's screen, whose content arrives beneath it. Both drawings of the book (lying and upright) are identical at the hand-off, so nothing jumps. |
 | Twisted | Your stories as glass cards: the book's cover, its title in its ink, your change, and the lit `TwistMark`. Tap to read; hold to read or remove; "Clear all" at the end, after one confirmation. |
