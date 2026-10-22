@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftData
 
-/// Home: a deep stack of books to pick from, switchable (with the icons at
+/// Home: a deep stack of books to pick from, switchable (with the tabs at
 /// the top right) between the whole library, the books you've read, and the
 /// stories you've twisted. Searching any book replaces the stack with results.
 struct LibraryView: View {
@@ -24,14 +24,6 @@ struct LibraryView: View {
 
     enum Collection: String, CaseIterable, Hashable {
         case library, read, twisted
-
-        var glyph: Glyph {
-            switch self {
-            case .library: .library
-            case .read: .read
-            case .twisted: .twisted
-            }
-        }
 
         var label: LocalizedStringKey {
             switch self {
@@ -66,16 +58,20 @@ struct LibraryView: View {
                             .sharedBackgroundVisibility(.hidden)
                         if trimmedQuery.isEmpty {
                             ToolbarItem(placement: .topBarTrailing) {
-                                HStack(spacing: DS.Space.xs) {
-                                    PaletteButton { choosingPalette = true }
-                                    GlyphSwitcher(
-                                        items: Collection.allCases.map { GlyphSwitcher<Collection>.Item(id: $0, glyph: $0.glyph, label: $0.label) },
-                                        selection: $collection
-                                    )
-                                }
+                                TabSwitcher(
+                                    items: Collection.allCases.map { TabSwitcher<Collection>.Item(id: $0, title: $0.label) },
+                                    selection: $collection
+                                )
                             }
                             .sharedBackgroundVisibility(.hidden)
                         }
+                        // The palette swatch sits beside the search field, as
+                        // Type Garden keeps its swatches at the foot of the page.
+                        DefaultToolbarItem(kind: .search, placement: .bottomBar)
+                        ToolbarItem(placement: .bottomBar) {
+                            PaletteButton { choosingPalette = true }
+                        }
+                        .sharedBackgroundVisibility(.hidden)
                     }
                     .sheet(item: $managing) { BookActionsSheet(book: $0.book) }
                     .sheet(isPresented: $choosingPalette) { PaletteSheet() }

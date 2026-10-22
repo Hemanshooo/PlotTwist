@@ -30,41 +30,63 @@ struct Seeded {
 
 /// The paths every drawing is made from.
 enum Botany {
-    /// A rose seen from above: a lumpy round head.
+    /// A rose seen three-quarters on: a wide head with a scalloped edge,
+    /// tipped a little one way or the other.
     static func roseHead(center c: CGPoint, radius r: CGFloat, seed: Int) -> Path {
-        var rng = Seeded(seed)
-        let lobes = 9
-        let phase = rng.next() * .pi * 2
-        let points = (0..<lobes).map { i -> CGPoint in
-            let angle = Double(i) / Double(lobes) * 2 * .pi + phase
-            let wobble = 0.84 + 0.16 * rng.next()
-            return CGPoint(x: c.x + cos(angle) * r * wobble, y: c.y + sin(angle) * r * wobble)
-        }
-        return smoothClosed(points)
-    }
-
-    /// The lines drawn on a rose: a spiral at its heart, and petal edges near the rim.
-    static func roseLines(center c: CGPoint, radius r: CGFloat, seed: Int) -> Path {
-        var rng = Seeded(seed &+ 101)
+        let tilt = roseTilt(seed)
+        let a = r, b = r * 0.8
+        let bumps = 9.0
+        let phase = Double(seed) * 0.7
         var path = Path()
-        let heart = CGPoint(x: c.x + r * 0.06, y: c.y - r * 0.04)
-        let start = rng.next() * 2 * .pi
-        let turns = 2.1
-        let steps = 44
-        for i in 0...steps {
-            let t = Double(i) / Double(steps)
-            let angle = start + t * turns * 2 * .pi
-            let radius = r * (0.05 + 0.5 * t)
-            let point = CGPoint(x: heart.x + cos(angle) * radius, y: heart.y + sin(angle) * radius)
+        let steps = 72
+        for i in 0..<steps {
+            let theta = Double(i) / Double(steps) * 2 * .pi
+            let scallop = abs(sin(theta * bumps / 2 + phase))
+            let k = 0.94 + 0.1 * scallop + 0.04 * sin(theta * 2 + Double(seed))
+            let point = turned(CGPoint(x: cos(theta) * a * k, y: sin(theta) * b * k), by: tilt, about: c)
             if i == 0 { path.move(to: point) } else { path.addLine(to: point) }
         }
-        for k in 0..<3 {
-            let from = start + Double(k) * 2.1 + rng.next() * 0.5
-            let radius = r * (0.7 + 0.08 * rng.next())
-            path.move(to: CGPoint(x: c.x + cos(from) * radius, y: c.y + sin(from) * radius))
-            path.addArc(center: c, radius: radius, startAngle: .radians(from), endAngle: .radians(from + 0.85), clockwise: false)
+        path.closeSubpath()
+        return path
+    }
+
+    /// The lines drawn on a rose: a loose spiral at its heart, and two wavy
+    /// petal edges across the lower part of the head.
+    static func roseLines(center c: CGPoint, radius r: CGFloat, seed: Int) -> Path {
+        var rng = Seeded(seed &+ 101)
+        let tilt = roseTilt(seed)
+        let w = r * 2, a = r, b = r * 0.8
+        var path = Path()
+        let heart = CGPoint(x: w * 0.06 * (rng.next() - 0.5), y: -b * 0.18)
+        let start = rng.next() * 2 * .pi
+        let steps = 52
+        for i in 0...steps {
+            let t = Double(i) / Double(steps)
+            let angle = start + t * 2.2 * 2 * .pi
+            let radius = w * (0.02 + 0.27 * t)
+            let point = turned(CGPoint(x: heart.x + cos(angle) * radius, y: heart.y + sin(angle) * radius * 0.7), by: tilt, about: c)
+            if i == 0 { path.move(to: point) } else { path.addLine(to: point) }
+        }
+        for (y, span, waves) in [(b * 0.5, 0.66, 3.0), (b * 0.78, 0.4, 2.0)] {
+            let samples = Int(waves) * 12
+            for i in 0...samples {
+                let t = Double(i) / Double(samples)
+                let x = -a * span + 2 * a * span * t
+                let point = turned(CGPoint(x: x, y: y - abs(sin(t * waves * .pi)) * w * 0.07), by: tilt, about: c)
+                if i == 0 { path.move(to: point) } else { path.addLine(to: point) }
+            }
         }
         return path
+    }
+
+    /// Each rose leans its own way, by a seeded few degrees.
+    private static func roseTilt(_ seed: Int) -> Double {
+        var rng = Seeded(seed &+ 57)
+        return (rng.next() - 0.5) * 0.45
+    }
+
+    private static func turned(_ p: CGPoint, by angle: Double, about c: CGPoint) -> CGPoint {
+        CGPoint(x: c.x + p.x * cos(angle) - p.y * sin(angle), y: c.y + p.x * sin(angle) + p.y * cos(angle))
     }
 
     /// A pointed leaf growing from `base` at `angle`, `length` long.
@@ -145,24 +167,6 @@ enum Botany {
     private static func placing(_ point: CGPoint, _ angle: Angle) -> CGAffineTransform {
         CGAffineTransform(translationX: point.x, y: point.y).rotated(by: angle.radians)
     }
-
-    /// A smooth closed curve through `points` (Catmull-Rom, as cubic Béziers).
-    private static func smoothClosed(_ points: [CGPoint]) -> Path {
-        var path = Path()
-        let n = points.count
-        guard n > 2 else { return path }
-        path.move(to: points[0])
-        for i in 0..<n {
-            let p0 = points[(i - 1 + n) % n], p1 = points[i], p2 = points[(i + 1) % n], p3 = points[(i + 2) % n]
-            path.addCurve(
-                to: p2,
-                control1: CGPoint(x: p1.x + (p2.x - p0.x) / 6, y: p1.y + (p2.y - p0.y) / 6),
-                control2: CGPoint(x: p2.x - (p3.x - p1.x) / 6, y: p2.y - (p3.y - p1.y) / 6)
-            )
-        }
-        path.closeSubpath()
-        return path
-    }
 }
 
 // MARK: - Drawing
@@ -186,7 +190,7 @@ struct GardenInk {
 }
 
 extension GraphicsContext {
-    /// A rose `size` across at `center`, opened `open` (0…1).
+    /// A rose `size` wide at `center`, opened `open` (0…1).
     func drawRose(at center: CGPoint, size: CGFloat, seed: Int, ink: GardenInk, open: Double = 1) {
         guard open > 0.01 else { return }
         let radius = size / 2 * open
@@ -194,7 +198,7 @@ extension GraphicsContext {
         stroke(
             Botany.roseLines(center: center, radius: radius, seed: seed),
             with: .color(ink.petal),
-            style: StrokeStyle(lineWidth: max(0.7, size * 0.05 * open), lineCap: .round, lineJoin: .round)
+            style: StrokeStyle(lineWidth: max(0.6, size * 0.04 * open), lineCap: .round, lineJoin: .round)
         )
     }
 
@@ -414,8 +418,8 @@ struct Sprig: View, Animatable {
 
 // MARK: - Twist mark
 
-/// The mark for a twisted story, and the Twisted icon: one stem forking in
-/// two, a leaf at the end of one branch and a rose at the end of the other.
+/// The mark for a twisted story: one stem forking in two, a leaf at the end
+/// of one branch and a rose at the end of the other.
 struct TwistDrawing {
     /// Draws into `rect` (square), the rose `open` (0…1).
     static func draw(in context: GraphicsContext, rect: CGRect, ink: GardenInk, open: Double = 1, stemWidth: CGFloat? = nil) {

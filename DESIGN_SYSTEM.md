@@ -81,12 +81,13 @@ Three families, each with one job, all bundled in `Resources/Fonts` (OFL) and re
 | `heading` | Instrument Serif, 24 | Titles in lists: moments, twisted stories, search results |
 | `numeral` | Instrument Serif, 84 | The reading numeral |
 | `raisedCap` | Instrument Serif, 62 | A chapter's opening initial, in `bloom` |
-| `wordmark` | Instrument Serif, 30 | Plot / Twist |
+| `wordmark(_:)` | Instrument Serif, fixed (22 in the top bar) | The wordmark, drawn with its garland |
 | `reading` (+7 leading) | Newsreader Text, 17 | Prose |
 | `blurb` | Newsreader Text, 15 | Descriptions, choices, messages |
 | `quote` / `quoteSmall` | Newsreader Italic, 17 / 15 | Your change, premises |
 | `compose` | Newsreader Text, 17 | The field where you write your change |
 | `label` | DM Mono Medium, 13 | Buttons and pills |
+| `tab` | DM Mono Medium, 12 | The tabs in the top bar |
 | `meta` | DM Mono, 12 | Bylines, metadata |
 | `caption` | DM Mono, 11 | Hints (`Hint`, lowercase) |
 | `eyebrow` | DM Mono Medium, 11, caps, tracked 1.3 | Section labels (`Eyebrow`) |
@@ -99,7 +100,7 @@ Three families, each with one job, all bundled in `Resources/Fonts` (OFL) and re
 
 `Garden.swift` draws everything from a handful of paths (`Botany`):
 
-- a lumpy round **rose** head, with a spiral and petal edges drawn in `petal`;
+- a **rose** seen three-quarters on: a wide head with a scalloped edge, tipped a few degrees, with a loose spiral at its heart and two wavy petal edges drawn in `petal` (after Type Garden's roses);
 - a pointed **leaf**, with a vein cut in the ground colour;
 - a closed **bud** with two sepals;
 - a **tendril** that curls in on itself;
@@ -116,12 +117,12 @@ are alike but each one is always the same.
 
 | Drawing | Where |
 |---|---|
-| `Wordmark` | Plot upright, Twist upside down beneath it (its T under the P), and a vine along the line between them, with a curl at one end and a rose at the other. When the library opens, Twist turns into place and the vine grows. Tapping it spins Twist and regrows the vine. |
+| `Wordmark` | "Plot Twist" set plainly in Instrument Serif, with a garland grown around it: two vines winding through the words (in front of some letters, behind others) and curling at their ends, leaves along them, and roses in a pair before Plot, one over the T, a pair after Twist and one below. `WordmarkGarland` draws it from ems of the type size, so it scales. It grows when the library opens (vines, then leaves, then roses); tapping it grows it again. |
 | `Flourish` | A printer's flourish: a rose at the heart of a short stem, leaves either side, tendrils at both ends. Under titles and in the reader. |
 | `VineGauge` | How far you've read: a dotted path for the whole book, the stem grown along it, leaves as it passes, a bud at the tip while you're partway, and a rose when you've finished. |
 | Story map vine | One stem winding down the map; each row's stretch bows once, alternately left and right. A curl and a seed where the story begins, a rose at every moment you've reached, a muted bud at each moment still sealed, and a curl at the end. |
 | `BranchRow` | The alternatives branching off a moment. Every branch carries a leaf, and the chosen one opens a rose. |
-| `TwistMark` | One stem forking in two, a leaf on one branch and a rose on the other. On every twisted story, and as the Twisted icon. |
+| `TwistMark` | One stem forking in two, a leaf on one branch and a rose on the other. On every twisted story. |
 | `Sprig` | A stem rising with leaves and a rose. Used in empty states. |
 | `Rose` / `Bud` | On their own. |
 
@@ -132,6 +133,7 @@ are alike but each one is always the same.
 - **Covers** are 2:3: 44×66, 104×156, 150×225, and hero 232×348.
 - **Slabs** (home): a book lying flat, `slabInset` 22 from each side, its spine `slabSpine` 34 tall, one book every `slabStride` 104.
 - **Garden:** stems are `1.8`, and roses on the map are `20`. The story map's vine grows in a `34` gutter, and the reading vine is `56` tall.
+- **Top bar:** the wordmark is set at `wordmark` 22 (its garland makes it about 105 × 41); tabs are `tab` 32 tall; the palette swatch is `navItem` 38.
 - **Touch targets** are at least 44pt; primary buttons are 52pt; pills are 36pt.
 - **Depth:** `Depth.stack` 0.42 for slabs and the lifted book, `Depth.cover` 0.35 for a cover swinging open.
 
@@ -155,7 +157,6 @@ are alike but each one is always the same.
 | `coverOpen` | A story's cover swinging open |
 | `openBook` | Taking a book from the stack and opening it (1.05s, linear; phases eased inside) |
 | `handOver` | The opened book fading into the book's screen |
-| `twist` | Twist turning over into place in the wordmark |
 | `grow` | A stem drawing itself |
 | `bloom(n)` | A rose or leaf opening, staggered |
 | `palette` | The whole app changing palette |
@@ -167,7 +168,7 @@ Page turns use the system page curl. Under Reduce Motion, every custom motion fa
 
 | Element | Behaviour |
 |---|---|
-| Top bar | The `Wordmark` sits on the left. On the right are the palette swatch (`PaletteButton`: the current bloom and stem as two overlapping dots) and the `GlyphSwitcher`, an outlined capsule of three hand-drawn icons like Type Garden's Type / Poster toggle. **Library** is books lying in a stack with a sprout growing from the top one. **Read** is a book with a ribbon falling from it and a leaf pressed in its pages. **Twisted** is the twist mark. Unselected icons are drawn in `inkTertiary`; the selected one takes its full colours on a `raised` pill, and its flower opens. The switcher is hidden while searching. |
+| Top bar | The `Wordmark` sits on the left. On the right are the palette swatch (`PaletteButton`: the current bloom and stem as two overlapping dots) and the `TabSwitcher`: **Library · Read · Twisted** in mono, in an outlined capsule, the chosen one in a solid ink pill that slides between them, like Type Garden's Type / Poster toggle. The tabs are hidden while searching. |
 | `BookStack` | Full-width slabs, after the Dumbling.FM stack. Each book lies flat with its spine toward you and its cover tipping into view behind. The spine is panelled like a real one: the pattern on two end panels, foil bands, and a plain centre panel where the title and author are stamped in `Edition.lettering`. A ribbon lies across the spine if you're partway, and a rose is stamped in foil if you've finished. Books near the top lie flat (spine only), lower books show more cover, and distant books recede by the palette's `fog`. **Library** is endless (classics, your books, then Open Library); **Read** is your books. |
 | Scrolling | The books answer the scroll. As the stack starts to move on, their covers lift open a few degrees (as if riffled); moving back, they lie flatter; when it comes to rest they settle with a soft wobble. Each book moves on its own beat, top to bottom, so the lift and the settle ripple down the stack. Off under Reduce Motion. |
 | Press / hold | A finger down brightens the book and deepens its shadow, with a light haptic. A tap opens it; holding for 0.45s (firmer haptic) opens its manage sheet. |
@@ -189,21 +190,19 @@ Page turns use the system page curl. Under Reduce Motion, every custom motion fa
 ## Components
 
 - **Buttons:** `PrimaryButton` (solid ink capsule, mono label), `SecondaryButton` (outlined capsule), `CircleButton`, `PressableButtonStyle`.
-- **Navigation and choice:** `GlyphView` / `GlyphSwitcher`, `PaletteButton`, `ChoicePills`, `VineGauge`, `BranchRow`.
+- **Navigation and choice:** `TabSwitcher`, `PaletteButton`, `ChoicePills`, `VineGauge`, `BranchRow`.
 - **Rows and fields:** `ActionRow`, `ChoiceRow`, `ComposerField`, `InlineNotice`, `MessageView`, `WritingIndicator`.
 - **Text:** `Eyebrow`, `Hint`, `QuoteBlock`, `Hairline`.
 - **Lists:** `BookRow`, `VersionCard`, `TwistMark`.
-- **Garden:** `Rose`, `Bud`, `Flourish`, `Sprig`, `Growing`, `Wordmark`.
+- **Garden:** `Rose`, `Bud`, `Flourish`, `Sprig`, `Growing`, `Wordmark` / `WordmarkGarland`.
 - **Book objects:** `BookCover`, `FlippableCover`, `Endpaper`, `SlabBook` (`SlabCoverFace` + `SlabSpineFace`), `BookmarkRibbon`, `PageCard`, `Ornament` (on covers), `RaisedCapText`.
 
 ## App icon
 
-After San Francisco Design Week's 2023 "Plot Twist" mark, set in Instrument Serif: **Plot** sits upright and **Twist** hangs upside down from the same line, its T under the P, so the words turn back on themselves the way a plot twist does. A vine runs along the line between them, curling at one end and opening into a rose at the other, with a second rose on Twist.
+The wordmark with its garland: "Plot Twist" in Instrument Serif on one line, two vines winding through it, roses at both ends and over the T.
 
-- **Light** home screens get **Paper**: cream ground, black type, navy vine, vermilion roses.
-- **Dark** home screens get **Rose noir**: black ground, white type, cobalt vine, vermilion roses.
-
-The same lockup is the `Wordmark` at the top of the library.
+- **Light** home screens get **Paper**: cream ground, black type, navy vines, vermilion roses.
+- **Dark** home screens get **Rose noir**: black ground, white type, cobalt vines, vermilion roses.
 
 ## Voice
 

@@ -6,7 +6,7 @@ struct DesignSystemGallery: View {
     @State private var text = ""
     @State private var choice = 0
     @State private var ribbon = true
-    @State private var collection = Glyph.library
+    @State private var collection = 0
     @State private var progress: ReadingProgress? = .partway(0.4)
     @FocusState private var focused: Bool
 
@@ -95,14 +95,11 @@ struct DesignSystemGallery: View {
                     }
                 }
 
-                section("Icons") {
-                    GlyphSwitcher(
-                        items: Glyph.allCases.map { GlyphSwitcher<Glyph>.Item(id: $0, glyph: $0, label: LocalizedStringKey($0.rawValue)) },
+                section("Top bar") {
+                    TabSwitcher(
+                        items: [.init(id: 0, title: "Library"), .init(id: 1, title: "Read"), .init(id: 2, title: "Twisted")],
                         selection: $collection
                     )
-                    HStack(spacing: DS.Space.l) {
-                        ForEach(Glyph.allCases, id: \.self) { GlyphView(glyph: $0, isSelected: true, size: 56) }
-                    }
                     PaletteButton {}
                 }
 

@@ -77,8 +77,9 @@ extension DS {
         static let numeral = font(.display, 84, relativeTo: .largeTitle)
         /// The raised initial that opens every chapter.
         static let raisedCap = font(.display, 62, relativeTo: .largeTitle)
-        /// The wordmark at the top of the library.
-        static let wordmark = font(.display, 30, relativeTo: .title3)
+        /// The wordmark at the top of the library: fixed, since the garden is
+        /// drawn around it to measure.
+        static func wordmark(_ size: CGFloat) -> Font { .custom(Face.display.rawValue, fixedSize: size) }
         /// Italic display, for the odd word set apart.
         static let displayItalic = font(.displayItalic, 32, relativeTo: .title)
 
@@ -99,6 +100,8 @@ extension DS {
 
         /// Buttons and pills.
         static let label = font(.monoMedium, 13, relativeTo: .subheadline)
+        /// The tabs in the top bar.
+        static let tab = font(.monoMedium, 12, relativeTo: .footnote)
         /// Bylines, metadata, counts.
         static let meta = font(.mono, 12, relativeTo: .footnote)
         /// Hints, footnotes, small print.
@@ -206,9 +209,11 @@ extension DS {
         static let slabInset: CGFloat = 22
         static let slabSpine: CGFloat = 34
         static let slabStride: CGFloat = 104
-        /// The drawn icons in the top bar, and the pill each sits in.
-        static let navIcon: CGFloat = 24
-        static let navItem: CGFloat = 40
+        /// The wordmark's type size; its garland is drawn in proportion.
+        static let wordmark: CGFloat = 24
+        /// The tabs in the top bar, and the palette swatch beside them.
+        static let tab: CGFloat = 32
+        static let navItem: CGFloat = 38
         /// Pills (choices).
         static let pill: CGFloat = 36
         /// The forking mark on a twisted story.
