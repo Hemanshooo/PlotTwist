@@ -117,7 +117,7 @@ are alike but each one is always the same.
 
 | Drawing | Where |
 |---|---|
-| `Wordmark` | "Plot Twist" set plainly in Instrument Serif, with a garland grown around it: two vines winding through the words (in front of some letters, behind others) and curling at their ends, leaves along them, and roses in a pair before Plot, one over the T, a pair after Twist and one below. `WordmarkGarland` draws it from ems of the type size, so it scales. It grows when the library opens (vines, then leaves, then roses); tapping it grows it again. |
+| `Wordmark` | "Plot Twist" set plainly in Instrument Serif, with a garland grown around it: two vines winding through the words (in front of some letters, behind others) and curling at their ends, leaves along them, and roses before Plot, over the T, in a pair after Twist and one below. `WordmarkGarland` draws it from ems of the type size, so it scales. It grows when the library opens (vines, then leaves, then roses); tapping it grows it again. |
 | `Flourish` | A printer's flourish: a rose at the heart of a short stem, leaves either side, tendrils at both ends. Under titles and in the reader. |
 | `VineGauge` | How far you've read: a dotted path for the whole book, the stem grown along it, leaves as it passes, a bud at the tip while you're partway, and a rose when you've finished. |
 | Story map vine | One stem winding down the map; each row's stretch bows once, alternately left and right. A curl and a seed where the story begins, a rose at every moment you've reached, a muted bud at each moment still sealed, and a curl at the end. |

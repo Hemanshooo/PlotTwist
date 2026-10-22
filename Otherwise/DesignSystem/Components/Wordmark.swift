@@ -3,8 +3,8 @@ import SwiftUI
 /// The Plot Twist wordmark: the name set plainly in Instrument Serif, with a
 /// garland grown around it, after Type Garden. Two vines wind through the
 /// words, passing in front of some letters and behind others, curling at
-/// their ends; leaves along them; and roses in a pair before Plot, one over
-/// the T, a pair after Twist and one below.
+/// their ends; leaves along them; and roses before Plot, over the T, in a
+/// pair after Twist and one below.
 ///
 /// When it first appears the garland grows: the vines draw themselves, the
 /// leaves unfurl as they pass, and the roses open last. Tapping it grows it again.
@@ -83,8 +83,8 @@ struct WordmarkGarland: View, Animatable {
     private static let lowerFront: [(Double, Double)] = [(0.0, 0.16), (0.34, 0.5), (0.7, 0.86)]
     /// Roses: where (ems), how wide (ems), seed, and when each opens.
     private static let roses: [(x: CGFloat, y: CGFloat, width: CGFloat, seed: Int, opens: Double)] = [
-        (-0.4, -0.42, 0.64, 1, 0.42), (-0.02, -0.86, 0.5, 2, 0.5), (1.6, -0.96, 0.56, 3, 0.58),
-        (3.52, -0.82, 0.56, 5, 0.66), (3.62, -0.24, 0.46, 6, 0.72), (2.62, 0.32, 0.34, 4, 0.62),
+        (-0.4, -0.42, 0.64, 1, 0.42), (1.6, -0.96, 0.56, 3, 0.56),
+        (3.62, -0.8, 0.54, 5, 0.66), (3.66, -0.22, 0.44, 6, 0.72), (2.62, 0.32, 0.34, 4, 0.62),
     ]
 
     var body: some View {
