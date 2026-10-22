@@ -1,7 +1,8 @@
 import SwiftUI
 
-/// One action in a sheet: an icon, a title and a line of detail on a glass card.
-/// Destructive actions are set in the caution colour, so they read as final.
+/// One action in a sheet: a symbol in an outlined circle, a mono title and a
+/// line of detail, on an outlined card. Destructive actions are set in the
+/// caution colour, so they read as final.
 struct ActionRow: View {
     let title: Text
     let systemImage: String
@@ -23,10 +24,10 @@ struct ActionRow: View {
         Button(action: action) {
             HStack(alignment: .center, spacing: DS.Space.s) {
                 Image(systemName: systemImage)
-                    .font(DS.Typography.label)
+                    .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(tint)
                     .frame(width: DS.Size.touch - DS.Space.xs, height: DS.Size.touch - DS.Space.xs)
-                    .background(tint.opacity(0.10), in: Circle())
+                    .overlay { Circle().strokeBorder(DS.Colors.hairline, lineWidth: DS.Size.hairline) }
                 VStack(alignment: .leading, spacing: DS.Space.xxs) {
                     title
                         .font(DS.Typography.label)
@@ -34,18 +35,17 @@ struct ActionRow: View {
                         .lineLimit(2)
                     if let detail {
                         detail
-                            .font(DS.Typography.caption)
+                            .font(DS.Typography.blurb)
                             .foregroundStyle(DS.Colors.inkSecondary)
                             .lineLimit(2)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding(.horizontal, DS.Space.s)
-            .padding(.vertical, DS.Space.s)
+            .padding(DS.Space.s)
             .frame(minHeight: DS.Size.touch)
-            .dsGlass(cornerRadius: DS.Radius.m)
-            .contentShape(RoundedRectangle(cornerRadius: DS.Radius.m, style: .continuous))
+            .dsOutline()
+            .contentShape(RoundedRectangle(cornerRadius: DS.Radius.s, style: .continuous))
         }
         .buttonStyle(PressableButtonStyle())
     }

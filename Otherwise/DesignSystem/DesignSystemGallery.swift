@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// A living reference of every token and component.
+/// A living reference of every token and component, in every palette.
 /// Open the canvas (⌥⌘↩) on this file before shipping a change.
 struct DesignSystemGallery: View {
     @State private var text = ""
@@ -10,20 +10,22 @@ struct DesignSystemGallery: View {
     @State private var progress: ReadingProgress? = .partway(0.4)
     @FocusState private var focused: Bool
 
-    private let colors: [(String, Color)] = [
-        ("canvas", DS.Colors.canvas),
-        ("surface", DS.Colors.surface),
-        ("surfaceRaised", DS.Colors.surfaceRaised),
-        ("page", DS.Colors.page),
-        ("ink", DS.Colors.ink),
-        ("inkSecondary", DS.Colors.inkSecondary),
-        ("inkTertiary", DS.Colors.inkTertiary),
-        ("pageInk", DS.Colors.pageInk),
-        ("accent", DS.Colors.accent),
-        ("accentDeep", DS.Colors.accentDeep),
-        ("positive", DS.Colors.positive),
-        ("caution", DS.Colors.caution),
-    ]
+    private var colors: [(String, Color)] {
+        [
+            ("canvas", DS.Colors.canvas),
+            ("surface", DS.Colors.surface),
+            ("raised", DS.Colors.raised),
+            ("page", DS.Colors.page),
+            ("ink", DS.Colors.ink),
+            ("inkSecondary", DS.Colors.inkSecondary),
+            ("inkTertiary", DS.Colors.inkTertiary),
+            ("pageInk", DS.Colors.pageInk),
+            ("stem", DS.Colors.stem),
+            ("bloom", DS.Colors.bloom),
+            ("petal", DS.Colors.petal),
+            ("caution", DS.Colors.caution),
+        ]
+    }
 
     private let spaces: [(String, CGFloat)] = [
         ("xxs", DS.Space.xxs), ("xs", DS.Space.xs), ("s", DS.Space.s), ("m", DS.Space.m),
@@ -35,7 +37,11 @@ struct DesignSystemGallery: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: DS.Space.xxl) {
-                section("The room") {
+                section("Palette") {
+                    ChoicePills(
+                        options: Palette.allCases.map { ChoicePills<Palette>.Option(id: $0, title: $0.name) },
+                        selection: Theme.shared.palette
+                    ) { palette in withAnimation(DS.Motion.palette) { Theme.shared.choose(palette) } }
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 96))], alignment: .leading, spacing: DS.Space.s) {
                         ForEach(colors, id: \.0) { name, color in
                             VStack(alignment: .leading, spacing: DS.Space.xxs) {
@@ -46,41 +52,36 @@ struct DesignSystemGallery: View {
                                             .strokeBorder(DS.Colors.hairline, lineWidth: DS.Size.hairline)
                                     }
                                     .frame(height: DS.Size.touch)
-                                Text(verbatim: name).font(DS.Typography.caption).foregroundStyle(DS.Colors.inkSecondary)
+                                Hint(verbatim: name)
                             }
                         }
                     }
-                    Capsule()
-                        .fill(DS.Gradients.opal)
-                        .frame(height: DS.Space.s)
-                        .dsGlow(DS.Colors.accentDeep)
-                    Text(verbatim: "opal").font(DS.Typography.caption).foregroundStyle(DS.Colors.inkSecondary)
                 }
 
-                section("Editions") {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: DS.Space.m) {
-                            ForEach(Catalog.entries, id: \.book.id) { entry in
-                                BookCover(book: entry.book, size: .medium)
-                                    .dsGlow(entry.edition.glow, radius: 16, strength: 0.4)
-                            }
-                        }
-                        .padding(.vertical, DS.Space.m)
+                section("Garden") {
+                    HStack(spacing: DS.Space.l) {
+                        Rose(size: 40, seed: 1)
+                        Rose(size: 40, seed: 2)
+                        Bud(size: 40)
+                        Bud(size: 40, muted: true)
+                        TwistMark(size: 40)
                     }
-                    .scrollClipDisabled()
+                    Growing { Flourish(width: 180, progress: $0) }
+                    Growing { Sprig(height: 120, progress: $0) }
+                    Wordmark()
                 }
 
                 section("Type") {
-                    Text("Display").font(DS.Typography.display)
-                    Text("Title").font(DS.Typography.title)
-                    Text(verbatim: "72").font(DS.Typography.gauge).foregroundStyle(DS.Colors.accent)
-                    Text("Screen title").font(DS.Typography.screenTitle)
-                    Text("Heading").font(DS.Typography.heading)
-                    Text("Row title").font(DS.Typography.rowTitle)
-                    RaisedCapText(text: "Reading text opens with a raised capital in the book’s ink.", ink: sample.edition.ink)
-                    Text("Interface body").font(DS.Typography.body)
+                    Text("Display").dsDisplay()
+                    Text("Title").dsDisplay(DS.Typography.title)
+                    Text("Heading").dsDisplay(DS.Typography.heading)
+                    Text(verbatim: "72").font(DS.Typography.numeral)
+                    RaisedCapText(text: "Reading text opens with a raised capital in the bloom.")
+                    Text("A blurb, in the reading face.").font(DS.Typography.blurb)
+                    Text("“A quotation.”").font(DS.Typography.quote)
+                    Text("Label · 1813").font(DS.Typography.label)
                     Text("Meta · 1813").font(DS.Typography.meta).foregroundStyle(DS.Colors.inkSecondary)
-                    Text("Folio · 12").font(DS.Typography.folio).foregroundStyle(DS.Colors.inkTertiary)
+                    Hint("a hint, in lowercase mono")
                     Eyebrow("Eyebrow")
                 }
                 .foregroundStyle(DS.Colors.ink)
@@ -88,9 +89,8 @@ struct DesignSystemGallery: View {
                 section("Space") {
                     ForEach(spaces, id: \.0) { name, value in
                         HStack(spacing: DS.Space.s) {
-                            Rectangle().fill(DS.Colors.accent).frame(width: value, height: DS.Space.s)
-                            Text(verbatim: "\(name) · \(Int(value))").font(DS.Typography.caption)
-                                .foregroundStyle(DS.Colors.inkSecondary)
+                            Rectangle().fill(DS.Colors.stem).frame(width: value, height: DS.Space.s)
+                            Hint(verbatim: "\(name) · \(Int(value))")
                         }
                     }
                 }
@@ -100,7 +100,10 @@ struct DesignSystemGallery: View {
                         items: Glyph.allCases.map { GlyphSwitcher<Glyph>.Item(id: $0, glyph: $0, label: LocalizedStringKey($0.rawValue)) },
                         selection: $collection
                     )
-                    TwistMark(edition: sample.edition)
+                    HStack(spacing: DS.Space.l) {
+                        ForEach(Glyph.allCases, id: \.self) { GlyphView(glyph: $0, isSelected: true, size: 56) }
+                    }
+                    PaletteButton {}
                 }
 
                 section("Book objects") {
@@ -111,7 +114,7 @@ struct DesignSystemGallery: View {
                         FlippableCover(book: sample.book, blurb: sample.map.premise)
                     }
                     HStack(spacing: DS.Space.l) {
-                        BookmarkRibbon(color: sample.edition.ink, isPlaced: ribbon)
+                        BookmarkRibbon(color: DS.Colors.bloom, isPlaced: ribbon)
                             .frame(height: DS.Size.ribbonLength, alignment: .top)
                             .clipped()
                         SecondaryButton("Drop ribbon") { ribbon.toggle() }
@@ -122,35 +125,34 @@ struct DesignSystemGallery: View {
                             Text(sample.map.moments[0].happened).dsReading()
                         }
                     }
-                    Ornament(color: sample.edition.ink)
                 }
 
-                section("Gauges") {
-                    ReadingGauge(edition: sample.edition, progress: progress) { progress = $0 }
+                section("Reading") {
+                    ReadingGauge(progress: progress) { progress = $0 }
                 }
 
                 section("Components") {
-                    QuoteBlock(text: "Darcy asks Elizabeth to dance.", ink: sample.edition.ink)
+                    QuoteBlock(text: "Darcy asks Elizabeth to dance.")
                     VStack(spacing: 0) {
                         ForEach(Array(sample.map.moments[0].alternatives.enumerated()), id: \.offset) { index, alternative in
-                            BranchRow(isLast: index == sample.map.moments[0].alternatives.count - 1, ink: sample.edition.ink, isLit: choice == index) {
-                                ChoiceRow(text: alternative, isSelected: choice == index, ink: sample.edition.ink) { choice = index }
+                            BranchRow(isLast: index == sample.map.moments[0].alternatives.count - 1, isLit: choice == index, seed: index) {
+                                ChoiceRow(text: alternative, isSelected: choice == index) { choice = index }
                             }
                         }
                     }
-                    ComposerField(placeholder: "Describe what happens instead.", text: $text, focus: $focused, tint: sample.edition.ink)
+                    ComposerField(placeholder: "Describe what happens instead.", text: $text, focus: $focused)
                     InlineNotice(symbol: "apple.intelligence", title: "Turn on Apple Intelligence", message: "Plot Twist writes every story on your iPhone.")
                     WritingIndicator()
-                    PrimaryButton("Rewrite from here", edition: sample.edition) {}
-                    PrimaryButton("App accent") {}
+                    PrimaryButton("Rewrite from here", systemImage: "arrow.right") {}
                     SecondaryButton("Try again", systemImage: "arrow.clockwise") {}
-                    GlassIconButton(systemImage: "xmark", label: "Close") {}
+                    CircleButton(systemImage: "xmark", label: "Close") {}
+                    ActionRow(Text("Remove from Read"), systemImage: "bookmark.slash", detail: Text("Later moments seal again.")) {}
                 }
             }
             .padding(DS.Space.screen)
         }
         .dsScreen()
-        .dsDarkOnly()
+        .dsColorScheme()
     }
 
     private func section<Content: View>(_ title: LocalizedStringKey, @ViewBuilder content: () -> Content) -> some View {

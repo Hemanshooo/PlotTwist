@@ -3,8 +3,7 @@ import SwiftUI
 import CoreText
 
 extension DS {
-    /// Registers the bundled serif (Resources/Fonts) used inside the books.
-    /// Call once, before any view is drawn.
+    /// Registers the bundled faces (Resources/Fonts). Call once, before any view is drawn.
     static func registerFonts() {
         guard let root = Bundle.main.resourceURL,
               let files = FileManager.default.enumerator(at: root, includingPropertiesForKeys: nil)
@@ -20,23 +19,24 @@ extension DS {
         #endif
     }
 
-    /// Carries the room's colours into UIKit-drawn chrome: navigation titles,
-    /// the search field, page indicators. The app is dark only.
+    /// Carries the palette into UIKit-drawn chrome: navigation titles and the
+    /// search field. Called at launch and whenever the palette changes.
     static func configureSystemAppearance() {
         let ink = UIColor(DS.Colors.ink)
         let bar = UINavigationBar.appearance()
         bar.largeTitleTextAttributes = [.foregroundColor: ink]
         bar.titleTextAttributes = [
-            .font: UIFont.preferredFont(forTextStyle: .headline),
+            .font: UIFont(name: Typography.Face.monoMedium.rawValue, size: 13) ?? UIFont.preferredFont(forTextStyle: .headline),
             .foregroundColor: ink,
         ]
-        UISearchTextField.appearance().tintColor = UIColor(DS.Colors.accent)
+        UISearchTextField.appearance().tintColor = ink
     }
 }
 
 extension View {
-    /// The whole app runs in the dark appearance, whatever the system setting.
-    func dsDarkOnly() -> some View {
-        self.preferredColorScheme(.dark)
+    /// System chrome (status bar, keyboard, alerts, sheets) follows the
+    /// palette: dark on Rose noir, Midnight and Citrus, light on Paper.
+    func dsColorScheme() -> some View {
+        self.preferredColorScheme(Theme.shared.palette.scheme.isDark ? .dark : .light)
     }
 }

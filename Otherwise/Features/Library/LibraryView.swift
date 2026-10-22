@@ -20,6 +20,7 @@ struct LibraryView: View {
     @State private var managing: StackItem?
     /// More books from Open Library, loaded as you scroll the library.
     @State private var feed = LibraryFeed()
+    @State private var choosingPalette = false
 
     enum Collection: String, CaseIterable, Hashable {
         case library, read, twisted
@@ -61,22 +62,26 @@ struct LibraryView: View {
                         // The wordmark sits at the top left, level with the icons.
                         // The centred inline title is left empty.
                         ToolbarItem(placement: .principal) { Color.clear.frame(width: 1, height: 1) }
-                        ToolbarItem(placement: .topBarLeading) { masthead }
+                        ToolbarItem(placement: .topBarLeading) { Wordmark() }
                             .sharedBackgroundVisibility(.hidden)
                         if trimmedQuery.isEmpty {
                             ToolbarItem(placement: .topBarTrailing) {
-                                GlyphSwitcher(
-                                    items: Collection.allCases.map { GlyphSwitcher<Collection>.Item(id: $0, glyph: $0.glyph, label: $0.label) },
-                                    selection: $collection
-                                )
+                                HStack(spacing: DS.Space.xs) {
+                                    PaletteButton { choosingPalette = true }
+                                    GlyphSwitcher(
+                                        items: Collection.allCases.map { GlyphSwitcher<Collection>.Item(id: $0, glyph: $0.glyph, label: $0.label) },
+                                        selection: $collection
+                                    )
+                                }
                             }
                             .sharedBackgroundVisibility(.hidden)
                         }
                     }
                     .sheet(item: $managing) { BookActionsSheet(book: $0.book) }
+                    .sheet(isPresented: $choosingPalette) { PaletteSheet() }
                     .dsScreen()
             }
-            .tint(DS.Colors.accent)
+            .tint(DS.Colors.ink)
 
             if let pulled {
                 BookOpening(pulled: pulled) {
@@ -90,7 +95,7 @@ struct LibraryView: View {
                 .zIndex(1)
             }
         }
-        .dsDarkOnly()
+        .dsColorScheme()
     }
 
     // MARK: Books
@@ -128,11 +133,10 @@ struct LibraryView: View {
             switch search {
             case .idle, .loading:
                 ProgressView()
-                    .tint(DS.Colors.accent)
+                    .tint(DS.Colors.ink)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             case .results(let books) where books.isEmpty:
                 MessageView(
-                    symbol: "magnifyingglass",
                     title: "No books found",
                     message: "Check the spelling, or try the author’s name."
                 )
@@ -150,12 +154,6 @@ struct LibraryView: View {
         }
     }
 
-    /// The wordmark at the top left, level with the icons: PLOT upright,
-    /// TWIST upside down beneath it, as on the app icon.
-    private var masthead: some View {
-        Wordmark()
-    }
-
     private var home: some View {
         VStack(alignment: .leading, spacing: 0) {
             ZStack {
@@ -165,7 +163,6 @@ struct LibraryView: View {
                 case .read:
                     if readItems.isEmpty {
                         MessageView(
-                            symbol: "bookmark",
                             title: "Nothing read yet",
                             message: "Open any book in the library and say how far you’ve read. It will appear here."
                         ) {
@@ -211,12 +208,15 @@ struct LibraryView: View {
 
     private func resultList(_ books: [Book]) -> some View {
         List(books) { book in
-            Button {
-                path.append(book)
-            } label: {
-                BookRow(book: book)
+            VStack(spacing: 0) {
+                Button {
+                    path.append(book)
+                } label: {
+                    BookRow(book: book)
+                }
+                .buttonStyle(PressableButtonStyle())
+                Hairline()
             }
-            .buttonStyle(PressableButtonStyle())
             .dsListRow()
         }
         .dsList()
@@ -278,29 +278,42 @@ private struct TwistedList: View {
         Group {
             if versions.isEmpty {
                 MessageView(
-                    symbol: "arrow.triangle.branch",
                     title: "No twisted stories yet",
                     message: "Open a book, pick a moment, and change what happens. Your versions are kept here."
                 )
             } else {
                 ScrollView {
-                    VStack(spacing: DS.Space.s) {
-                        ForEach(versions) { version in
-                            VersionCard(version: version)
-                                .onTapGesture { onOpen(version) }
-                                .onLongPressGesture(minimumDuration: 0.45) {
-                                    holds += 1
-                                    managing = version
-                                }
-                                .accessibilityAddTraits(.isButton)
-                                .accessibilityAction(named: "Manage story") { managing = version }
-                                .transition(.opacity.combined(with: .scale(scale: 0.96)))
+                    VStack(spacing: 0) {
+                        HStack(alignment: .firstTextBaseline) {
+                            Eyebrow("Twisted stories")
+                            Spacer()
+                            Hint(verbatim: "\(versions.count)")
                         }
-                        Button("Clear all", role: .destructive) { confirmClear = true }
-                            .font(DS.Typography.label)
-                            .foregroundStyle(DS.Colors.caution)
-                            .frame(minHeight: DS.Size.touch)
-                            .padding(.top, DS.Space.s)
+                        .padding(.bottom, DS.Space.xs)
+                        Hairline()
+                        ForEach(versions) { version in
+                            VStack(spacing: 0) {
+                                VersionCard(version: version)
+                                    .onTapGesture { onOpen(version) }
+                                    .onLongPressGesture(minimumDuration: 0.45) {
+                                        holds += 1
+                                        managing = version
+                                    }
+                                    .accessibilityAddTraits(.isButton)
+                                    .accessibilityAction(named: "Manage story") { managing = version }
+                                Hairline()
+                            }
+                            .transition(.opacity.combined(with: .scale(scale: 0.96)))
+                        }
+                        HStack {
+                            Hint("tap to read · hold to manage")
+                            Spacer()
+                            Button("Clear all", role: .destructive) { confirmClear = true }
+                                .font(DS.Typography.label)
+                                .foregroundStyle(DS.Colors.caution)
+                                .frame(minHeight: DS.Size.touch)
+                        }
+                        .padding(.top, DS.Space.xs)
                     }
                     .padding(.horizontal, DS.Space.screen)
                     .padding(.vertical, DS.Space.s)

@@ -1,17 +1,17 @@
 import SwiftUI
 
-/// Small uppercase label that introduces a section.
+/// Small mono capitals that introduce a section.
 struct Eyebrow: View {
     private let text: Text
-    private let color: Color
+    private let color: Color?
 
-    init(_ key: LocalizedStringKey, color: Color = DS.Colors.inkSecondary) {
+    init(_ key: LocalizedStringKey, color: Color? = nil) {
         self.text = Text(key)
         self.color = color
     }
 
     /// For content that isn't interface copy, such as a book title.
-    init(verbatim string: String, color: Color = DS.Colors.inkSecondary) {
+    init(verbatim string: String, color: Color? = nil) {
         self.text = Text(verbatim: string)
         self.color = color
     }
@@ -21,23 +21,35 @@ struct Eyebrow: View {
             .font(DS.Typography.eyebrow)
             .tracking(DS.Tracking.eyebrow)
             .textCase(.uppercase)
-            .foregroundStyle(color)
+            .foregroundStyle(color ?? DS.Colors.inkSecondary)
             .accessibilityAddTraits(.isHeader)
     }
 }
 
-/// The user's change, set as a pull quote with a glowing rule.
+/// A line of lowercase mono, the way Type Garden labels its controls
+/// ("type to grow · space cuts"). Hints and small print.
+struct Hint: View {
+    private let text: Text
+
+    init(_ key: LocalizedStringKey) { text = Text(key) }
+    init(verbatim string: String) { text = Text(verbatim: string) }
+
+    var body: some View {
+        text
+            .font(DS.Typography.caption)
+            .foregroundStyle(DS.Colors.inkTertiary)
+    }
+}
+
+/// The user's change, set as a pull quote with a rule in the bloom colour.
 struct QuoteBlock: View {
     let text: String
-    /// The rule colour: the book's ink on book screens, the app accent elsewhere.
-    var ink: Color = DS.Colors.accent
 
     var body: some View {
         HStack(alignment: .top, spacing: DS.Space.s) {
             Capsule()
-                .fill(ink)
+                .fill(DS.Colors.bloom)
                 .frame(width: DS.Size.rule)
-                .dsGlow(ink, radius: 6, strength: 0.6)
             Text(text)
                 .font(DS.Typography.quote)
                 .foregroundStyle(DS.Colors.pageInk)
@@ -57,42 +69,8 @@ struct Hairline: View {
     }
 }
 
-/// The black room with light falling into it from the top, the way Opal's
-/// screens glow behind the gem. Library screens glow mint; a book's screens
-/// glow in its own cloth.
-struct AmbientBackground: View {
-    var tint: Color = DS.Gradients.roomGlow
-    /// How much of the screen the light reaches (0…1).
-    var reach: CGFloat = 0.62
-    var strength: Double = 1
-
-    var body: some View {
-        GeometryReader { proxy in
-            let height = proxy.size.height
-            ZStack(alignment: .top) {
-                DS.Colors.canvas
-                EllipticalGradient(
-                    stops: [
-                        .init(color: tint.opacity(0.34 * strength), location: 0),
-                        .init(color: tint.opacity(0.12 * strength), location: 0.45),
-                        .init(color: .clear, location: 1),
-                    ],
-                    center: .top,
-                    startRadiusFraction: 0,
-                    endRadiusFraction: 0.75
-                )
-                .frame(height: height * reach)
-                .offset(y: -height * 0.06)
-            }
-        }
-        .ignoresSafeArea()
-        .allowsHitTesting(false)
-        .accessibilityHidden(true)
-    }
-}
-
 extension View {
-    /// Long-form story text: serif, relaxed leading, warm page ink.
+    /// Long-form story text: serif, relaxed leading, page ink.
     func dsReading() -> some View {
         self
             .font(DS.Typography.reading)
@@ -100,39 +78,56 @@ extension View {
             .foregroundStyle(DS.Colors.pageInk)
     }
 
-    /// Every screen: the black room with its glow, the interface face for any
-    /// text that doesn't set its own, and the tint for system controls.
-    func dsScreen(glow: Color = DS.Gradients.roomGlow, tint: Color = DS.Colors.accent) -> some View {
+    /// A display title: Instrument Serif, set a little tight.
+    func dsDisplay(_ font: Font = DS.Typography.display) -> some View {
         self
-            .font(DS.Typography.body)
+            .font(font)
+            .tracking(DS.Tracking.display)
             .foregroundStyle(DS.Colors.ink)
-            .background { AmbientBackground(tint: glow) }
-            .tint(tint)
     }
 
-    /// A glass card: lit from above, with a bright top edge.
-    func dsGlass(cornerRadius: CGFloat = DS.Radius.m) -> some View {
+    /// Every screen: the palette's flat ground, the reading face for any text
+    /// that doesn't set its own, and the ink as the tint for system controls.
+    func dsScreen() -> some View {
+        self
+            .font(DS.Typography.blurb)
+            .foregroundStyle(DS.Colors.ink)
+            .background { DS.Colors.canvas.ignoresSafeArea() }
+            .tint(DS.Colors.ink)
+    }
+
+    /// A panel: a step off the ground, with a fine outline. No shadow, no glass.
+    func dsPanel(cornerRadius: CGFloat = DS.Radius.s) -> some View {
         let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
         return self
-            .background(DS.Gradients.glass, in: shape)
-            .overlay { shape.strokeBorder(DS.Gradients.glassEdge, lineWidth: DS.Size.hairline) }
+            .background(DS.Colors.surface, in: shape)
+            .overlay { shape.strokeBorder(DS.Colors.hairline, lineWidth: DS.Size.hairline) }
     }
 
-    /// A glass capsule: pills, fields and quiet buttons.
-    func dsGlassCapsule(fill: Color = DS.Colors.surface) -> some View {
-        self
-            .background(fill, in: Capsule())
-            .overlay { Capsule().strokeBorder(DS.Gradients.glassEdge, lineWidth: DS.Size.hairline) }
+    /// An outline on the ground: choices, fields, quiet buttons.
+    func dsOutline(cornerRadius: CGFloat = DS.Radius.s, isSelected: Bool = false) -> some View {
+        let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+        return self
+            .background(isSelected ? DS.Colors.raised : DS.Colors.canvas, in: shape)
+            .overlay {
+                shape.strokeBorder(
+                    isSelected ? DS.Colors.ink : DS.Colors.hairline,
+                    lineWidth: isSelected ? 1.2 : DS.Size.hairline
+                )
+            }
     }
 }
 
 #Preview {
     VStack(alignment: .leading, spacing: DS.Space.l) {
         Eyebrow("What if")
+        Text("The Great Gatsby").dsDisplay()
+        Hint("tap to open · hold to manage")
         QuoteBlock(text: "Elizabeth accepts Mr. Collins's proposal.")
         Hairline()
         Text("It is a truth universally acknowledged…").dsReading()
-        Text("A glass card").padding(DS.Space.m).dsGlass()
+        Text("A panel").padding(DS.Space.m).dsPanel()
+        Text("An outline").padding(DS.Space.m).dsOutline(isSelected: true)
     }
     .padding(DS.Space.screen)
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)

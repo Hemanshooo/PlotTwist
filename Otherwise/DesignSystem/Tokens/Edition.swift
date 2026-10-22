@@ -3,9 +3,9 @@ import SwiftUI
 /// How a book is bound: a cloth colour, a foil colour and a stamped pattern.
 ///
 /// Inspired by clothbound classics, every book in Plot Twist gets its own
-/// edition. On the black room it is the main source of colour: covers, spines,
-/// the glow at the top of the book's screen, its gauge, timeline and buttons,
-/// and the reader's raised capitals all come from the book's edition.
+/// edition. Editions colour the books themselves (covers, spines, endpapers,
+/// the cover that swings open over a story); the rest of the app takes its
+/// colour from the palette.
 ///
 /// Curated books have a hand-picked edition in the catalogue. Every other book
 /// gets one chosen from `palettes` by a stable hash of its title, so the same
@@ -22,25 +22,6 @@ struct Edition: Hashable {
 
     var clothColor: Color { Color(hex: cloth) }
     var foilColor: Color { Color(hex: foil) }
-
-    /// The edition's light on the black: the brighter of cloth and foil,
-    /// lifted if it's too dark to read. Used for numerals, rules, the
-    /// timeline, raised capitals and the tint of the book's screens.
-    var ink: Color { Color(hex: Self.inkHex(cloth, foil)) }
-
-    /// The glow behind a book's screen and under its spine: the cloth's own
-    /// colour, unless the cloth is nearly black, when the foil glows instead.
-    var glow: Color {
-        Color(hex: Self.luminance(cloth) < 0.035 ? foil : cloth)
-    }
-
-    /// Label colour for text set on `ink`.
-    var onInk: Color {
-        Self.luminance(Self.inkHex(cloth, foil)) > 0.25 ? Color(hex: 0x0B0C0C) : .white
-    }
-
-    /// The gradient for this book's arcs and glowing buttons.
-    var gradientColors: [Color] { [glow, ink] }
 
     /// Foil for lettering stamped on the cloth (spines): the edition's foil,
     /// pushed lighter or darker, keeping its hue, until it reads against the
@@ -86,17 +67,6 @@ struct Edition: Hashable {
             + 0.0722 * channel(hex & 0xFF)
     }
 
-    /// The brighter of the pair, mixed toward white until it reads on black (≥ 0.2 luminance).
-    private static func inkHex(_ a: UInt32, _ b: UInt32) -> UInt32 {
-        var color = luminance(a) > luminance(b) ? a : b
-        var steps = 0
-        while luminance(color) < 0.2, steps < 10 {
-            color = mix(color, 0xFFFFFF, 0.18)
-            steps += 1
-        }
-        return color
-    }
-
     static func contrast(_ a: UInt32, _ b: UInt32) -> Double {
         let la = luminance(a), lb = luminance(b)
         return (max(la, lb) + 0.05) / (min(la, lb) + 0.05)
@@ -126,7 +96,7 @@ struct Edition: Hashable {
         return color
     }
 
-    private static func mix(_ a: UInt32, _ b: UInt32, _ t: Double) -> UInt32 {
+    static func mix(_ a: UInt32, _ b: UInt32, _ t: Double) -> UInt32 {
         func channel(_ shift: UInt32) -> UInt32 {
             let x = Double((a >> shift) & 0xFF), y = Double((b >> shift) & 0xFF)
             return UInt32((x + (y - x) * t).rounded()) << shift

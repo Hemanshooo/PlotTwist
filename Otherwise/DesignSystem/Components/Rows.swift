@@ -1,6 +1,7 @@
 import SwiftUI
 
-/// A book in search results.
+/// A book in search results: its cover, its title in the display serif, a
+/// mono byline, and a note in the stem colour if it has a story map.
 struct BookRow: View {
     let book: Book
 
@@ -11,7 +12,7 @@ struct BookRow: View {
             BookCover(book: book, size: .small)
             VStack(alignment: .leading, spacing: DS.Space.xxs) {
                 Text(book.title)
-                    .font(DS.Typography.rowTitle)
+                    .font(DS.Typography.heading)
                     .foregroundStyle(DS.Colors.ink)
                     .lineLimit(2)
                 if let byline = book.byline {
@@ -21,43 +22,46 @@ struct BookRow: View {
                         .lineLimit(1)
                 }
                 if isMapped {
-                    Label("Story map", systemImage: "point.topleft.down.to.point.bottomright.curvepath")
-                        .font(DS.Typography.captionEmphasis)
-                        .foregroundStyle(Edition.of(book).ink)
-                        .padding(.top, DS.Space.xxs)
+                    Text("story map")
+                        .font(DS.Typography.caption)
+                        .foregroundStyle(DS.Colors.stem)
+                        .padding(.top, 2)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            Image(systemName: "chevron.right")
-                .font(DS.Typography.captionEmphasis)
+            Image(systemName: "arrow.right")
+                .font(.system(size: 12, weight: .medium))
                 .foregroundStyle(DS.Colors.inkTertiary)
         }
-        .padding(DS.Space.s)
-        .dsGlass(cornerRadius: DS.Radius.m)
+        .padding(.vertical, DS.Space.s)
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
     }
 }
 
-/// A twisted story: its book's cover, your change, and the forking mark
-/// lit in the book's colours.
+/// A twisted story, set like an index entry: its book's cover, the book's
+/// title in mono capitals, the story's title in the display serif, your
+/// change in italics, and the twist mark.
 struct VersionCard: View {
     let version: Version
 
-    private var edition: Edition { Edition.of(version.book) }
+    /// The story's title, without any markdown emphasis the model wrapped it in.
+    private var displayTitle: String {
+        let title = version.title.trimmingCharacters(in: CharacterSet(charactersIn: "*_ \n"))
+        return title.isEmpty ? version.change : title
+    }
 
     var body: some View {
         HStack(alignment: .center, spacing: DS.Space.m) {
             BookCover(book: version.book, size: .small)
-                .dsGlow(edition.glow, radius: 12, strength: 0.4)
             VStack(alignment: .leading, spacing: DS.Space.xxs) {
-                Eyebrow(verbatim: version.bookTitle, color: edition.ink)
-                Text(version.title.isEmpty ? version.change : version.title)
-                    .font(DS.Typography.rowTitle)
+                Eyebrow(verbatim: version.bookTitle)
+                Text(displayTitle)
+                    .font(DS.Typography.heading)
                     .foregroundStyle(DS.Colors.ink)
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
-                if !version.title.isEmpty {
+                if displayTitle != version.change {
                     Text("“\(version.change)”")
                         .font(DS.Typography.quoteSmall)
                         .foregroundStyle(DS.Colors.inkSecondary)
@@ -66,27 +70,10 @@ struct VersionCard: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            TwistMark(edition: edition)
+            TwistMark()
         }
-        .padding(DS.Space.m)
-        .dsGlass()
+        .padding(.vertical, DS.Space.m)
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
-    }
-}
-
-/// The mark for a twisted story: the forking-path glyph, lit by its book.
-struct TwistMark: View {
-    let edition: Edition
-
-    var body: some View {
-        Glyph.twisted.shape
-            .fill(LinearGradient(colors: edition.gradientColors, startPoint: .bottomLeading, endPoint: .topTrailing))
-            .frame(width: DS.Size.twistMark * 0.58, height: DS.Size.twistMark * 0.58)
-            .frame(width: DS.Size.twistMark, height: DS.Size.twistMark)
-            .background(edition.ink.opacity(0.10), in: Circle())
-            .overlay { Circle().strokeBorder(edition.ink.opacity(0.25), lineWidth: DS.Size.hairline) }
-            .dsGlow(edition.glow, radius: 10, strength: 0.4)
-            .accessibilityHidden(true)
     }
 }

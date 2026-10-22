@@ -90,7 +90,6 @@ private struct OpeningBook: View, Animatable {
     static let unfoldStart = 0.60
 
     private var book: Book { pulled.book }
-    private var edition: Edition { Edition.of(book) }
     private var length: CGFloat { pulled.pose.length }
     private var depth: CGFloat { Slab.depth(for: length) }
     private var spine: CGFloat { DS.Size.slabSpine }
@@ -107,8 +106,8 @@ private struct OpeningBook: View, Animatable {
         let unfold = Ease.inOutCubic(phase(Self.unfoldStart, 1))
 
         ZStack(alignment: .topLeading) {
-            // The room fills with the book's light as it comes toward you.
-            AmbientBackground(tint: edition.glow, strength: lift)
+            // The rest of the library falls away as the book comes toward you.
+            DS.Colors.canvas
                 .opacity(min(1, lift * 1.15))
 
             if progress < Self.liftEnd {
@@ -150,7 +149,7 @@ private struct OpeningBook: View, Animatable {
         .frame(width: length, height: depth + spine)
         .scaleEffect(scale, anchor: anchor)
         .rotationEffect(.degrees(90 * t), anchor: anchor)
-        .shadow(color: .black.opacity(0.55 * t), radius: 30 * t, x: 0, y: 24 * t)
+        .shadow(color: DS.Colors.shadow.opacity(0.28 * t), radius: 30 * t, x: 0, y: 22 * t)
         .position(x: hinge.x, y: hinge.y + (spine - depth) / 2)
     }
 
@@ -181,7 +180,7 @@ private struct OpeningBook: View, Animatable {
                 .opacity(1 - Ease.inCubic(unfold))
         }
         .frame(width: page.width, height: page.height)
-        .shadow(color: .black.opacity(0.55 * (1 - unfold)), radius: 30, x: 0, y: 24)
+        .shadow(color: DS.Colors.shadow.opacity(0.28 * (1 - unfold)), radius: 30, x: 0, y: 22)
         .position(x: page.midX, y: page.midY)
     }
 }
@@ -199,7 +198,8 @@ private struct CoverLeaf: View {
         ZStack {
             if angle < 90 {
                 // The hero cover, scaled (uniformly, both are 2:3) to the page's size.
-                BookCover(book: book, size: .hero)
+                // The whole book casts one shadow, so the cover doesn't add its own.
+                BookCover(book: book, size: .hero, isShadowed: false)
                     .scaleEffect(size.height / hero.height)
                     .frame(width: size.width, height: size.height)
             } else {
@@ -215,20 +215,18 @@ private struct CoverLeaf: View {
     }
 }
 
-/// The first page: a half-title on dark paper. As it comes up to fill the
-/// screen it becomes the black room lit by the book, the background of the
-/// book's own screen.
+/// The first page: a half-title on the reader's paper. As it comes up to
+/// fill the screen it becomes the ground of the book's own screen.
 private struct FirstPage: View {
     let book: Book
     let unfold: Double
     let cover: Double
 
-    private var edition: Edition { Edition.of(book) }
 
     var body: some View {
         ZStack {
             DS.Colors.page
-            AmbientBackground(tint: edition.glow)
+            DS.Colors.canvas
                 .opacity(unfold)
             VStack(spacing: DS.Space.xs) {
                 Text(book.title)
@@ -236,7 +234,7 @@ private struct FirstPage: View {
                     .multilineTextAlignment(.center)
                     .lineLimit(4)
                     .minimumScaleFactor(0.6)
-                Ornament(color: edition.ink, compact: true)
+                Ornament(color: DS.Colors.bloom, compact: true)
                 if let author = book.author {
                     Text(author)
                         .font(DS.Typography.stampItalic(11))
@@ -244,18 +242,18 @@ private struct FirstPage: View {
                         .minimumScaleFactor(0.7)
                 }
             }
-            .foregroundStyle(edition.ink)
+            .foregroundStyle(DS.Colors.pageInk)
             .padding(DS.Space.l)
             .opacity(max(0, 1 - unfold * 3))
             // The gutter, where the page curves into the spine.
             HStack(spacing: 0) {
-                LinearGradient(colors: [.black.opacity(0.5), .clear], startPoint: .leading, endPoint: .trailing)
+                LinearGradient(colors: [DS.Colors.shadow.opacity(0.16), DS.Colors.shadow.opacity(0)], startPoint: .leading, endPoint: .trailing)
                     .frame(width: DS.Space.l)
                 Spacer(minLength: 0)
             }
             .opacity(1 - unfold)
             // In the cover's shadow until it lifts away.
-            Color.black.opacity(0.35 * max(0, 1 - cover * 1.6))
+            DS.Colors.shadow.opacity(0.18 * max(0, 1 - cover * 1.6))
         }
         .clipShape(RoundedRectangle(cornerRadius: DS.Radius.cover * (1 - unfold), style: .continuous))
         .allowsHitTesting(false)

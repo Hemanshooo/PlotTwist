@@ -1,14 +1,13 @@
 import SwiftUI
 import SwiftData
 
-/// Inside a book: its title page, how far you've read (on a gauge), and the
-/// story map you change it from. The room glows in the book's own cloth.
+/// Inside a book: its title page, how far you've read (a vine), and the
+/// story map you change it from.
 ///
 /// Opening a book from the stack ends on this screen: the first page grows
 /// to fill the screen, becomes this background, and the content arrives.
 struct BookView: View {
     let book: Book
-    private let edition: Edition
 
     @Environment(\.modelContext) private var modelContext
     @Query private var shelfEntries: [ShelfEntry]
@@ -34,7 +33,6 @@ struct BookView: View {
         // so the shelf and the map always agree on which book this is.
         let canonical = Catalog.entry(for: book)?.book ?? book
         self.book = canonical
-        self.edition = Edition.of(canonical)
         let id = canonical.id
         _shelfEntries = Query(filter: #Predicate<ShelfEntry> { $0.bookID == id })
         if let curated = Catalog.entry(for: canonical)?.map {
@@ -52,7 +50,7 @@ struct BookView: View {
             VStack(spacing: DS.Space.xxl) {
                 titlePage
                     .arriving(arrived, order: 0)
-                ReadingGauge(edition: edition, progress: progress, onChange: save)
+                ReadingGauge(progress: progress, onChange: save)
                     .arriving(arrived, order: 1)
                 if progress != nil {
                     mapSection
@@ -73,7 +71,7 @@ struct BookView: View {
                 self.pendingRequest = nil
             }
         }) { choice in
-            MomentSheet(book: book, edition: edition, map: currentMap, moment: choice.moment) { newRequest in
+            MomentSheet(book: book, map: currentMap, moment: choice.moment) { newRequest in
                 pendingRequest = newRequest
             }
         }
@@ -91,7 +89,7 @@ struct BookView: View {
             if reduceMotion { arrived = true } else { withAnimation { arrived = true } }
         }
         .animation(DS.Motion.standard, value: progress)
-        .dsScreen(glow: edition.glow, tint: edition.ink)
+        .dsScreen()
     }
 
     // MARK: Title page
@@ -99,22 +97,21 @@ struct BookView: View {
     /// The book's title page: what you see once the cover's open.
     private var titlePage: some View {
         VStack(spacing: DS.Space.m) {
-            Text(book.title)
-                .font(DS.Typography.display)
-                .foregroundStyle(DS.Colors.pageInk)
-                .multilineTextAlignment(.center)
-                .minimumScaleFactor(0.7)
-                .accessibilityAddTraits(.isHeader)
-            Ornament(color: edition.ink)
             if let byline = book.byline {
                 Text(byline)
                     .font(DS.Typography.meta)
                     .foregroundStyle(DS.Colors.inkSecondary)
             }
+            Text(book.title)
+                .dsDisplay()
+                .multilineTextAlignment(.center)
+                .minimumScaleFactor(0.7)
+                .accessibilityAddTraits(.isHeader)
+            Growing(delay: 0.3) { Flourish(width: 136, progress: $0) }
             if let premise {
                 Text(premise)
                     .font(DS.Typography.quote)
-                    .foregroundStyle(DS.Colors.pageInk.opacity(0.82))
+                    .foregroundStyle(DS.Colors.inkSecondary)
                     .lineSpacing(DS.Leading.relaxed)
                     .multilineTextAlignment(.center)
                     .padding(.top, DS.Space.xs)
@@ -162,8 +159,8 @@ struct BookView: View {
         switch map {
         case .loading:
             VStack(alignment: .leading, spacing: DS.Space.s) {
-                Eyebrow("Story map", color: edition.ink)
-                WritingIndicator(label: "Drawing the story map")
+                Eyebrow("Story map")
+                WritingIndicator(label: "drawing the story map")
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         case .unavailable(let notice):
@@ -178,7 +175,6 @@ struct BookView: View {
         case .ready(let storyMap):
             StoryMapView(
                 map: storyMap,
-                edition: edition,
                 threshold: progress?.threshold ?? 0,
                 revealAll: revealAll,
                 onSelect: { choice = MomentChoice(moment: $0) },
@@ -230,5 +226,5 @@ extension View {
         BookView(book: Catalog.entries[1].book)
     }
     .modelContainer(for: [Version.self, ShelfEntry.self], inMemory: true)
-    .dsDarkOnly()
+    .dsColorScheme()
 }

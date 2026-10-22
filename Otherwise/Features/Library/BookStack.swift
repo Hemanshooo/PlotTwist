@@ -44,6 +44,7 @@ struct BookStack: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
+        let fogStrength = Theme.shared.palette.scheme.fog
         GeometryReader { proxy in
             // Never negative: the first layout pass can propose a zero width.
             let length = max(proxy.size.width - DS.Size.slabInset * 2, 0)
@@ -60,6 +61,7 @@ struct BookStack: View {
                             length: length,
                             viewportHeight: height,
                             flutter: flutter,
+                            fogStrength: fogStrength,
                             isPicked: pickedID == item.id,
                             isDimmed: pickedID != nil && pickedID != item.id
                         ) { hinge in
@@ -68,7 +70,7 @@ struct BookStack: View {
                                 hinge: hinge,
                                 length: length,
                                 coverAngle: Slab.coverAngle(atScreenFraction: fraction),
-                                fog: Slab.fog(atScreenFraction: fraction)
+                                fog: Slab.fog(atScreenFraction: fraction, strength: fogStrength)
                             ))
                         } onHold: {
                             onHold(item)
@@ -124,7 +126,7 @@ private struct StackFooter: View {
                 SecondaryButton("Couldn’t load more books", systemImage: "arrow.clockwise", action: onRetry)
             } else if isLoading {
                 ProgressView()
-                    .tint(DS.Colors.accent)
+                    .tint(DS.Colors.ink)
                     .frame(minHeight: DS.Size.touch)
                     .accessibilityLabel("Loading more books")
             }
@@ -140,6 +142,7 @@ private struct StackRow: View {
     let length: CGFloat
     let viewportHeight: CGFloat
     let flutter: Double
+    let fogStrength: Double
     let isPicked: Bool
     let isDimmed: Bool
     let onPick: (CGPoint) -> Void
@@ -149,10 +152,10 @@ private struct StackRow: View {
     @State private var isPressed = false
     @State private var holds = 0
 
-    private var edition: Edition { Edition.of(item.book) }
-
     var body: some View {
         let depth = Slab.depth(for: length)
+        // Captured for the effects below, which run off the main actor.
+        let fog = fogStrength
         VStack(spacing: 0) {
             SlabCoverFace(book: item.book, length: length)
                 .visualEffect { content, proxy in
@@ -165,7 +168,7 @@ private struct StackRow: View {
                             anchor: .bottom,
                             perspective: DS.Depth.stack
                         )
-                        .brightness(Slab.fog(atScreenFraction: fraction))
+                        .brightness(Slab.fog(atScreenFraction: fraction, strength: fog))
                 }
             SlabSpineFace(book: item.book, length: length, progress: item.progress)
                 .onGeometryChange(for: CGPoint.self) { proxy in
@@ -182,15 +185,15 @@ private struct StackRow: View {
                             anchor: .top,
                             perspective: DS.Depth.stack
                         )
-                        .brightness(Slab.fog(atScreenFraction: fraction) * Slab.spineFog)
+                        .brightness(Slab.fog(atScreenFraction: fraction, strength: fog) * Slab.spineFog)
                 }
-                // The book's colour, glowing faintly on the black beneath it.
+                // A soft shadow under the spine.
                 .background {
                     Capsule()
-                        .fill(edition.glow)
+                        .fill(DS.Colors.shadow)
                         .frame(height: DS.Size.slabSpine * 0.6)
-                        .blur(radius: 22)
-                        .opacity(isPressed ? 0.55 : 0.28)
+                        .blur(radius: 18)
+                        .opacity(isPressed ? 0.36 : 0.22)
                         .offset(y: DS.Size.slabSpine * 0.55)
                         .padding(.horizontal, DS.Space.l)
                 }
@@ -214,8 +217,8 @@ private struct StackRow: View {
         .sensoryFeedback(.impact(weight: .light), trigger: isPressed) { _, pressed in pressed }
         .sensoryFeedback(.impact(weight: .medium), trigger: holds)
         // The picked book is drawn by the opening animation, so it leaves here at once;
-        // the others dim behind it.
-        .opacity(isPicked ? 0 : (isDimmed ? 0.25 : 1))
+        // the others fade behind it.
+        .opacity(isPicked ? 0 : (isDimmed ? 0.2 : 1))
         .animation(isPicked ? nil : DS.Motion.standard, value: isDimmed)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(item.book.title))

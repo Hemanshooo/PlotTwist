@@ -55,7 +55,7 @@ private struct FoldShape: Shape {
     }
 }
 
-/// A dark page with a dog-eared corner. Used for "what happened in the book":
+/// A page with a dog-eared corner. Used for "what happened in the book":
 /// the page the reader has marked.
 struct PageCard<Content: View>: View {
     @ViewBuilder let content: Content
@@ -66,24 +66,23 @@ struct PageCard<Content: View>: View {
             .padding(.trailing, DS.Space.xs)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(DogEarShape().fill(DS.Colors.page))
-            .overlay(DogEarShape().stroke(DS.Gradients.glassEdge, lineWidth: DS.Size.hairline))
-            .overlay(FoldShape().fill(DS.Colors.surfaceRaised))
+            .overlay(DogEarShape().stroke(DS.Colors.hairline, lineWidth: DS.Size.hairline))
+            .overlay(FoldShape().fill(DS.Colors.raised))
             .overlay(FoldShape().stroke(DS.Colors.hairline, lineWidth: DS.Size.hairline))
     }
 }
 
 // MARK: - Raised capital
 
-/// A paragraph that opens with a large initial in the book's ink,
+/// A paragraph that opens with a large display initial in the bloom colour,
 /// the way chapters open in a printed book.
 struct RaisedCapText: View {
     let text: String
-    let ink: Color
 
     var body: some View {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         if let first = trimmed.first {
-            let initial = Text(String(first)).font(DS.Typography.raisedCap).foregroundStyle(ink)
+            let initial = Text(String(first)).font(DS.Typography.raisedCap).foregroundStyle(DS.Colors.bloom)
             let rest = Text(String(trimmed.dropFirst())).font(DS.Typography.reading).foregroundStyle(DS.Colors.pageInk)
             Text("\(initial)\(rest)")
                 .lineSpacing(DS.Leading.reading)
@@ -128,8 +127,7 @@ struct BookmarkRibbon: View {
                     .clipShape(RibbonShape())
             )
             .frame(width: width, height: length)
-            .shadow(color: .black.opacity(0.5), radius: 1.5, x: 0, y: 1)
-            .dsGlow(color, radius: 8, strength: 0.35)
+            .shadow(color: Color.black.opacity(0.3), radius: 1.5, x: 0, y: 1)
             .offset(y: isPlaced ? 0 : -length - 4)
             .opacity(reduceMotion && !isPlaced ? 0 : 1)
             .animation(reduceMotion ? DS.Motion.standard : DS.Motion.ribbon, value: isPlaced)
@@ -147,9 +145,9 @@ struct BookmarkRibbon: View {
                 Text("Darcy calls Elizabeth tolerable, but not handsome enough to tempt him.").dsReading()
             }
         }
-        RaisedCapText(text: "It was a bright cold morning when the letter arrived.", ink: DS.Colors.accent)
+        RaisedCapText(text: "It was a bright cold morning when the letter arrived.")
         HStack {
-            BookmarkRibbon(color: DS.Colors.accent, isPlaced: placed)
+            BookmarkRibbon(color: DS.Colors.bloom, isPlaced: placed)
             Button("Toggle") { placed.toggle() }
         }
         .frame(height: 60, alignment: .top)

@@ -68,6 +68,9 @@ struct BookCover: View {
 
     let book: Book
     var size: Size = .medium
+    /// Off where the cover is one face of a 3D book (the stack's slabs),
+    /// whose shadow would otherwise fall outside the book.
+    var isShadowed = true
 
     private var edition: Edition { Edition.of(book) }
 
@@ -81,8 +84,16 @@ struct BookCover: View {
         }
         .frame(width: size.dimensions.width, height: size.dimensions.height)
         .clipShape(RoundedRectangle(cornerRadius: DS.Radius.cover, style: .continuous))
-        .dsCoverShadow()
+        .modifier(CoverShadow(isOn: isShadowed))
         .accessibilityHidden(true)
+    }
+
+    private struct CoverShadow: ViewModifier {
+        let isOn: Bool
+
+        func body(content: Content) -> some View {
+            if isOn { content.dsCoverShadow() } else { content }
+        }
     }
 
     private var label: some View {
@@ -221,16 +232,16 @@ struct Endpaper: View {
             EditionPattern(edition: edition, tile: 16, intensity: 0.5)
                 .opacity(0.4)
             VStack(spacing: DS.Space.xs) {
-                Text("Ex libris")
+                Text("ex libris")
                     .font(DS.Typography.folio)
                 Text("Plot Twist")
                     .font(DS.Typography.chapter)
             }
-            .foregroundStyle(edition.ink)
+            .foregroundStyle(DS.Colors.pageInk)
             .padding(.horizontal, DS.Space.l)
             .padding(.vertical, DS.Space.m)
             .background(DS.Colors.page)
-            .overlay(Rectangle().strokeBorder(edition.ink, lineWidth: 1).padding(3))
+            .overlay(Rectangle().strokeBorder(DS.Colors.bloom, lineWidth: 1).padding(3))
         }
     }
 }

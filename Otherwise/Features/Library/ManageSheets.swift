@@ -30,7 +30,7 @@ struct BookActionsSheet: View {
 
             if entry == nil && versions.isEmpty {
                 Text("Nothing to remove yet. Say how far you’ve read this book, or write a version of it, and you can manage it here.")
-                    .font(DS.Typography.body)
+                    .font(DS.Typography.blurb)
                     .foregroundStyle(DS.Colors.inkSecondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -72,7 +72,7 @@ struct BookActionsSheet: View {
         .padding(.horizontal, DS.Space.screen)
         .padding(.top, DS.Space.l)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .dsScreen(glow: Edition.of(book).glow, tint: Edition.of(book).ink)
+        .dsScreen()
         .sensoryFeedback(.success, trigger: changes)
         .confirmRemoval(of: $pendingRemoval) { version in
             withAnimation(DS.Motion.standard) { modelContext.delete(version) }
@@ -81,6 +81,7 @@ struct BookActionsSheet: View {
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
         .presentationBackground(DS.Colors.canvas)
+        .dsColorScheme()
     }
 
     /// A version's name; one saved without a title goes by its change.
@@ -137,11 +138,12 @@ struct VersionActionsSheet: View {
         .padding(.horizontal, DS.Space.screen)
         .padding(.top, DS.Space.l)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .dsScreen(glow: Edition.of(version.book).glow, tint: Edition.of(version.book).ink)
+        .dsScreen()
         .confirmRemoval(of: $pendingRemoval) { _ in onRemove() }
         .presentationDetents([.medium])
         .presentationDragIndicator(.visible)
         .presentationBackground(DS.Colors.canvas)
+        .dsColorScheme()
     }
 }
 
@@ -157,7 +159,6 @@ private struct SheetHeader: View {
     var body: some View {
         HStack(alignment: .center, spacing: DS.Space.s) {
             BookCover(book: book, size: .small)
-                .dsGlow(Edition.of(book).glow, radius: 12, strength: 0.4)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: DS.Space.xxs) {
                 title
@@ -174,7 +175,7 @@ private struct SheetHeader: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .accessibilityElement(children: .combine)
             .accessibilityAddTraits(.isHeader)
-            GlassIconButton(systemImage: "xmark", label: "Close", action: onClose)
+            CircleButton(systemImage: "xmark", label: "Close", action: onClose)
         }
     }
 }

@@ -10,7 +10,6 @@ struct MomentChoice: Identifiable, Hashable {
 /// The reader picks an alternative (or writes their own) and rewrites from here.
 struct MomentSheet: View {
     let book: Book
-    let edition: Edition
     let map: StoryMap
     let moment: Moment?
     let onRewrite: (StoryRequest) -> Void
@@ -55,23 +54,22 @@ struct MomentSheet: View {
                     Button("Close", systemImage: "xmark") { dismiss() }
                 }
             }
-            .dsScreen(glow: edition.glow, tint: edition.ink)
+            .dsScreen()
         }
-        .tint(edition.ink)
+        .tint(DS.Colors.ink)
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .presentationBackground(DS.Colors.canvas)
-        .dsDarkOnly()
+        .dsColorScheme()
     }
 
     // MARK: Sections
 
     @ViewBuilder private func momentContent(_ moment: Moment) -> some View {
         VStack(alignment: .leading, spacing: DS.Space.xs) {
-            Eyebrow(verbatim: moment.chapter, color: edition.ink)
+            Eyebrow(verbatim: moment.chapter)
             Text(moment.title)
-                .font(DS.Typography.title)
-                .foregroundStyle(DS.Colors.ink)
+                .dsDisplay(DS.Typography.title)
         }
 
         PageCard {
@@ -82,13 +80,13 @@ struct MomentSheet: View {
         }
 
         VStack(alignment: .leading, spacing: DS.Space.s) {
-            Eyebrow("What if, instead…", color: edition.ink)
+            Eyebrow("What if, instead…")
             // Each alternative branches off the moment, like a path forking.
             VStack(spacing: 0) {
                 ForEach(Array(moment.alternatives.enumerated()), id: \.offset) { index, alternative in
                     let isSelected = !writingOwn && selection == index
-                    BranchRow(isLast: false, ink: edition.ink, isLit: isSelected) {
-                        ChoiceRow(text: alternative, isSelected: isSelected, ink: edition.ink) {
+                    BranchRow(isLast: false, isLit: isSelected, seed: index) {
+                        ChoiceRow(text: alternative, isSelected: isSelected) {
                             withAnimation(DS.Motion.quick) {
                                 writingOwn = false
                                 selection = index
@@ -97,12 +95,11 @@ struct MomentSheet: View {
                         }
                     }
                 }
-                BranchRow(isLast: true, ink: edition.ink, isLit: writingOwn) {
+                BranchRow(isLast: true, isLit: writingOwn, seed: 9) {
                     ChoiceRow(
                         text: String(localized: "Something else"),
                         isSelected: writingOwn,
-                        ink: edition.ink,
-                        systemImage: writingOwn ? "checkmark.circle.fill" : "square.and.pencil"
+                        systemImage: "square.and.pencil"
                     ) {
                         withAnimation(DS.Motion.quick) { writingOwn = true }
                         composing = true
@@ -113,8 +110,7 @@ struct MomentSheet: View {
                 ComposerField(
                     placeholder: String(localized: "Describe what happens instead."),
                     text: $custom,
-                    focus: $composing,
-                    tint: edition.ink
+                    focus: $composing
                 )
                 .transition(.opacity.combined(with: .move(edge: .top)))
             }
@@ -123,19 +119,17 @@ struct MomentSheet: View {
 
     @ViewBuilder private var freeContent: some View {
         VStack(alignment: .leading, spacing: DS.Space.xs) {
-            Eyebrow("Off the map", color: edition.ink)
+            Eyebrow("Off the map")
             Text("What changes?")
-                .font(DS.Typography.title)
-                .foregroundStyle(DS.Colors.ink)
+                .dsDisplay(DS.Typography.title)
             Text("Describe one thing that happens differently in \(book.title).")
-                .font(DS.Typography.meta)
+                .font(DS.Typography.blurb)
                 .foregroundStyle(DS.Colors.inkSecondary)
         }
         ComposerField(
             placeholder: String(localized: "A character makes a different choice…"),
             text: $custom,
-            focus: $composing,
-            tint: edition.ink
+            focus: $composing
         )
         .onAppear { composing = true }
     }
@@ -151,7 +145,7 @@ struct MomentSheet: View {
                     .multilineTextAlignment(.center)
                     .transition(.opacity)
             }
-            PrimaryButton("Rewrite from here", systemImage: "book.pages", edition: edition) {
+            PrimaryButton("Rewrite from here", systemImage: "arrow.right") {
                 guard let change else { return }
                 onRewrite(StoryRequest(
                     book: book,

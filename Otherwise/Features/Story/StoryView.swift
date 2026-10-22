@@ -50,7 +50,7 @@ struct StoryView: View {
             }
             .sensoryFeedback(.success, trigger: model.isSaved)
             .background(DS.Colors.page.ignoresSafeArea())
-            .tint(model.edition.ink)
+            .tint(DS.Colors.ink)
     }
 
     // MARK: Content
@@ -86,7 +86,7 @@ struct StoryView: View {
             .ignoresSafeArea(edges: .bottom)
             // The saved ribbon drops from the top of the book once the story is kept.
             .overlay(alignment: .topTrailing) {
-                BookmarkRibbon(color: model.edition.ink, isPlaced: model.isSaved, width: 16, length: 44)
+                BookmarkRibbon(color: DS.Colors.bloom, isPlaced: model.isSaved, width: 16, length: 44)
                     .frame(height: 44, alignment: .top)
                     .clipped()
                     .padding(.trailing, DS.Space.l)
@@ -263,7 +263,7 @@ private struct OpeningCover: View, Animatable {
             VStack {
                 Spacer()
                 if isWriting {
-                    WritingIndicator(label: "Writing your version", color: edition.foilColor)
+                    WritingIndicator(label: "writing your version", color: edition.foilColor)
                         .padding(.horizontal, DS.Space.m)
                         .padding(.vertical, DS.Space.xs)
                         .background(edition.clothColor, in: Capsule())

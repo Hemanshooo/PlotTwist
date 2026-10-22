@@ -20,7 +20,7 @@ struct ReaderPageView: View {
                 DS.Colors.page
             }
             // Gutter: the page curves into the spine.
-            LinearGradient(colors: [Color.black.opacity(0.6), Color.black.opacity(0)], startPoint: .leading, endPoint: .trailing)
+            LinearGradient(colors: [DS.Colors.shadow.opacity(0.12), DS.Colors.shadow.opacity(0)], startPoint: .leading, endPoint: .trailing)
                 .frame(width: DS.Space.l)
                 .accessibilityHidden(true)
 
@@ -90,21 +90,20 @@ struct ReaderPageView: View {
         if chapters.indices.contains(i) {
             let chapter = chapters[i]
             VStack(spacing: DS.Space.m) {
-                Text(verbatim: Roman.numeral(i + 1))
-                    .font(DS.Typography.chapter)
-                    .foregroundStyle(edition.ink)
+                Eyebrow("Chapter \(Roman.numeral(i + 1))", color: DS.Colors.bloom)
                 if !chapter.heading.isEmpty {
                     Text(chapter.heading)
                         .font(DS.Typography.chapter)
+                        .tracking(DS.Tracking.display)
                         .foregroundStyle(DS.Colors.pageInk)
                         .multilineTextAlignment(.center)
                 }
-                Ornament(color: edition.ink)
+                Flourish(width: 96)
                     .padding(.bottom, DS.Space.xs)
                 if chapter.text.isEmpty {
                     WritingIndicator()
                 } else {
-                    RaisedCapText(text: chapter.text, ink: edition.ink)
+                    RaisedCapText(text: chapter.text)
                 }
             }
         }
@@ -112,10 +111,10 @@ struct ReaderPageView: View {
 
     private var ending: some View {
         VStack(spacing: DS.Space.m) {
-            Eyebrow("How it ends", color: edition.ink)
-            Ornament(color: edition.ink)
+            Eyebrow("How it ends", color: DS.Colors.bloom)
+            Flourish(width: 96)
                 .padding(.bottom, DS.Space.xs)
-            RaisedCapText(text: model.story.ending, ink: edition.ink)
+            RaisedCapText(text: model.story.ending)
         }
     }
 
@@ -123,9 +122,9 @@ struct ReaderPageView: View {
         VStack(spacing: DS.Space.m) {
             Image(systemName: "pencil.line")
                 .font(DS.Typography.symbol)
-                .foregroundStyle(edition.ink)
+                .foregroundStyle(DS.Colors.bloom)
                 .symbolEffect(.pulse, options: .repeating)
-            WritingIndicator(label: "Writing the next page")
+            WritingIndicator(label: "writing the next page")
         }
         .frame(maxHeight: .infinity)
     }
@@ -139,14 +138,16 @@ private struct TitlePage: View {
     var body: some View {
         VStack(spacing: DS.Space.l) {
             Spacer()
-            Eyebrow("Plot Twist", color: model.edition.ink)
+            Eyebrow("Plot Twist", color: DS.Colors.bloom)
             Text(model.story.title.isEmpty ? "An untitled version" : model.story.title)
                 .font(DS.Typography.display)
+                .tracking(DS.Tracking.display)
                 .foregroundStyle(DS.Colors.pageInk)
                 .multilineTextAlignment(.center)
-                .redacted(reason: model.story.title.isEmpty ? .placeholder : [])
+                // A placeholder only while the title is still being written.
+                .redacted(reason: model.story.title.isEmpty && model.phase == .writing ? .placeholder : [])
                 .contentTransition(.opacity)
-            Ornament(color: model.edition.ink)
+            Growing(delay: 0.2) { Flourish(width: 132, progress: $0) }
             VStack(spacing: DS.Space.xxs) {
                 Text("after \(model.book.title)")
                     .font(DS.Typography.quote)
@@ -159,9 +160,7 @@ private struct TitlePage: View {
             }
             .multilineTextAlignment(.center)
             Spacer()
-            Label("Turn the page", systemImage: "hand.draw")
-                .font(DS.Typography.caption)
-                .foregroundStyle(DS.Colors.inkTertiary)
+            Hint("turn the page →")
         }
         .padding(.horizontal, DS.Space.page)
         .padding(.bottom, DS.Space.s)
@@ -178,7 +177,7 @@ private struct DivergencePage: View {
     var body: some View {
         VStack(alignment: .leading, spacing: DS.Space.l) {
             if let chapter = model.momentChapter {
-                Eyebrow(verbatim: chapter, color: model.edition.ink)
+                Eyebrow(verbatim: chapter, color: DS.Colors.bloom)
             }
             if let happened = model.momentHappened {
                 VStack(alignment: .leading, spacing: DS.Space.xs) {
@@ -187,14 +186,14 @@ private struct DivergencePage: View {
                         .font(DS.Typography.reading)
                         .foregroundStyle(DS.Colors.pageInk.opacity(0.55))
                         .lineSpacing(DS.Leading.reading)
-                        .strikethrough(true, color: model.edition.ink.opacity(0.6))
+                        .strikethrough(true, color: DS.Colors.bloom)
                 }
             }
             VStack(alignment: .leading, spacing: DS.Space.xs) {
-                Eyebrow("In this version", color: model.edition.ink)
-                QuoteBlock(text: model.change, ink: model.edition.ink)
+                Eyebrow("In this version", color: DS.Colors.bloom)
+                QuoteBlock(text: model.change)
             }
-            Ornament(color: model.edition.ink)
+            Flourish(width: 96)
                 .frame(maxWidth: .infinity)
                 .padding(.top, DS.Space.s)
         }
@@ -211,7 +210,6 @@ private struct ColophonPage: View {
     let onChangeAnother: () -> Void
     let onRetry: () -> Void
 
-    private var ink: Color { model.edition.ink }
 
     var body: some View {
         VStack {
@@ -229,17 +227,16 @@ private struct ColophonPage: View {
                 } else {
                     Text("The End")
                         .font(DS.Typography.title)
-                        .foregroundStyle(ink)
-                    Ornament(color: ink)
+                        .foregroundStyle(DS.Colors.pageInk)
+                    Growing(delay: 0.2) { Flourish(width: 120, progress: $0) }
                     Text("Imagined on this iPhone with Apple Intelligence. Not part of the original book.")
-                        .font(DS.Typography.caption)
+                        .font(DS.Typography.meta)
                         .foregroundStyle(DS.Colors.inkSecondary)
                         .multilineTextAlignment(.center)
                         .lineSpacing(DS.Leading.relaxed)
                     PrimaryButton(
                         "Change another moment",
-                        systemImage: "point.topleft.down.to.point.bottomright.curvepath",
-                        edition: model.edition,
+                        systemImage: "arrow.right",
                         action: onChangeAnother
                     )
                     .padding(.top, DS.Space.xs)
@@ -254,9 +251,9 @@ private struct ColophonPage: View {
             .padding(DS.Space.l)
             .background(DS.Colors.page)
             // A bookplate's double rule.
-            .overlay(Rectangle().strokeBorder(ink, lineWidth: 1).padding(4))
-            .overlay(Rectangle().strokeBorder(ink.opacity(0.4), lineWidth: DS.Size.hairline))
-            .shadow(color: .black.opacity(0.6), radius: 20, x: 0, y: 12)
+            .overlay(Rectangle().strokeBorder(DS.Colors.bloom, lineWidth: 1).padding(4))
+            .overlay(Rectangle().strokeBorder(DS.Colors.hairline, lineWidth: DS.Size.hairline))
+            .shadow(color: DS.Colors.shadow.opacity(0.14), radius: 20, x: 0, y: 10)
             Spacer()
         }
         .padding(.horizontal, DS.Space.page)

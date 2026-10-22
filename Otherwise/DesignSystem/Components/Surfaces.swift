@@ -1,28 +1,14 @@
 import SwiftUI
 
-/// A glass group of rows separated by hairlines.
-/// Used for any list that lives inside a scrolling screen.
-struct GroupedSurface<Content: View>: View {
-    @ViewBuilder let content: Content
-
-    var body: some View {
-        VStack(spacing: 0) {
-            content
-        }
-        .dsGlass()
-    }
-}
-
-/// The multiline field where the reader writes their change.
+/// The multiline field where the reader writes their change: an outline on
+/// the ground, set in the reading face.
 struct ComposerField: View {
     let placeholder: String
     @Binding var text: String
     var focus: FocusState<Bool>.Binding
-    /// Edge colour while editing: the book's ink, or the app accent.
-    var tint: Color = DS.Colors.accent
 
     var body: some View {
-        let shape = RoundedRectangle(cornerRadius: DS.Radius.m, style: .continuous)
+        let shape = RoundedRectangle(cornerRadius: DS.Radius.s, style: .continuous)
         TextField(
             "What changes",
             text: $text,
@@ -36,84 +22,87 @@ struct ComposerField: View {
         .focused(focus)
         .submitLabel(.done)
         .padding(DS.Space.m)
-        .background(DS.Gradients.glass, in: shape)
+        .background(DS.Colors.surface, in: shape)
         .overlay {
             shape.strokeBorder(
-                focus.wrappedValue ? AnyShapeStyle(tint.opacity(0.8)) : AnyShapeStyle(DS.Gradients.glassEdge),
-                lineWidth: DS.Size.hairline
+                focus.wrappedValue ? DS.Colors.ink : DS.Colors.hairline,
+                lineWidth: focus.wrappedValue ? 1.2 : DS.Size.hairline
             )
         }
-        .dsGlow(tint, radius: 16, strength: focus.wrappedValue ? 0.25 : 0)
-        .tint(tint)
+        .tint(DS.Colors.bloom)
         .animation(DS.Motion.quick, value: focus.wrappedValue)
     }
 }
 
-/// One option in a single-choice list: a glass row that lights up in the
-/// book's ink when chosen.
+/// One option in a single-choice list: an outlined card in the reading face
+/// that fills and takes a firm edge when chosen.
 struct ChoiceRow: View {
     let text: String
     let isSelected: Bool
-    var ink: Color = DS.Colors.accent
     var systemImage: String?
     let action: () -> Void
 
     var body: some View {
-        let shape = RoundedRectangle(cornerRadius: DS.Radius.m, style: .continuous)
         Button(action: action) {
             HStack(alignment: .firstTextBaseline, spacing: DS.Space.s) {
-                Image(systemName: systemImage ?? (isSelected ? "checkmark.circle.fill" : "circle"))
-                    .foregroundStyle(isSelected ? ink : DS.Colors.inkTertiary)
-                    .contentTransition(.symbolEffect(.replace))
+                marker
                 Text(text)
-                    .font(DS.Typography.rowTitle)
-                    .foregroundStyle(isSelected ? DS.Colors.ink : DS.Colors.ink.opacity(0.86))
+                    .font(DS.Typography.blurb)
+                    .foregroundStyle(isSelected ? DS.Colors.ink : DS.Colors.inkSecondary)
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding(DS.Space.m)
+            .padding(.horizontal, DS.Space.m)
+            .padding(.vertical, DS.Space.s + 2)
             .frame(minHeight: DS.Size.touch)
-            .background {
-                ZStack {
-                    shape.fill(DS.Gradients.glass)
-                    shape.fill(ink.opacity(isSelected ? 0.10 : 0))
-                }
-            }
-            .overlay {
-                shape.strokeBorder(
-                    isSelected ? AnyShapeStyle(ink.opacity(0.85)) : AnyShapeStyle(DS.Gradients.glassEdge),
-                    lineWidth: isSelected ? 1.25 : DS.Size.hairline
-                )
-            }
-            .dsGlow(ink, radius: 18, strength: isSelected ? 0.28 : 0)
-            .contentShape(shape)
+            .dsOutline(isSelected: isSelected)
+            .contentShape(Rectangle())
         }
         .buttonStyle(PressableButtonStyle())
         .animation(DS.Motion.quick, value: isSelected)
         .sensoryFeedback(.selection, trigger: isSelected)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
+
+    @ViewBuilder private var marker: some View {
+        if let systemImage {
+            Image(systemName: systemImage)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(isSelected ? DS.Colors.ink : DS.Colors.inkTertiary)
+                .frame(width: 14)
+        } else {
+            Circle()
+                .strokeBorder(isSelected ? DS.Colors.ink : DS.Colors.inkTertiary, lineWidth: DS.Size.hairline)
+                .background(Circle().fill(isSelected ? DS.Colors.ink : .clear).padding(3.5))
+                .frame(width: 14, height: 14)
+                .alignmentGuide(.firstTextBaseline) { $0[VerticalAlignment.center] + 4 }
+        }
+    }
 }
 
-/// Full-area message for empty, unavailable and error states.
+/// Full-area message for empty, unavailable and error states: a sprig
+/// growing (or a symbol, for errors), a serif title and a line of explanation.
 struct MessageView<Actions: View>: View {
-    let symbol: String
+    var symbol: String?
     let title: LocalizedStringKey
     let message: LocalizedStringKey
     @ViewBuilder var actions: Actions
 
     var body: some View {
         VStack(spacing: DS.Space.m) {
-            Image(systemName: symbol)
-                .font(DS.Typography.symbol)
-                .foregroundStyle(DS.Gradients.opal)
-                .dsGlow(DS.Colors.accentDeep, radius: 18, strength: 0.4)
-                .padding(.bottom, DS.Space.xxs)
+            if let symbol {
+                Image(systemName: symbol)
+                    .font(DS.Typography.symbol)
+                    .foregroundStyle(DS.Colors.inkSecondary)
+                    .padding(.bottom, DS.Space.xxs)
+            } else {
+                Growing { Sprig(height: 92, progress: $0) }
+                    .padding(.bottom, DS.Space.xs)
+            }
             Text(title)
-                .font(DS.Typography.heading)
-                .foregroundStyle(DS.Colors.ink)
+                .dsDisplay(DS.Typography.title)
             Text(message)
-                .font(DS.Typography.body)
+                .font(DS.Typography.blurb)
                 .foregroundStyle(DS.Colors.inkSecondary)
                 .lineSpacing(DS.Leading.relaxed)
             actions
@@ -126,7 +115,7 @@ struct MessageView<Actions: View>: View {
 }
 
 extension MessageView where Actions == EmptyView {
-    init(symbol: String, title: LocalizedStringKey, message: LocalizedStringKey) {
+    init(symbol: String? = nil, title: LocalizedStringKey, message: LocalizedStringKey) {
         self.init(symbol: symbol, title: title, message: message) { EmptyView() }
     }
 }
@@ -140,28 +129,28 @@ struct InlineNotice: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: DS.Space.s) {
             Image(systemName: symbol)
-                .foregroundStyle(DS.Colors.accent)
+                .foregroundStyle(DS.Colors.bloom)
             VStack(alignment: .leading, spacing: DS.Space.xxs) {
                 Text(verbatim: title)
-                    .font(DS.Typography.emphasis)
+                    .font(DS.Typography.label)
                     .foregroundStyle(DS.Colors.ink)
                 Text(verbatim: message)
-                    .font(DS.Typography.meta)
+                    .font(DS.Typography.blurb)
                     .foregroundStyle(DS.Colors.inkSecondary)
                     .lineSpacing(DS.Leading.relaxed)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(DS.Space.m)
-        .dsGlass()
+        .dsPanel()
         .accessibilityElement(children: .combine)
     }
 }
 
 /// Quiet signal that the model is still writing.
 struct WritingIndicator: View {
-    var label: LocalizedStringKey = "Writing"
-    var color: Color = DS.Colors.inkSecondary
+    var label: LocalizedStringKey = "writing"
+    var color: Color?
 
     var body: some View {
         HStack(spacing: DS.Space.xs) {
@@ -170,7 +159,7 @@ struct WritingIndicator: View {
             Text(label)
         }
         .font(DS.Typography.meta)
-        .foregroundStyle(color)
+        .foregroundStyle(color ?? DS.Colors.inkSecondary)
         .accessibilityElement(children: .combine)
     }
 }
@@ -185,6 +174,8 @@ struct WritingIndicator: View {
             ChoiceRow(text: "Lydia is found before Wickham marries her", isSelected: false) {}
             InlineNotice(symbol: "apple.intelligence", title: "Turn on Apple Intelligence", message: "Plot Twist writes every story on your iPhone.")
             WritingIndicator()
+            MessageView(title: "Nothing read yet", message: "Open any book and say how far you've read.")
+                .frame(height: 320)
         }
         .padding(DS.Space.screen)
     }

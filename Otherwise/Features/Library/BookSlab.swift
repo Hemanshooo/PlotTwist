@@ -26,13 +26,14 @@ enum Slab {
         return acos(visible) * 180 / .pi
     }
 
-    /// Books far up the screen sit a little in shadow.
-    nonisolated static func fog(atScreenFraction fraction: CGFloat) -> Double {
+    /// Books far up the screen sit further off: sunk into shadow on a dark
+    /// ground, into haze on a light one. `strength` is the palette's `fog`.
+    nonisolated static func fog(atScreenFraction fraction: CGFloat, strength: Double) -> Double {
         let t = min(max(fraction, 0), 1)
-        return -0.22 * pow(1 - t, 1.6)
+        return strength * pow(1 - t, 1.6)
     }
 
-    /// Spines take only a little of the shadow, so their lettering stays readable.
+    /// Spines take only a little of the fog, so their lettering stays readable.
     nonisolated static let spineFog: Double = 0.35
 
     /// How far covers lift (degrees) while the stack is moving; see `BookStack`.
@@ -69,7 +70,7 @@ struct SlabCoverFace: View {
     var body: some View {
         let depth = Slab.depth(for: length)
         let hero = DS.Size.coverHero
-        BookCover(book: book, size: .hero)
+        BookCover(book: book, size: .hero, isShadowed: false)
             // Portrait, scaled to depth × length (uniformly, since both are 2:3)…
             .scaleEffect(length / hero.height)
             .frame(width: depth, height: length)
@@ -79,7 +80,7 @@ struct SlabCoverFace: View {
             .overlay {
                 // Further from the light at the back.
                 LinearGradient(
-                    colors: [.black.opacity(0.55), .black.opacity(0.05)],
+                    colors: [.black.opacity(Theme.shared.palette.scheme.coverFalloff), .black.opacity(0)],
                     startPoint: .top,
                     endPoint: .bottom
                 )
@@ -95,7 +96,8 @@ struct SlabCoverFace: View {
 /// The spine, panelled like a real cloth spine: the edition's pattern on the
 /// two end panels, foil bands, and a plain centre panel where the title and
 /// author are stamped in a foil that's checked to read against the cloth.
-/// A ribbon lies across books you're partway through; finished books carry a seal.
+/// A ribbon lies across books you're partway through; finished books carry a
+/// rose stamped in foil.
 /// Nothing is drawn outside the spine.
 struct SlabSpineFace: View {
     let book: Book
@@ -146,9 +148,9 @@ struct SlabSpineFace: View {
                         .minimumScaleFactor(0.85)
                 }
                 if let progress, progress >= 0.999 {
-                    Image(systemName: "checkmark.seal.fill")
-                        .font(.system(size: 11, weight: .semibold))
-                        .accessibilityHidden(true)
+                    // A rose stamped in foil: you've finished it.
+                    StampedRose(foil: edition.lettering, cloth: edition.clothColor)
+                        .frame(width: 15, height: 15)
                 } else if progress != nil {
                     // Your bookmark, lying across the spine from its top edge.
                     RibbonShape()
@@ -189,6 +191,24 @@ struct SlabSpineFace: View {
         }
         .frame(height: height)
         .opacity(0.85)
+    }
+}
+
+/// A rose stamped into the cloth in foil, for finished books.
+private struct StampedRose: View {
+    let foil: Color
+    let cloth: Color
+
+    var body: some View {
+        Canvas { context, size in
+            context.drawRose(
+                at: CGPoint(x: size.width / 2, y: size.height / 2),
+                size: min(size.width, size.height) * 0.92,
+                seed: 6,
+                ink: GardenInk(stem: foil, bloom: foil, petal: cloth, ground: cloth)
+            )
+        }
+        .accessibilityHidden(true)
     }
 }
 

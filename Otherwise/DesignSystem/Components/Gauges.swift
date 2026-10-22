@@ -1,223 +1,197 @@
 import SwiftUI
 
-// MARK: - Arc gauge
+// MARK: - Reading vine
 
-/// A wide arc that fills with light, with a big light numeral inside.
-/// Opal scores your day with one; Plot Twist shows how far you've read.
-struct ArcGauge<Center: View>: View {
+/// How far you've read, as a vine growing across the screen: a dotted path
+/// for the whole book, the stem grown along it as far as you've read, leaves
+/// unfurling as it passes, a bud at its tip while you're partway, and a rose
+/// once you've finished.
+struct VineGauge: View, Animatable {
     /// 0…1.
-    let value: Double
-    var colors: [Color] = DS.Gradients.opalColors
-    var diameter: CGFloat = DS.Size.gauge
-    @ViewBuilder let center: Center
+    var value: Double
+    /// Whether you've finished: the tip opens into a rose.
+    var isFinished: Bool
 
-    /// The arc runs 220° around, open at the bottom.
-    private let sweep: Double = 220
-    private let start: Double = 160
+    var animatableData: Double {
+        get { value }
+        set { value = newValue }
+    }
+
+    private static let leaves: [Double] = [0.07, 0.17, 0.27, 0.37, 0.47, 0.57, 0.67, 0.77, 0.87]
 
     var body: some View {
-        let fraction = sweep / 360
-        let gradient = AngularGradient(
-            colors: colors,
-            center: .center,
-            startAngle: .degrees(0),
-            endAngle: .degrees(sweep)
-        )
-        let line = DS.Size.gaugeLine
-        ZStack {
-            // The track.
-            Circle()
-                .trim(from: 0, to: fraction)
-                .stroke(Color.white.opacity(0.10), style: StrokeStyle(lineWidth: line, lineCap: .round))
-                .rotationEffect(.degrees(start))
-            // Light spilling from the filled part.
-            Circle()
-                .trim(from: 0, to: fraction * clamped)
-                .stroke(gradient, style: StrokeStyle(lineWidth: line * 2.4, lineCap: .round))
-                .rotationEffect(.degrees(start))
-                .blur(radius: 12)
-                .opacity(0.55)
-            // The filled part.
-            Circle()
-                .trim(from: 0, to: fraction * clamped)
-                .stroke(gradient, style: StrokeStyle(lineWidth: line, lineCap: .round))
-                .rotationEffect(.degrees(start))
-            // A bead of light at the end.
-            if clamped > 0.001 {
-                Circle()
-                    .fill(Color.white)
-                    .frame(width: line * 0.9, height: line * 0.9)
-                    .offset(endOffset)
-                    .dsGlow(.white, radius: 6, strength: 0.8)
+        let ink = GardenInk.current
+        let track = DS.Colors.inkTertiary
+        Canvas { context, size in
+            let inset: CGFloat = 14
+            let span = size.width - inset * 2
+            let mid = size.height / 2
+            let amplitude = size.height * 0.08
+            func point(_ t: Double) -> CGPoint {
+                CGPoint(x: inset + span * t, y: mid + sin(t * .pi * 5) * amplitude)
             }
-            center
-                .offset(y: diameter * 0.03)
+            let samples = stride(from: 0.0, through: 1.0, by: 0.025).map(point)
+            let path = Botany.stem(through: samples)
+            // The whole book, still to grow.
+            context.stroke(path, with: .color(track), style: StrokeStyle(lineWidth: 1, lineCap: .round, dash: [1, 5]))
+            let grown = min(max(value, 0), 1)
+            context.drawStem(path, ink: ink, width: DS.Size.stem + 0.2, progress: grown)
+            // Leaves, alternately above and below, as the stem passes.
+            for (i, t) in Self.leaves.enumerated() where t < grown {
+                let up = i.isMultiple(of: 2)
+                context.drawLeaf(
+                    at: point(t),
+                    angle: .degrees(up ? -132 : 132),
+                    length: size.height * 0.3,
+                    ink: ink,
+                    open: Ease.opening(grown, start: t, span: 0.08)
+                )
+            }
+            // The tip.
+            let tip = point(grown)
+            if isFinished {
+                context.drawRose(at: tip, size: size.height * 0.5, seed: 4, ink: ink, open: Ease.opening(grown, start: 0.9, span: 0.1))
+            } else if grown > 0.02 {
+                let ahead = point(min(grown + 0.01, 1))
+                let angle = Angle.radians(atan2(ahead.y - tip.y, ahead.x - tip.x))
+                context.drawBud(at: tip, angle: angle, length: size.height * 0.3, ink: ink)
+            } else {
+                context.fill(Path(ellipseIn: CGRect(x: tip.x - 3, y: tip.y - 3, width: 6, height: 6)), with: .color(ink.stem))
+            }
         }
-        .frame(width: diameter, height: diameter)
-        // The open bottom of the circle isn't drawn, so don't reserve it.
-        .frame(height: diameter * 0.78, alignment: .top)
-    }
-
-    private var clamped: Double { min(max(value, 0), 1) }
-
-    private var endOffset: CGSize {
-        let angle = (start + sweep * clamped) * .pi / 180
-        let radius = diameter / 2
-        return CGSize(width: cos(angle) * radius, height: sin(angle) * radius)
+        .frame(height: DS.Size.gaugeHeight)
+        .accessibilityHidden(true)
     }
 }
 
-// MARK: - Pills
+// MARK: - Choice pills
 
-/// A capsule choice that lights up when selected: Opal's score pills, used
-/// here for "Finished · Partway · Not yet".
-struct GlowPill: View {
-    let title: LocalizedStringKey
-    let systemImage: String
-    let isSelected: Bool
-    var colors: [Color] = DS.Gradients.opalColors
-    let action: () -> Void
+/// Options in an outlined capsule, the chosen one in a solid ink pill that
+/// slides between them, like Type Garden's Type | Poster toggle.
+struct ChoicePills<ID: Hashable>: View {
+    struct Option: Identifiable {
+        let id: ID
+        let title: LocalizedStringKey
+    }
+
+    let options: [Option]
+    let selection: ID?
+    let onSelect: (ID) -> Void
+
+    @Namespace private var pill
 
     var body: some View {
-        let gradient = LinearGradient(colors: colors, startPoint: .leading, endPoint: .trailing)
-        Button(action: action) {
-            Label(title, systemImage: systemImage)
-                .font(DS.Typography.metaEmphasis)
-                .labelStyle(.titleAndIcon)
-                .foregroundStyle(isSelected ? DS.Colors.ink : DS.Colors.inkSecondary)
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
-                .frame(maxWidth: .infinity, minHeight: DS.Size.pill)
-                .padding(.horizontal, DS.Space.xs)
-                .background {
-                    ZStack {
-                        Capsule().fill(DS.Gradients.glass)
-                        Capsule().fill(gradient).opacity(isSelected ? 0.14 : 0)
-                    }
+        HStack(spacing: 0) {
+            ForEach(options) { option in
+                let isSelected = option.id == selection
+                Button {
+                    onSelect(option.id)
+                } label: {
+                    Text(option.title)
+                        .font(DS.Typography.label)
+                        .foregroundStyle(isSelected ? DS.Colors.onInk : DS.Colors.inkSecondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                        .frame(maxWidth: .infinity, minHeight: DS.Size.pill)
+                        .background {
+                            if isSelected {
+                                Capsule()
+                                    .fill(DS.Colors.ink)
+                                    .matchedGeometryEffect(id: "pill", in: pill)
+                            }
+                        }
+                        .contentShape(Capsule())
                 }
-                .overlay {
-                    Capsule().strokeBorder(
-                        isSelected ? AnyShapeStyle(gradient) : AnyShapeStyle(DS.Gradients.glassEdge),
-                        lineWidth: isSelected ? 1.5 : DS.Size.hairline
-                    )
-                }
-                .dsGlow(colors.first ?? DS.Colors.accent, radius: 14, strength: isSelected ? 0.35 : 0)
-                .contentShape(Capsule())
+                .buttonStyle(PressableButtonStyle())
+                .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
+            }
         }
-        .buttonStyle(PressableButtonStyle())
-        .animation(DS.Motion.quick, value: isSelected)
-        .sensoryFeedback(.selection, trigger: isSelected)
-        .accessibilityAddTraits(isSelected ? .isSelected : [])
-    }
-}
-
-// MARK: - Bracket
-
-/// One thing splitting into several, drawn like Opal's score bracket:
-/// a stem from the top centre, a bar across, and a drop to each child.
-/// Children are assumed to share the width equally (an `HStack` of equal widths).
-struct BracketShape: Shape {
-    var count: Int
-    var spacing: CGFloat = DS.Space.xs
-    var corner: CGFloat = 8
-
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        guard count > 0 else { return path }
-        let width = (rect.width - spacing * CGFloat(count - 1)) / CGFloat(count)
-        let centers = (0..<count).map { rect.minX + width / 2 + CGFloat($0) * (width + spacing) }
-        let bar = rect.minY + rect.height * 0.45
-        // The stem.
-        path.move(to: CGPoint(x: rect.midX, y: rect.minY))
-        path.addLine(to: CGPoint(x: rect.midX, y: bar))
-        guard let first = centers.first, let last = centers.last, count > 1 else {
-            path.addLine(to: CGPoint(x: rect.midX, y: rect.maxY))
-            return path
-        }
-        // The bar, rounding down into the outer drops.
-        path.move(to: CGPoint(x: first, y: rect.maxY))
-        path.addLine(to: CGPoint(x: first, y: bar + corner))
-        path.addQuadCurve(to: CGPoint(x: first + corner, y: bar), control: CGPoint(x: first, y: bar))
-        path.addLine(to: CGPoint(x: last - corner, y: bar))
-        path.addQuadCurve(to: CGPoint(x: last, y: bar + corner), control: CGPoint(x: last, y: bar))
-        path.addLine(to: CGPoint(x: last, y: rect.maxY))
-        // Inner drops.
-        for x in centers.dropFirst().dropLast() {
-            path.move(to: CGPoint(x: x, y: bar))
-            path.addLine(to: CGPoint(x: x, y: rect.maxY))
-        }
-        return path
+        .padding(3)
+        .overlay { Capsule().strokeBorder(DS.Colors.hairline, lineWidth: DS.Size.hairline) }
+        .animation(DS.Motion.select, value: selection)
+        .sensoryFeedback(.selection, trigger: selection)
     }
 }
 
 // MARK: - Branches
 
-/// A row hanging off a trunk line on the left, joined to it by a curve:
-/// the alternatives that branch off a moment. Stack rows with no spacing;
-/// each row pads its own bottom so the trunk runs unbroken.
+/// A row hanging off a stem on the left, joined to it by a branch: the
+/// alternatives that grow from a moment. The chosen branch flowers; the
+/// others carry a leaf. Stack rows with no spacing; each row pads its own
+/// bottom so the stem runs unbroken.
 struct BranchRow<Content: View>: View {
     let isLast: Bool
-    var ink: Color = DS.Colors.accent
     var isLit = false
+    var seed = 0
     @ViewBuilder let content: Content
 
     var body: some View {
         content
-            .padding(.leading, DS.Size.branchGutter)
+            .padding(.leading, DS.Size.vineGutter)
             .padding(.bottom, isLast ? 0 : DS.Space.s)
             .background(alignment: .topLeading) {
-                GeometryReader { proxy in
-                    let rowHeight = proxy.size.height - (isLast ? 0 : DS.Space.s)
-                    let mid = rowHeight / 2
-                    let trunk: CGFloat = DS.Size.rule / 2 + 4
-                    ZStack(alignment: .topLeading) {
-                        // The trunk, down to this row (and on, unless it's the last).
-                        Path { path in
-                            path.move(to: CGPoint(x: trunk, y: 0))
-                            path.addLine(to: CGPoint(x: trunk, y: isLast ? mid - 10 : proxy.size.height))
-                        }
-                        .stroke(DS.Colors.inkTertiary.opacity(0.6), lineWidth: DS.Size.rule * 0.75)
-                        // The branch, curving into the row.
-                        Path { path in
-                            path.move(to: CGPoint(x: trunk, y: mid - 12))
-                            path.addQuadCurve(
-                                to: CGPoint(x: DS.Size.branchGutter, y: mid),
-                                control: CGPoint(x: trunk, y: mid)
-                            )
-                        }
-                        .stroke(
-                            isLit ? AnyShapeStyle(ink) : AnyShapeStyle(DS.Colors.inkTertiary.opacity(0.6)),
-                            style: StrokeStyle(lineWidth: DS.Size.rule * 0.75, lineCap: .round)
-                        )
-                        .dsGlow(ink, radius: 6, strength: isLit ? 0.7 : 0)
-                    }
-                }
-                .accessibilityHidden(true)
+                BranchDrawing(isLast: isLast, bloom: isLit ? 1 : 0, gap: isLast ? 0 : DS.Space.s, seed: seed)
+                    .animation(DS.Motion.bloom(), value: isLit)
             }
+    }
+}
+
+private struct BranchDrawing: View, Animatable {
+    let isLast: Bool
+    var bloom: Double
+    let gap: CGFloat
+    let seed: Int
+
+    var animatableData: Double {
+        get { bloom }
+        set { bloom = newValue }
+    }
+
+    var body: some View {
+        let ink = GardenInk.current
+        Canvas { context, size in
+            let rowHeight = size.height - gap
+            let mid = rowHeight / 2
+            let trunk: CGFloat = 7
+            // The stem, down past this row unless it's the last.
+            var stem = Path()
+            stem.move(to: CGPoint(x: trunk, y: 0))
+            stem.addLine(to: CGPoint(x: trunk, y: isLast ? mid - 12 : size.height))
+            context.drawStem(stem, ink: ink, width: 1.4)
+            // The branch, curving out to the row.
+            let end = CGPoint(x: DS.Size.vineGutter - 11, y: mid)
+            var branch = Path()
+            branch.move(to: CGPoint(x: trunk, y: mid - 14))
+            branch.addQuadCurve(to: end, control: CGPoint(x: trunk, y: mid))
+            context.drawStem(branch, ink: ink, width: 1.4)
+            // A leaf on every branch; a rose opens on the chosen one.
+            context.drawLeaf(at: CGPoint(x: trunk + 3, y: mid - 7), angle: .degrees(-62), length: 9, ink: ink, open: 1 - bloom * 0.4, vein: false)
+            context.drawRose(at: end, size: 17, seed: seed, ink: ink, open: bloom)
+            if bloom < 0.99 {
+                context.fill(
+                    Path(ellipseIn: CGRect(x: end.x - 2.5, y: end.y - 2.5, width: 5, height: 5)),
+                    with: .color(ink.stem.opacity(1 - bloom))
+                )
+            }
+        }
+        .accessibilityHidden(true)
     }
 }
 
 #Preview {
     @Previewable @State var choice = 1
+    @Previewable @State var value = 0.4
     ScrollView {
         VStack(spacing: DS.Space.l) {
-            ArcGauge(value: 0.4) {
-                VStack(spacing: 0) {
-                    Text("40%").font(DS.Typography.gauge).foregroundStyle(DS.Colors.accent)
-                    Text("Read").font(DS.Typography.caption).foregroundStyle(DS.Colors.inkSecondary)
-                }
-            }
-            BracketShape(count: 3)
-                .stroke(DS.Colors.inkTertiary, lineWidth: 1)
-                .frame(height: 24)
-            HStack(spacing: DS.Space.xs) {
-                GlowPill(title: "Finished", systemImage: "checkmark.seal.fill", isSelected: choice == 0) { choice = 0 }
-                GlowPill(title: "Partway", systemImage: "bookmark.fill", isSelected: choice == 1) { choice = 1 }
-                GlowPill(title: "Not yet", systemImage: "book.closed", isSelected: choice == 2) { choice = 2 }
-            }
+            VineGauge(value: value, isFinished: value >= 1)
+                .onTapGesture { withAnimation(.easeInOut(duration: 1.2)) { value = value >= 1 ? 0.2 : 1 } }
+            ChoicePills(
+                options: [.init(id: 0, title: "Finished"), .init(id: 1, title: "Partway"), .init(id: 2, title: "Not yet")],
+                selection: choice
+            ) { choice = $0 }
             VStack(spacing: 0) {
-                BranchRow(isLast: false, isLit: true) { ChoiceRow(text: "Darcy never writes the letter", isSelected: true) {} }
-                BranchRow(isLast: true) { ChoiceRow(text: "Lydia is found first", isSelected: false) {} }
+                BranchRow(isLast: false, isLit: choice == 0) { ChoiceRow(text: "Darcy never writes the letter", isSelected: choice == 0) { choice = 0 } }
+                BranchRow(isLast: true, isLit: choice == 1) { ChoiceRow(text: "Lydia is found first", isSelected: choice == 1) { choice = 1 } }
             }
         }
         .padding(DS.Space.screen)
