@@ -1,0 +1,93 @@
+{
+  "slug": "the-great-gatsby",
+  "title": "The Great Gatsby",
+  "author": "F. Scott Fitzgerald",
+  "year": 1925,
+  "premise": "Summer, 1922. Nick Carraway rents a cottage on Long Island next to Jay Gatsby, a mysterious millionaire whose lavish parties glitter across the bay from Nick’s cousin Daisy.",
+  "moments": [
+    {
+      "id": "gg1",
+      "chapter": "Ch. 1",
+      "position": 0.08,
+      "title": "The green light",
+      "happened": "Nick sees Gatsby alone at night, reaching toward a green light at the end of Daisy’s dock.",
+      "alternatives": [
+        "Gatsby buys the house beside Daisy’s",
+        "Nick never moves to West Egg",
+        "Daisy sees Gatsby that night"
+      ]
+    },
+    {
+      "id": "gg2",
+      "chapter": "Ch. 3",
+      "position": 0.2,
+      "title": "Gatsby’s party",
+      "happened": "Nick finally meets his host at one of the enormous parties and is drawn into his circle.",
+      "alternatives": [
+        "Gatsby never throws his parties",
+        "Nick refuses the invitation",
+        "Daisy comes to the party"
+      ]
+    },
+    {
+      "id": "gg3",
+      "chapter": "Ch. 5",
+      "position": 0.4,
+      "title": "Tea at Nick’s cottage",
+      "happened": "Gatsby and Daisy meet again for the first time in five years, in Nick’s small front room.",
+      "alternatives": [
+        "Daisy never comes to tea",
+        "Tom arrives instead of Daisy",
+        "Gatsby loses his nerve and leaves"
+      ]
+    },
+    {
+      "id": "gg4",
+      "chapter": "Ch. 7",
+      "position": 0.65,
+      "title": "The Plaza Hotel",
+      "happened": "In a sweltering hotel suite Tom exposes Gatsby’s dealings, and Daisy won’t say she never loved Tom.",
+      "alternatives": [
+        "Daisy says she never loved Tom",
+        "Gatsby admits everything first",
+        "Nick stays home that day"
+      ]
+    },
+    {
+      "id": "gg5",
+      "chapter": "Ch. 7",
+      "position": 0.72,
+      "title": "The yellow car",
+      "happened": "Driving Gatsby’s car home, Daisy strikes Myrtle Wilson. Gatsby decides to take the blame.",
+      "alternatives": [
+        "Gatsby is driving the car",
+        "They take a different road home",
+        "Daisy confesses"
+      ]
+    },
+    {
+      "id": "gg6",
+      "chapter": "Ch. 8",
+      "position": 0.85,
+      "title": "Waiting for the call",
+      "happened": "Gatsby waits by his pool for a call from Daisy that never comes, while George Wilson searches for the car’s owner.",
+      "alternatives": [
+        "Daisy calls and they leave together",
+        "Gatsby leaves for Chicago at dawn",
+        "Nick stays with Gatsby all day"
+      ]
+    },
+    {
+      "id": "gg7",
+      "chapter": "Ch. 9",
+      "position": 0.95,
+      "title": "The funeral",
+      "happened": "Almost no one comes to Gatsby’s funeral. Daisy and Tom have already left town.",
+      "alternatives": [
+        "Daisy comes to the funeral",
+        "Gatsby’s father tells everyone his past",
+        "Nick stays in the East"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "slug": "little-women",
+  "title": "Little Women",
+  "author": "Louisa May Alcott",
+  "year": 1868,
+  "premise": "While their father serves in the Civil War, the four March sisters, Meg, Jo, Beth and Amy, grow up in Massachusetts with their mother, Marmee.",
+  "moments": [
+    {
+      "id": "lw1",
+      "chapter": "Ch. 2",
+      "position": 0.05,
+      "title": "Christmas breakfast",
+      "happened": "The girls give their Christmas breakfast to the Hummels, a poor family nearby.",
+      "alternatives": [
+        "The girls keep their breakfast",
+        "Laurie joins them that morning",
+        "Aunt March comes for Christmas"
+      ]
+    },
+    {
+      "id": "lw2",
+      "chapter": "Ch. 8",
+      "position": 0.12,
+      "title": "The burned manuscript",
+      "happened": "Angry at being left out, Amy burns the book Jo has been writing for years.",
+      "alternatives": [
+        "Amy goes to the theatre with them",
+        "Jo kept a second copy",
+        "Jo forgives Amy at once"
+      ]
+    },
+    {
+      "id": "lw3",
+      "chapter": "Ch. 18",
+      "position": 0.3,
+      "title": "Scarlet fever",
+      "happened": "Visiting the Hummels while Marmee is away, Beth catches scarlet fever.",
+      "alternatives": [
+        "Jo visits the Hummels instead",
+        "Marmee comes home sooner",
+        "Beth never catches the fever"
+      ]
+    },
+    {
+      "id": "lw4",
+      "chapter": "Ch. 23",
+      "position": 0.4,
+      "title": "Meg chooses John Brooke",
+      "happened": "Meg accepts the poor tutor John Brooke despite Aunt March’s threats.",
+      "alternatives": [
+        "Meg refuses John",
+        "Aunt March approves the match",
+        "Meg marries a rich suitor"
+      ]
+    },
+    {
+      "id": "lw5",
+      "chapter": "Pt. 2, Ch. 35",
+      "position": 0.6,
+      "title": "Laurie’s proposal",
+      "happened": "Laurie proposes to Jo, and she tells him she can’t love him that way.",
+      "alternatives": [
+        "Jo says yes to Laurie",
+        "Laurie never proposes",
+        "Jo goes to Europe instead of Amy"
+      ]
+    },
+    {
+      "id": "lw6",
+      "chapter": "Pt. 2, Ch. 40",
+      "position": 0.75,
+      "title": "Beth’s last spring",
+      "happened": "Beth’s health fades, and the family gathers around her at home.",
+      "alternatives": [
+        "Beth recovers",
+        "Beth goes south for her health",
+        "Jo stays in New York"
+      ]
+    },
+    {
+      "id": "lw7",
+      "chapter": "Pt. 2, Ch. 46",
+      "position": 0.92,
+      "title": "Under the umbrella",
+      "happened": "Professor Bhaer proposes to Jo under an umbrella in the rain.",
+      "alternatives": [
+        "Jo turns Bhaer down",
+        "Bhaer leaves for the West",
+        "Jo becomes a famous novelist alone"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "slug": "frankenstein",
+  "title": "Frankenstein",
+  "author": "Mary Shelley",
+  "year": 1818,
+  "premise": "On an Arctic voyage, the explorer Robert Walton rescues a dying stranger, Victor Frankenstein, who tells how his obsession with the secret of life led to disaster.",
+  "moments": [
+    {
+      "id": "fr1",
+      "chapter": "Ch. 5",
+      "position": 0.2,
+      "title": "The creature wakes",
+      "happened": "Victor brings his creature to life, is horrified by it, and flees, leaving it alone.",
+      "alternatives": [
+        "Victor stays and cares for the creature",
+        "Victor destroys his notes first",
+        "Elizabeth visits that night"
+      ]
+    },
+    {
+      "id": "fr2",
+      "chapter": "Ch. 8",
+      "position": 0.3,
+      "title": "Justine’s trial",
+      "happened": "Victor’s little brother William is found dead. The servant Justine is blamed and executed while Victor stays silent.",
+      "alternatives": [
+        "Victor tells the truth at the trial",
+        "Justine is acquitted",
+        "William is never harmed"
+      ]
+    },
+    {
+      "id": "fr3",
+      "chapter": "Ch. 15",
+      "position": 0.42,
+      "title": "The cottage in the woods",
+      "happened": "The creature tells how the De Lacey family, whom he secretly helped, drove him away in fear.",
+      "alternatives": [
+        "The De Laceys welcome him",
+        "The creature never finds the cottage",
+        "Old De Lacey speaks for him"
+      ]
+    },
+    {
+      "id": "fr4",
+      "chapter": "Ch. 17",
+      "position": 0.5,
+      "title": "A companion",
+      "happened": "The creature asks for a companion and promises to vanish with her forever. Victor agrees.",
+      "alternatives": [
+        "Victor refuses outright",
+        "The creature asks for a friend instead",
+        "Victor tells his father everything"
+      ]
+    },
+    {
+      "id": "fr5",
+      "chapter": "Ch. 20",
+      "position": 0.65,
+      "title": "The island workshop",
+      "happened": "On a Scottish island Victor tears apart the half-made companion as the creature watches.",
+      "alternatives": [
+        "Victor finishes the companion",
+        "The creature stops him in time",
+        "Victor sails away and abandons both"
+      ]
+    },
+    {
+      "id": "fr6",
+      "chapter": "Ch. 23",
+      "position": 0.82,
+      "title": "The wedding night",
+      "happened": "On his wedding night Victor guards himself, but it is Elizabeth who is attacked.",
+      "alternatives": [
+        "Victor stays by Elizabeth’s side",
+        "Elizabeth meets the creature and talks to it",
+        "Victor postpones the wedding"
+      ]
+    },
+    {
+      "id": "fr7",
+      "chapter": "Ch. 24",
+      "position": 0.95,
+      "title": "Into the ice",
+      "happened": "Victor pursues the creature across the frozen north, where Walton finds him.",
+      "alternatives": [
+        "Victor gives up the chase",
+        "The creature turns back to help him",
+        "Walton joins the hunt"
+      ]
+    }
+  ]
+}

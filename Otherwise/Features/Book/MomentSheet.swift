@@ -76,6 +76,12 @@ struct MomentSheet: View {
             VStack(alignment: .leading, spacing: DS.Space.xs) {
                 Eyebrow("In the book")
                 Text(moment.happened).dsReading()
+                // A few lines of the scene itself, when the book has a guide.
+                if let excerpt = Catalog.entry(for: book)?.guide?.excerpt(for: moment) {
+                    QuoteBlock(text: excerpt)
+                        .padding(.top, DS.Space.xs)
+                        .accessibilityLabel("From the original: \(excerpt)")
+                }
             }
         }
 
@@ -147,12 +153,14 @@ struct MomentSheet: View {
             }
             PrimaryButton("Rewrite from here", systemImage: "arrow.right") {
                 guard let change else { return }
+                let guide = Catalog.entry(for: book)?.guide
                 onRewrite(StoryRequest(
                     book: book,
                     moment: moment,
                     change: change,
                     premise: map.premise,
-                    earlierMoments: moment.map { map.moments(before: $0) } ?? []
+                    earlierMoments: moment.map { map.moments(before: $0) } ?? [],
+                    grounding: moment.map { guide?.grounding(for: $0) } ?? guide?.grounding(forChange: change)
                 ))
                 dismiss()
             }

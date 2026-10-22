@@ -1,15 +1,33 @@
 import Foundation
 
-/// A hand-checked book: its edition and its story map.
+/// A book with a story map you can trust: its edition, its map, and, once
+/// ChatGPT has read it from Project Gutenberg, its guide.
 struct CatalogEntry {
     let book: Book
     let edition: Edition
     let map: StoryMap
+    /// Characters, chapter summaries and original passages. Twists are written from it.
+    var guide: BookGuide? = nil
 }
 
-/// Twelve classics with hand-written story maps. Premises are spoiler-free;
+/// The mapped books: twelve classics with hand-written story maps, then any
+/// other book with a guide (see `BookGuide`). Premises are spoiler-free;
 /// moments are ordered and positioned so the map can be gated by reading progress.
+///
+/// When a classic has a guide, its map comes from the guide: the same
+/// moments, with chapters and positions checked against the full text.
 enum Catalog {
+
+    static let entries: [CatalogEntry] = {
+        let guided = handWritten.map { entry -> CatalogEntry in
+            guard let guide = Guides.all.first(where: { $0.book.id == entry.book.id }) else { return entry }
+            return CatalogEntry(book: entry.book, edition: entry.edition, map: guide.map, guide: guide)
+        }
+        let others = Guides.all
+            .filter { guide in !handWritten.contains { $0.book.id == guide.book.id } }
+            .map { CatalogEntry(book: $0.book, edition: Edition.hashed($0.book), map: $0.map, guide: $0) }
+        return guided + others
+    }()
 
     static func entry(for book: Book) -> CatalogEntry? {
         if let match = byID[book.id] { return match }
@@ -23,10 +41,10 @@ enum Catalog {
     }
 
     private static let byID: [String: CatalogEntry] =
-        Dictionary(uniqueKeysWithValues: entries.map { ($0.book.id, $0) })
+        Dictionary(entries.map { ($0.book.id, $0) }, uniquingKeysWith: { first, _ in first })
 
     private static let byTitle: [String: CatalogEntry] =
-        Dictionary(uniqueKeysWithValues: entries.map { (normalize($0.book.title), $0) })
+        Dictionary(entries.map { (normalize($0.book.title), $0) }, uniquingKeysWith: { first, _ in first })
 
     private static func normalize(_ s: String) -> String {
         let lowered = s.lowercased()
@@ -48,7 +66,7 @@ enum Catalog {
 
     // MARK: - Entries
 
-    static let entries: [CatalogEntry] = [
+    private static let handWritten: [CatalogEntry] = [
         CatalogEntry(
             book: book("pride-and-prejudice", "Pride and Prejudice", "Jane Austen", 1813),
             edition: Edition(cloth: 0xD46A7E, foil: 0x4A1622, pattern: .dots),

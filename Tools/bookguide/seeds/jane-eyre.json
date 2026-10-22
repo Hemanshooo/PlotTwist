@@ -1,0 +1,105 @@
+{
+  "slug": "jane-eyre",
+  "title": "Jane Eyre",
+  "author": "Charlotte Brontë",
+  "year": 1847,
+  "premise": "An orphan raised by a cruel aunt and a harsh charity school, Jane becomes governess at Thornfield Hall and grows close to its brooding master, Mr. Rochester.",
+  "moments": [
+    {
+      "id": "je1",
+      "chapter": "Ch. 2",
+      "position": 0.04,
+      "title": "The red-room",
+      "happened": "As punishment, young Jane is locked in the room where her uncle died, and faints in terror.",
+      "alternatives": [
+        "Jane escapes Gateshead that night",
+        "Mrs. Reed relents and keeps her",
+        "Jane is sent to other relatives"
+      ]
+    },
+    {
+      "id": "je2",
+      "chapter": "Ch. 9",
+      "position": 0.15,
+      "title": "Fever at Lowood",
+      "happened": "Typhus sweeps the school, and Jane’s dearest friend Helen dies in her arms.",
+      "alternatives": [
+        "Helen survives the fever",
+        "Jane and Helen leave Lowood together",
+        "Mr. Brocklehurst is exposed early"
+      ]
+    },
+    {
+      "id": "je3",
+      "chapter": "Ch. 12",
+      "position": 0.25,
+      "title": "A horse on the ice",
+      "happened": "On a frozen lane a rider’s horse slips. Jane helps him, not knowing he is her master.",
+      "alternatives": [
+        "Jane walks past without helping",
+        "Rochester is cold and dismissive",
+        "Jane leaves before he returns"
+      ]
+    },
+    {
+      "id": "je4",
+      "chapter": "Ch. 15",
+      "position": 0.33,
+      "title": "Fire in the night",
+      "happened": "Jane wakes to find Rochester’s bed curtains on fire and saves his life.",
+      "alternatives": [
+        "Jane sleeps through the fire",
+        "Jane sees who set it",
+        "Rochester tells her the truth that night"
+      ]
+    },
+    {
+      "id": "je5",
+      "chapter": "Ch. 23",
+      "position": 0.5,
+      "title": "The orchard proposal",
+      "happened": "Under the chestnut tree Rochester asks Jane to marry him, and she says yes.",
+      "alternatives": [
+        "Jane refuses Rochester",
+        "Rochester confesses his secret first",
+        "Rochester marries Blanche Ingram"
+      ]
+    },
+    {
+      "id": "je6",
+      "chapter": "Ch. 26",
+      "position": 0.56,
+      "title": "The interrupted wedding",
+      "happened": "At the altar a lawyer reveals that Rochester is already married to Bertha, who is hidden in the attic.",
+      "alternatives": [
+        "The wedding goes ahead",
+        "Jane discovers Bertha herself first",
+        "Rochester and Jane run away together"
+      ]
+    },
+    {
+      "id": "je7",
+      "chapter": "Ch. 34",
+      "position": 0.8,
+      "title": "St. John’s proposal",
+      "happened": "Her cousin St. John asks Jane to marry him and join his mission in India.",
+      "alternatives": [
+        "Jane marries St. John",
+        "Jane goes to India alone",
+        "Jane never hears Rochester’s voice call"
+      ]
+    },
+    {
+      "id": "je8",
+      "chapter": "Ch. 36",
+      "position": 0.92,
+      "title": "Return to Thornfield",
+      "happened": "Jane returns to find Thornfield a burned ruin, and learns where Rochester has gone.",
+      "alternatives": [
+        "Jane returns before the fire",
+        "Rochester comes looking for Jane",
+        "Thornfield never burns"
+      ]
+    }
+  ]
+}

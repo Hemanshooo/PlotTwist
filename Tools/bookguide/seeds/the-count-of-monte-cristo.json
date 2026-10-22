@@ -1,0 +1,93 @@
+{
+  "slug": "the-count-of-monte-cristo",
+  "title": "The Count of Monte Cristo",
+  "author": "Alexandre Dumas",
+  "year": 1844,
+  "premise": "Marseille, 1815. Young sailor Edmond Dantès comes home to marry Mercédès and become a captain, unaware that jealous rivals are plotting against him.",
+  "moments": [
+    {
+      "id": "mc1",
+      "chapter": "Ch. 5",
+      "position": 0.03,
+      "title": "Arrest at the betrothal feast",
+      "happened": "Framed by Danglars and Fernand as a Bonapartist agent, Edmond is arrested at his own betrothal feast.",
+      "alternatives": [
+        "The letter is never sent",
+        "Villefort sets Edmond free",
+        "Mercédès hides Edmond"
+      ]
+    },
+    {
+      "id": "mc2",
+      "chapter": "Ch. 8",
+      "position": 0.08,
+      "title": "The Château d’If",
+      "happened": "To protect his own family, the prosecutor Villefort buries Edmond in an island prison without trial.",
+      "alternatives": [
+        "Villefort gives him a fair trial",
+        "Edmond escapes on the way",
+        "Monsieur Morrel wins his release"
+      ]
+    },
+    {
+      "id": "mc3",
+      "chapter": "Ch. 17",
+      "position": 0.15,
+      "title": "The Abbé Faria",
+      "happened": "Edmond meets the old prisoner Faria, who educates him and tells him of a hidden treasure.",
+      "alternatives": [
+        "Faria and Edmond escape together",
+        "Faria tunnels the wrong way",
+        "Edmond never meets Faria"
+      ]
+    },
+    {
+      "id": "mc4",
+      "chapter": "Ch. 20",
+      "position": 0.2,
+      "title": "The escape",
+      "happened": "Edmond takes Faria’s place in a burial sack and is thrown into the sea.",
+      "alternatives": [
+        "Edmond is caught in the sack",
+        "Edmond serves out his sentence",
+        "Edmond takes Faria’s map but not his place"
+      ]
+    },
+    {
+      "id": "mc5",
+      "chapter": "Ch. 39",
+      "position": 0.4,
+      "title": "The Count arrives in Paris",
+      "happened": "Rich and transformed, Edmond appears in Paris as the Count of Monte Cristo.",
+      "alternatives": [
+        "Edmond returns to Marseille in peace",
+        "Edmond reveals himself to Mercédès at once",
+        "Edmond helps his enemies instead"
+      ]
+    },
+    {
+      "id": "mc6",
+      "chapter": "Ch. 89",
+      "position": 0.75,
+      "title": "Mercédès recognises him",
+      "happened": "Mercédès, who knew him all along, begs the Count to spare her son Albert in a duel.",
+      "alternatives": [
+        "The Count refuses Mercédès",
+        "Albert wins the duel",
+        "Mercédès tells Albert the truth first"
+      ]
+    },
+    {
+      "id": "mc7",
+      "chapter": "Ch. 111",
+      "position": 0.92,
+      "title": "Too far",
+      "happened": "As Villefort’s family is destroyed, the Count begins to wonder if his revenge has gone too far.",
+      "alternatives": [
+        "The Count shows mercy sooner",
+        "Villefort confesses everything",
+        "The Count abandons his revenge"
+      ]
+    }
+  ]
+}

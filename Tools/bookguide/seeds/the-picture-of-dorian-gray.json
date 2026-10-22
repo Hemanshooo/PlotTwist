@@ -1,0 +1,93 @@
+{
+  "slug": "the-picture-of-dorian-gray",
+  "title": "The Picture of Dorian Gray",
+  "author": "Oscar Wilde",
+  "year": 1890,
+  "premise": "The painter Basil Hallward finishes a portrait of the beautiful young Dorian Gray, while the witty Lord Henry fills Dorian’s head with ideas about youth and pleasure.",
+  "moments": [
+    {
+      "id": "dg1",
+      "chapter": "Ch. 2",
+      "position": 0.08,
+      "title": "The wish",
+      "happened": "Looking at his portrait, Dorian wishes the painting could grow old instead of him.",
+      "alternatives": [
+        "Dorian never makes the wish",
+        "Basil destroys the painting",
+        "Dorian never meets Lord Henry"
+      ]
+    },
+    {
+      "id": "dg2",
+      "chapter": "Ch. 7",
+      "position": 0.25,
+      "title": "Sibyl’s performance",
+      "happened": "After the actress Sibyl Vane acts badly for love of him, Dorian cruelly rejects her.",
+      "alternatives": [
+        "Dorian forgives Sibyl",
+        "Sibyl performs brilliantly",
+        "Lord Henry never comes to the theatre"
+      ]
+    },
+    {
+      "id": "dg3",
+      "chapter": "Ch. 8",
+      "position": 0.3,
+      "title": "The portrait changes",
+      "happened": "Dorian sees cruelty in the painted face and resolves to make amends, but it is too late for Sibyl.",
+      "alternatives": [
+        "Dorian reaches Sibyl in time",
+        "Dorian shows Basil the change",
+        "Dorian destroys the portrait now"
+      ]
+    },
+    {
+      "id": "dg4",
+      "chapter": "Ch. 10",
+      "position": 0.4,
+      "title": "Locked in the schoolroom",
+      "happened": "Dorian hides the portrait in his old schoolroom and keeps the only key.",
+      "alternatives": [
+        "Dorian hangs the portrait in public",
+        "Lord Henry finds the key",
+        "Dorian gives the portrait away"
+      ]
+    },
+    {
+      "id": "dg5",
+      "chapter": "Ch. 13",
+      "position": 0.6,
+      "title": "Basil sees the portrait",
+      "happened": "Dorian shows Basil what the painting has become, and their meeting ends in violence.",
+      "alternatives": [
+        "Dorian lets Basil pray with him",
+        "Basil never visits that night",
+        "Basil takes the portrait away"
+      ]
+    },
+    {
+      "id": "dg6",
+      "chapter": "Ch. 18",
+      "position": 0.8,
+      "title": "James Vane’s revenge",
+      "happened": "Sibyl’s brother hunts Dorian for years, until a shooting party ends the chase.",
+      "alternatives": [
+        "James confronts Dorian face to face",
+        "James recognises Dorian’s true age",
+        "Dorian confesses to James"
+      ]
+    },
+    {
+      "id": "dg7",
+      "chapter": "Ch. 20",
+      "position": 0.95,
+      "title": "The knife",
+      "happened": "Desperate to be free, Dorian takes a knife to the portrait.",
+      "alternatives": [
+        "Dorian confesses everything",
+        "Dorian leaves the portrait alone",
+        "Lord Henry sees the painting first"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "slug": "wuthering-heights",
+  "title": "Wuthering Heights",
+  "author": "Emily Brontë",
+  "year": 1847,
+  "premise": "On the Yorkshire moors the Earnshaw family takes in a foundling boy, Heathcliff, who forms a fierce bond with the daughter of the house, Catherine.",
+  "moments": [
+    {
+      "id": "wh1",
+      "chapter": "Ch. 4",
+      "position": 0.08,
+      "title": "Heathcliff arrives",
+      "happened": "Mr. Earnshaw brings home a ragged orphan from Liverpool and names him Heathcliff.",
+      "alternatives": [
+        "Mr. Earnshaw leaves him in Liverpool",
+        "Hindley welcomes Heathcliff",
+        "Heathcliff is raised at Thrushcross Grange"
+      ]
+    },
+    {
+      "id": "wh2",
+      "chapter": "Ch. 6",
+      "position": 0.15,
+      "title": "Five weeks at the Grange",
+      "happened": "Bitten by a dog, Catherine stays with the Lintons and comes home a fine lady.",
+      "alternatives": [
+        "Heathcliff stays at the Grange with her",
+        "Catherine never goes near the Grange",
+        "Catherine runs back to the Heights"
+      ]
+    },
+    {
+      "id": "wh3",
+      "chapter": "Ch. 9",
+      "position": 0.3,
+      "title": "“I am Heathcliff”",
+      "happened": "Catherine tells Nelly she will marry Edgar. Heathcliff overhears only part of it, and vanishes.",
+      "alternatives": [
+        "Heathcliff hears the whole speech",
+        "Catherine chooses Heathcliff",
+        "Nelly stops Heathcliff leaving"
+      ]
+    },
+    {
+      "id": "wh4",
+      "chapter": "Ch. 10",
+      "position": 0.4,
+      "title": "Heathcliff returns",
+      "happened": "Three years later he returns, wealthy and bent on revenge.",
+      "alternatives": [
+        "Heathcliff never returns",
+        "Heathcliff returns and forgives",
+        "Catherine leaves Edgar for him"
+      ]
+    },
+    {
+      "id": "wh5",
+      "chapter": "Ch. 12",
+      "position": 0.48,
+      "title": "Isabella elopes",
+      "happened": "Heathcliff elopes with Edgar’s sister Isabella to wound the Lintons.",
+      "alternatives": [
+        "Isabella refuses Heathcliff",
+        "Edgar stops the elopement",
+        "Heathcliff marries for love"
+      ]
+    },
+    {
+      "id": "wh6",
+      "chapter": "Ch. 16",
+      "position": 0.55,
+      "title": "Catherine’s last night",
+      "happened": "After a last stormy meeting with Heathcliff, Catherine dies giving birth to a daughter.",
+      "alternatives": [
+        "Catherine survives",
+        "Heathcliff takes Catherine away",
+        "Edgar lets Heathcliff visit freely"
+      ]
+    },
+    {
+      "id": "wh7",
+      "chapter": "Ch. 27",
+      "position": 0.8,
+      "title": "Young Cathy is trapped",
+      "happened": "Heathcliff traps Catherine’s daughter at the Heights and forces her to marry his son, Linton.",
+      "alternatives": [
+        "Nelly helps young Cathy escape",
+        "Edgar rescues his daughter",
+        "Linton refuses to marry her"
+      ]
+    },
+    {
+      "id": "wh8",
+      "chapter": "Ch. 34",
+      "position": 0.95,
+      "title": "The open window",
+      "happened": "Haunted by Catherine, Heathcliff stops eating and is found by the open window.",
+      "alternatives": [
+        "Heathcliff sets young Cathy free",
+        "Heathcliff leaves the moors",
+        "Heathcliff makes peace with Hareton"
+      ]
+    }
+  ]
+}

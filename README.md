@@ -8,7 +8,9 @@ Change one moment in any book, and read how the story would have gone.
 2. Pick an iPhone simulator running iOS 26, or your own iPhone (signing: choose your Team under Signing & Capabilities).
 3. Press Run. Writing stories needs Apple Intelligence: on the Simulator it uses your Mac's, so turn it on in System Settings.
 
-Stories and maps for books outside the catalogue are written on device with Apple's Foundation Models framework. There are no API keys, and nothing the reader types leaves the phone. Search and book details come from Open Library.
+Stories and maps for books outside the catalogue are written on device with Apple's Foundation Models framework. There are no API keys in the app, and nothing the reader types leaves the phone. Search and book details come from Open Library.
+
+**Book guides.** The phone's model can hold only about 3,000 words, so it can't read a novel. Instead ChatGPT reads each book once, from its full text on Project Gutenberg, and leaves a guide the app is built with: characters, every chapter summarised, and each turning point with its original passage, cut word-for-word from the book. Twists are written from the original scene, the people in it and what followed. See [Tools/bookguide](Tools/bookguide/README.md) to build guides (needs an OpenAI API key, on your Mac only). Books with a guide appear in the library with the classics.
 
 ## The flow
 
@@ -26,13 +28,16 @@ Plot Twist is a garden of forking paths, set like a type specimen (after Type Ga
 Otherwise/
   App/             Entry point
   DesignSystem/    Tokens (palettes, type, editions), the garden, icons, book components, gallery → DESIGN_SYSTEM.md
-  Resources/Fonts/ Newsreader (OFL), the serif used inside the books
-  Models/          Book, Story, StoryMap, Catalog (12 hand-written maps), Version & ShelfEntry (SwiftData)
+  Resources/Fonts/ Instrument Serif, DM Mono, Newsreader (all OFL)
+  Resources/Guides/ Book guides built by Tools/bookguide (<slug>.guide.json)
+  Models/          Book, Story, StoryMap, Catalog (12 hand-written maps + guided books), BookGuide, Version & ShelfEntry (SwiftData)
   Services/        OpenLibrary, StoryEngine (Foundation Models + tolerant text parser)
   Features/        Library (stack, slabs, opening), Book (gauge, story map, moment sheet), Story (page-curl reader)
+Tools/
+  bookguide/       build.py: Gutenberg text → ChatGPT → book guide; books.json; seeds (the hand-written maps)
 ```
 
 ## Known limits
 
-- Apple's on-device model is small (about 3B parameters). The structure, titles and chapters work reliably, but the prose is plain and sometimes drifts from the change. Hand-written maps for the classics keep the turning points accurate.
+- Apple's on-device model is small (about 3B parameters). The structure, titles and chapters work reliably, but the prose is plain and sometimes drifts from the change. Hand-written maps and book guides keep the turning points, names and events accurate.
 - For noticeably better stories, replace `StoryEngine.write` with a call to a larger cloud model. Nothing else depends on Foundation Models.

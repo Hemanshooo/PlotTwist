@@ -15,3 +15,8 @@ playground.xcworkspace
 Packages/
 # macOS
 .DS_Store
+
+# Book-guide builder
+Tools/bookguide/cache/
+Tools/bookguide/.env
+__pycache__/

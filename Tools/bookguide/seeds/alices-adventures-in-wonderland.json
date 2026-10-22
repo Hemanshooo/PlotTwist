@@ -1,0 +1,81 @@
+{
+  "slug": "alices-adventures-in-wonderland",
+  "title": "Alice’s Adventures in Wonderland",
+  "author": "Lewis Carroll",
+  "year": 1865,
+  "premise": "On a drowsy summer afternoon, Alice follows a White Rabbit with a pocket watch down a rabbit hole, into a world where nothing makes sense.",
+  "moments": [
+    {
+      "id": "aw1",
+      "chapter": "Ch. 1",
+      "position": 0.05,
+      "title": "Down the rabbit hole",
+      "happened": "Alice follows the White Rabbit and tumbles into Wonderland.",
+      "alternatives": [
+        "Alice stays on the riverbank",
+        "Her sister follows her down",
+        "Alice catches the Rabbit first"
+      ]
+    },
+    {
+      "id": "aw2",
+      "chapter": "Ch. 2",
+      "position": 0.12,
+      "title": "The pool of tears",
+      "happened": "Alice grows enormous and cries a pool of tears, then shrinks and nearly drowns in it.",
+      "alternatives": [
+        "Alice stays tiny",
+        "Alice never drinks from the bottle",
+        "Alice keeps hold of the key"
+      ]
+    },
+    {
+      "id": "aw3",
+      "chapter": "Ch. 6",
+      "position": 0.42,
+      "title": "The Cheshire Cat",
+      "happened": "A grinning cat in a tree tells Alice that everyone here is mad.",
+      "alternatives": [
+        "The Cat guides Alice home",
+        "Alice ignores the Cat",
+        "The Cat comes along with Alice"
+      ]
+    },
+    {
+      "id": "aw4",
+      "chapter": "Ch. 7",
+      "position": 0.5,
+      "title": "The Mad Tea-Party",
+      "happened": "Alice joins the Hatter, the March Hare and the Dormouse at a tea-party that never ends.",
+      "alternatives": [
+        "Alice stays at the tea-party",
+        "Time forgives the Hatter",
+        "The Dormouse leads the way"
+      ]
+    },
+    {
+      "id": "aw5",
+      "chapter": "Ch. 8",
+      "position": 0.62,
+      "title": "The Queen’s croquet",
+      "happened": "Alice plays croquet with flamingos while the Queen of Hearts orders heads off.",
+      "alternatives": [
+        "Alice beats the Queen",
+        "The King overrules the Queen",
+        "Alice refuses to play"
+      ]
+    },
+    {
+      "id": "aw6",
+      "chapter": "Ch. 12",
+      "position": 0.92,
+      "title": "The trial of the Knave",
+      "happened": "At the trial over the stolen tarts, Alice grows huge and calls the court “nothing but a pack of cards.”",
+      "alternatives": [
+        "Alice stays small and silent",
+        "The Knave is found innocent",
+        "Alice is put on trial"
+      ]
+    }
+  ]
+}

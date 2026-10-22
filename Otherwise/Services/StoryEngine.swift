@@ -4,6 +4,10 @@ import FoundationModels
 /// Writes alternate stories, and draws story maps for books outside the
 /// catalogue, on device with Apple Intelligence (Foundation Models).
 /// Nothing the reader writes leaves the phone.
+///
+/// Books with a guide (see `BookGuide`) are grounded in their full text: each
+/// story is written from the original scene, the people in it, and what
+/// followed, instead of from a summary.
 enum StoryEngine {
 
     // MARK: Availability
@@ -82,25 +86,34 @@ enum StoryEngine {
     static func write(_ request: StoryRequest) -> AsyncThrowingStream<Story, Error> {
         AsyncThrowingStream { continuation in
             let task = Task {
-                do {
-                    let model = SystemLanguageModel(guardrails: .permissiveContentTransformations)
-                    let session = LanguageModelSession(model: model, instructions: StoryInstructions.story)
-                    let stream = session.streamResponse(
-                        to: Prompts.story(request),
-                        // Capped so a rambling answer stops instead of overflowing the 4K context window.
-                        options: GenerationOptions(temperature: 0.7, maximumResponseTokens: 1100)
-                    )
-                    var raw = ""
-                    for try await snapshot in stream {
-                        raw = snapshot.content
-                        continuation.yield(StoryParser.parse(raw))
+                var attempt = request
+                while true {
+                    do {
+                        let model = SystemLanguageModel(guardrails: .permissiveContentTransformations)
+                        let session = LanguageModelSession(model: model, instructions: StoryInstructions.story)
+                        let stream = session.streamResponse(
+                            to: Prompts.story(attempt),
+                            // Capped so a rambling answer stops instead of overflowing the 4K context window.
+                            options: GenerationOptions(temperature: 0.7, maximumResponseTokens: 1100)
+                        )
+                        var raw = ""
+                        for try await snapshot in stream {
+                            raw = snapshot.content
+                            continuation.yield(StoryParser.parse(raw))
+                        }
+                        #if DEBUG
+                        print("[PlotTwist] Story text:\n\(raw)")
+                        #endif
+                        continuation.finish()
+                        return
+                    } catch LanguageModelSession.GenerationError.exceededContextWindowSize where attempt.grounding?.passage != nil {
+                        // The guide's notes didn't fit alongside the story: write it again without the long passage.
+                        attempt.grounding?.passage = nil
+                        attempt.grounding?.context = []
+                    } catch {
+                        continuation.finish(throwing: error)
+                        return
                     }
-                    #if DEBUG
-                    print("[PlotTwist] Story text:\n\(raw)")
-                    #endif
-                    continuation.finish()
-                } catch {
-                    continuation.finish(throwing: error)
                 }
             }
             continuation.onTermination = { _ in task.cancel() }
@@ -151,7 +164,8 @@ private enum StoryInstructions {
     The first chapter opens with the change itself. Then follow its consequences: what the characters do next, \
     what the change makes impossible, and what it makes possible, all the way to a new ending. \
     Keep the original characters, setting, era and voice. Write vivid third-person prose in the past tense, \
-    with specific details. Keep any violence offstage and understated.
+    with specific details. Keep any violence offstage and understated. \
+    You may be given notes from the original book: use them to keep names, places and relationships right.
     """
 
     static let map = """
@@ -174,9 +188,23 @@ private enum Prompts {
         // Just the book and the moment: a premise or earlier events pull a small model
         // back into retelling the opening. The premise is only used for off-map changes.
         var lines = [book(request.book, context: nil)]
+        let grounding = request.grounding
+        if let people = grounding?.people, !people.isEmpty {
+            lines.append("Characters:\n" + people.map { "- \($0)" }.joined(separator: "\n"))
+        }
         if request.moment == nil { lines.append("Premise: \(request.premise)") }
+        if let context = grounding?.context, !context.isEmpty {
+            lines.append("In the original book:\n" + context.map { "- \($0)" }.joined(separator: "\n"))
+        }
         if let moment = request.moment {
             lines.append("In the original book (\(moment.chapter), \(moment.title)): \(moment.happened)")
+            if let passage = grounding?.passage {
+                // Labelled as reference, or a small model copies it out instead of changing it.
+                lines.append("The original scene, for names, setting and voice only. Do not retell it:\n\"\"\"\n\(passage)\n\"\"\"")
+            }
+            if let aftermath = grounding?.aftermath {
+                lines.append("What it led to in the original: \(aftermath)")
+            }
             lines.append("THE CHANGE: \(request.change). This replaces what happened in the original.")
         } else {
             lines.append("THE CHANGE: \(request.change).")

@@ -48,7 +48,11 @@ struct Edition: Hashable {
 
     /// The edition for any book: curated if the catalogue has it, otherwise hashed.
     static func of(_ book: Book) -> Edition {
-        if let curated = Catalog.entry(for: book)?.edition { return curated }
+        Catalog.entry(for: book)?.edition ?? hashed(book)
+    }
+
+    /// An edition worked out from the title alone, the same every time.
+    static func hashed(_ book: Book) -> Edition {
         let seed = book.title.lowercased().unicodeScalars.reduce(0) { $0 &+ Int($1.value) }
         let pair = palettes[seed % palettes.count]
         let pattern = Pattern.allCases[(seed / palettes.count) % Pattern.allCases.count]

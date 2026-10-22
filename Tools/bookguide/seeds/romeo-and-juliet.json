@@ -1,0 +1,93 @@
+{
+  "slug": "romeo-and-juliet",
+  "title": "Romeo and Juliet",
+  "author": "William Shakespeare",
+  "year": 1597,
+  "premise": "In Verona two families are locked in an old feud. Romeo, a Montague, slips into a Capulet feast and falls for Juliet, the daughter of his family’s enemies.",
+  "moments": [
+    {
+      "id": "rj1",
+      "chapter": "Act 1, Sc. 5",
+      "position": 0.1,
+      "title": "The masked feast",
+      "happened": "Romeo crashes the Capulet party. He and Juliet fall in love before learning who the other is.",
+      "alternatives": [
+        "Romeo stays home that night",
+        "Tybalt throws Romeo out at once",
+        "Juliet learns his name first"
+      ]
+    },
+    {
+      "id": "rj2",
+      "chapter": "Act 2, Sc. 2",
+      "position": 0.2,
+      "title": "The balcony",
+      "happened": "Juliet speaks her love aloud, not knowing Romeo hears. They agree to marry.",
+      "alternatives": [
+        "Juliet calls for the guards",
+        "They decide to wait",
+        "They tell their parents"
+      ]
+    },
+    {
+      "id": "rj3",
+      "chapter": "Act 2, Sc. 6",
+      "position": 0.3,
+      "title": "The secret wedding",
+      "happened": "Friar Laurence marries them in secret, hoping it will end the feud.",
+      "alternatives": [
+        "The Friar refuses to marry them",
+        "They marry in public",
+        "The Nurse tells Lady Capulet"
+      ]
+    },
+    {
+      "id": "rj4",
+      "chapter": "Act 3, Sc. 1",
+      "position": 0.45,
+      "title": "The street fight",
+      "happened": "Tybalt kills Mercutio. Romeo kills Tybalt in revenge and is banished from Verona.",
+      "alternatives": [
+        "Romeo stops the fight",
+        "Romeo walks away from Tybalt",
+        "The Prince arrives in time"
+      ]
+    },
+    {
+      "id": "rj5",
+      "chapter": "Act 4, Sc. 1",
+      "position": 0.65,
+      "title": "The Friar’s potion",
+      "happened": "Facing a forced marriage to Paris, Juliet takes a potion that will make her seem dead.",
+      "alternatives": [
+        "Juliet refuses Paris openly",
+        "Juliet runs to Mantua",
+        "Juliet tells her father the truth"
+      ]
+    },
+    {
+      "id": "rj6",
+      "chapter": "Act 5, Sc. 1",
+      "position": 0.8,
+      "title": "The letter that never arrives",
+      "happened": "The Friar’s letter explaining the plan never reaches Romeo. He hears only that Juliet is dead.",
+      "alternatives": [
+        "The letter reaches Romeo",
+        "Balthasar never brings the news",
+        "Romeo waits a day before leaving"
+      ]
+    },
+    {
+      "id": "rj7",
+      "chapter": "Act 5, Sc. 3",
+      "position": 0.95,
+      "title": "The tomb",
+      "happened": "Romeo reaches the tomb believing Juliet dead, moments before she wakes.",
+      "alternatives": [
+        "Juliet wakes a minute sooner",
+        "Friar Laurence arrives first",
+        "Paris stops Romeo at the door"
+      ]
+    }
+  ]
+}

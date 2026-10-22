@@ -1,0 +1,69 @@
+{
+  "slug": "a-christmas-carol",
+  "title": "A Christmas Carol",
+  "author": "Charles Dickens",
+  "year": 1843,
+  "premise": "On Christmas Eve, the miser Ebenezer Scrooge is visited by the ghost of his old partner, Jacob Marley, who warns him that three spirits are coming.",
+  "moments": [
+    {
+      "id": "cc1",
+      "chapter": "Stave 1",
+      "position": 0.1,
+      "title": "Marley’s warning",
+      "happened": "Marley’s chained ghost warns Scrooge to change, or share his fate.",
+      "alternatives": [
+        "Scrooge laughs Marley away",
+        "No spirits follow Marley",
+        "Scrooge goes to Fred’s party that night"
+      ]
+    },
+    {
+      "id": "cc2",
+      "chapter": "Stave 2",
+      "position": 0.3,
+      "title": "Belle walks away",
+      "happened": "The first spirit shows young Scrooge losing his fiancée, Belle, to his love of money.",
+      "alternatives": [
+        "Scrooge chooses Belle over money",
+        "Belle waits for him",
+        "Fezziwig makes Scrooge his partner"
+      ]
+    },
+    {
+      "id": "cc3",
+      "chapter": "Stave 3",
+      "position": 0.5,
+      "title": "The Cratchits’ dinner",
+      "happened": "The second spirit shows the Cratchits’ small Christmas dinner, and frail Tiny Tim.",
+      "alternatives": [
+        "Scrooge visits the Cratchits in person",
+        "Bob asks for a raise",
+        "Tiny Tim is healthy"
+      ]
+    },
+    {
+      "id": "cc4",
+      "chapter": "Stave 4",
+      "position": 0.75,
+      "title": "The neglected grave",
+      "happened": "The last spirit shows Scrooge a lonely, untended grave bearing his own name.",
+      "alternatives": [
+        "Scrooge refuses to look",
+        "The grave belongs to someone else",
+        "Scrooge sees a different future"
+      ]
+    },
+    {
+      "id": "cc5",
+      "chapter": "Stave 5",
+      "position": 0.92,
+      "title": "Christmas morning",
+      "happened": "Scrooge wakes a changed man and sends a prize turkey to the Cratchits.",
+      "alternatives": [
+        "Scrooge wakes unchanged",
+        "Scrooge goes to the Cratchits himself",
+        "Scrooge decides it was all a dream"
+      ]
+    }
+  ]
+}

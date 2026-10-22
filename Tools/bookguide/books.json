@@ -1,0 +1,14 @@
+[
+  { "slug": "pride-and-prejudice", "gutenberg": 1342, "title": "Pride and Prejudice", "author": "Jane Austen", "year": 1813 },
+  { "slug": "the-great-gatsby", "gutenberg": 64317, "title": "The Great Gatsby", "author": "F. Scott Fitzgerald", "year": 1925 },
+  { "slug": "frankenstein", "gutenberg": 84, "title": "Frankenstein", "author": "Mary Shelley", "year": 1818 },
+  { "slug": "jane-eyre", "gutenberg": 1260, "title": "Jane Eyre", "author": "Charlotte Brontë", "year": 1847 },
+  { "slug": "romeo-and-juliet", "gutenberg": 1513, "title": "Romeo and Juliet", "author": "William Shakespeare", "year": 1597 },
+  { "slug": "dracula", "gutenberg": 345, "title": "Dracula", "author": "Bram Stoker", "year": 1897 },
+  { "slug": "the-picture-of-dorian-gray", "gutenberg": 174, "title": "The Picture of Dorian Gray", "author": "Oscar Wilde", "year": 1890 },
+  { "slug": "little-women", "gutenberg": 514, "title": "Little Women", "author": "Louisa May Alcott", "year": 1868 },
+  { "slug": "a-christmas-carol", "gutenberg": 46, "title": "A Christmas Carol", "author": "Charles Dickens", "year": 1843 },
+  { "slug": "alices-adventures-in-wonderland", "gutenberg": 11, "title": "Alice’s Adventures in Wonderland", "author": "Lewis Carroll", "year": 1865 },
+  { "slug": "the-count-of-monte-cristo", "gutenberg": 1184, "title": "The Count of Monte Cristo", "author": "Alexandre Dumas", "year": 1844 },
+  { "slug": "wuthering-heights", "gutenberg": 768, "title": "Wuthering Heights", "author": "Emily Brontë", "year": 1847 }
+]

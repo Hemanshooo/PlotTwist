@@ -44,4 +44,7 @@ struct StoryRequest: Identifiable, Hashable {
     /// The premise and the moments leading up to the change, used to ground the model.
     let premise: String
     let earlierMoments: [Moment]
+    /// From the book's guide, when it has one: the original scene, the people
+    /// in it and what followed, so the twist is true to the text.
+    var grounding: Grounding? = nil
 }

@@ -1,0 +1,93 @@
+{
+  "slug": "dracula",
+  "title": "Dracula",
+  "author": "Bram Stoker",
+  "year": 1897,
+  "premise": "Young solicitor Jonathan Harker travels to Transylvania to help a reclusive count buy a house in England, and slowly realises he is a prisoner in the castle.",
+  "moments": [
+    {
+      "id": "dr1",
+      "chapter": "Ch. 3",
+      "position": 0.08,
+      "title": "A prisoner in the castle",
+      "happened": "Harker finds every door locked, then sees the Count crawl head-first down the castle wall.",
+      "alternatives": [
+        "Jonathan escapes in the first week",
+        "Jonathan refuses the journey",
+        "Mina travels with him"
+      ]
+    },
+    {
+      "id": "dr2",
+      "chapter": "Ch. 7",
+      "position": 0.2,
+      "title": "The ship at Whitby",
+      "happened": "A ship drifts into Whitby harbour with its crew gone, and a great dog leaps ashore.",
+      "alternatives": [
+        "The ship sinks at sea",
+        "The captain stops the stowaway",
+        "The dog is caught on the beach"
+      ]
+    },
+    {
+      "id": "dr3",
+      "chapter": "Ch. 12",
+      "position": 0.35,
+      "title": "Lucy’s decline",
+      "happened": "Despite blood transfusions from four men, Lucy grows weaker night after night.",
+      "alternatives": [
+        "Van Helsing arrives a week sooner",
+        "Lucy’s mother leaves the garlic",
+        "Lucy marries Arthur and leaves Whitby"
+      ]
+    },
+    {
+      "id": "dr4",
+      "chapter": "Ch. 16",
+      "position": 0.45,
+      "title": "The tomb in Hampstead",
+      "happened": "Van Helsing leads the men to Lucy’s tomb to set her soul free.",
+      "alternatives": [
+        "Arthur refuses to go",
+        "Lucy is cured instead",
+        "Lucy escapes the tomb"
+      ]
+    },
+    {
+      "id": "dr5",
+      "chapter": "Ch. 21",
+      "position": 0.6,
+      "title": "Mina is bitten",
+      "happened": "The Count visits Mina and binds her to him, linking her mind with his.",
+      "alternatives": [
+        "The men keep Mina with them",
+        "Mina fights the Count off",
+        "Jonathan wakes in time"
+      ]
+    },
+    {
+      "id": "dr6",
+      "chapter": "Ch. 23",
+      "position": 0.75,
+      "title": "The boxes of earth",
+      "happened": "The hunters destroy the Count’s boxes of earth across London, leaving him one refuge.",
+      "alternatives": [
+        "They miss the boxes in Piccadilly",
+        "The Count stays in London",
+        "Renfield warns the Count"
+      ]
+    },
+    {
+      "id": "dr7",
+      "chapter": "Ch. 27",
+      "position": 0.95,
+      "title": "The race to the castle",
+      "happened": "The hunters chase the Count’s cart back to Transylvania, racing the setting sun.",
+      "alternatives": [
+        "The sun sets before they reach him",
+        "Mina goes on alone",
+        "The Count offers a bargain"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "slug": "pride-and-prejudice",
+  "title": "Pride and Prejudice",
+  "author": "Jane Austen",
+  "year": 1813,
+  "premise": "In Regency England the five Bennet sisters need to marry well. Elizabeth, the sharp-witted second daughter, takes an instant dislike to the proud and wealthy Mr. Darcy.",
+  "moments": [
+    {
+      "id": "pp1",
+      "chapter": "Ch. 3",
+      "position": 0.05,
+      "title": "Darcy’s snub at the Meryton ball",
+      "happened": "Within Elizabeth’s hearing, Darcy calls her “tolerable, but not handsome enough to tempt me.”",
+      "alternatives": [
+        "Darcy asks Elizabeth to dance",
+        "Elizabeth never overhears him",
+        "Bingley never comes to Netherfield"
+      ]
+    },
+    {
+      "id": "pp2",
+      "chapter": "Ch. 16",
+      "position": 0.15,
+      "title": "Wickham tells his story",
+      "happened": "The charming officer Wickham tells Elizabeth that Darcy cheated him of his inheritance, and she believes every word.",
+      "alternatives": [
+        "Elizabeth doubts Wickham from the start",
+        "Wickham never joins the regiment",
+        "Darcy confronts Wickham in public"
+      ]
+    },
+    {
+      "id": "pp3",
+      "chapter": "Ch. 19",
+      "position": 0.25,
+      "title": "Mr. Collins proposes",
+      "happened": "Her pompous cousin proposes. Elizabeth refuses him, and he marries her friend Charlotte instead.",
+      "alternatives": [
+        "Elizabeth accepts Mr. Collins",
+        "Mrs. Bennet forces the marriage",
+        "Charlotte refuses him too"
+      ]
+    },
+    {
+      "id": "pp4",
+      "chapter": "Ch. 34",
+      "position": 0.45,
+      "title": "Darcy’s first proposal",
+      "happened": "At Hunsford, Darcy proposes while insulting her family. Elizabeth refuses and accuses him of ruining Jane’s happiness.",
+      "alternatives": [
+        "Elizabeth says yes",
+        "Darcy proposes humbly",
+        "Darcy never proposes"
+      ]
+    },
+    {
+      "id": "pp5",
+      "chapter": "Ch. 35",
+      "position": 0.5,
+      "title": "Darcy’s letter",
+      "happened": "Darcy hands Elizabeth a letter revealing Wickham’s true character and explaining his part in separating Jane and Bingley.",
+      "alternatives": [
+        "Elizabeth burns the letter unread",
+        "Darcy never writes it",
+        "Jane reads the letter instead"
+      ]
+    },
+    {
+      "id": "pp6",
+      "chapter": "Ch. 46",
+      "position": 0.7,
+      "title": "Lydia elopes",
+      "happened": "Lydia runs off with Wickham, threatening the whole family’s reputation.",
+      "alternatives": [
+        "Lydia stays home at Longbourn",
+        "Elizabeth stops the elopement",
+        "Wickham abandons Lydia in London"
+      ]
+    },
+    {
+      "id": "pp7",
+      "chapter": "Ch. 52",
+      "position": 0.8,
+      "title": "Darcy’s secret rescue",
+      "happened": "Darcy tracks the couple down and pays Wickham to marry Lydia, asking that no one ever know.",
+      "alternatives": [
+        "Darcy refuses to get involved",
+        "Darcy’s part is made public",
+        "Mr. Bennet finds them first"
+      ]
+    },
+    {
+      "id": "pp8",
+      "chapter": "Ch. 56",
+      "position": 0.9,
+      "title": "Lady Catherine’s visit",
+      "happened": "Lady Catherine demands Elizabeth promise never to marry Darcy. Elizabeth refuses.",
+      "alternatives": [
+        "Elizabeth gives her promise",
+        "Lady Catherine never hears the rumour",
+        "Darcy arrives during the visit"
+      ]
+    }
+  ]
+}
