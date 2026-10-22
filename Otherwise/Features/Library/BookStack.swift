@@ -32,6 +32,8 @@ struct BookStack: View {
     var onNearEnd: (() -> Void)? = nil
     var isLoadingMore = false
     var loadFailed = false
+    /// A line of introduction above the first book: what to do here.
+    var intro: (title: LocalizedStringKey, detail: LocalizedStringKey)? = nil
 
     @State private var viewport: CGRect = .zero
     /// The books' response to scrolling: +1 while moving on through the stack
@@ -55,6 +57,15 @@ struct BookStack: View {
             ScrollView {
                 // Lazy, so an endless stack only builds the books near the screen.
                 LazyVStack(spacing: 0) {
+                    if let intro {
+                        StackIntro(title: intro.title, detail: intro.detail)
+                            .padding(.horizontal, DS.Size.slabInset)
+                            .padding(.top, DS.Space.s)
+                            // The first book's row starts with empty room for its cover
+                            // to lie back into; let it tuck up under the introduction.
+                            .padding(.bottom, Self.hiddenTop + DS.Space.s)
+                            .zIndex(1)
+                    }
                     ForEach(items) { item in
                         StackRow(
                             item: item,
@@ -86,9 +97,9 @@ struct BookStack: View {
                     }
                 }
                 .frame(maxWidth: .infinity)
-                // The first spine sits just under the guidance line, with room for
-                // the sliver of cover that lies back above it.
-                .padding(.top, DS.Size.slabSpine + DS.Space.xl - DS.Size.slabStride)
+                // The first spine sits just under the top bar (or the introduction),
+                // with room for the sliver of cover that lies back above it.
+                .padding(.top, intro == nil ? Self.hiddenTop : 0)
                 // Room below, so the last books can come up the screen.
                 .padding(.bottom, height * 0.45)
             }
@@ -109,6 +120,35 @@ struct BookStack: View {
             }
             .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { viewport = $0 }
         }
+    }
+
+    /// How much of the first row's empty top is tucked out of sight (negative).
+    private static var hiddenTop: CGFloat { DS.Size.slabSpine + DS.Space.xl - DS.Size.slabStride }
+}
+
+// MARK: - The introduction
+
+/// Above the first book: what this place is for, in a serif line and an italic one.
+private struct StackIntro: View {
+    let title: LocalizedStringKey
+    let detail: LocalizedStringKey
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: DS.Space.xxs) {
+            Text(title)
+                .dsDisplay(DS.Typography.title)
+                .accessibilityAddTraits(.isHeader)
+            Text(detail)
+                .font(DS.Typography.quoteSmall)
+                .foregroundStyle(DS.Colors.inkSecondary)
+                .lineSpacing(2)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .fixedSize(horizontal: false, vertical: true)
+        // The first book reaches up behind this; a tap here shouldn't open it.
+        .contentShape(Rectangle())
+        .onTapGesture {}
+        .accessibilityElement(children: .combine)
     }
 }
 

@@ -183,6 +183,12 @@ struct LibraryView: View {
         .task { if feed.books.isEmpty { await feed.loadMore() } }
     }
 
+    /// Above the first book in the library: what to do here.
+    private static let libraryIntro: (title: LocalizedStringKey, detail: LocalizedStringKey) = (
+        title: "Pick a book to twist",
+        detail: "Open any book, choose a moment, and change what happens next."
+    )
+
     private func stack(_ items: [StackItem], endless: Bool = false) -> some View {
         let loadMore: (() -> Void)? = endless ? { Task { await feed.loadMore() } } : nil
         return BookStack(
@@ -196,7 +202,8 @@ struct LibraryView: View {
             onHold: { item in managing = item },
             onNearEnd: loadMore,
             isLoadingMore: feed.isLoading,
-            loadFailed: feed.failed
+            loadFailed: feed.failed,
+            intro: endless ? Self.libraryIntro : nil
         )
         .id(collection)
         .transition(.opacity.combined(with: .offset(y: DS.Space.l)))
