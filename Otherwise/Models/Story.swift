@@ -29,7 +29,7 @@ struct Story: Hashable, Codable {
             lines.append(ending)
             lines.append("")
         }
-        lines.append("Written with Plot Twist")
+        lines.append("Written with Endpaper")
         return lines.joined(separator: "\n")
     }
 }

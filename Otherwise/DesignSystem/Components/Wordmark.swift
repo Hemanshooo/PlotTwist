@@ -1,10 +1,11 @@
 import SwiftUI
 
-/// The Plot Twist wordmark: the name set plainly in Instrument Serif, with a
+/// The Endpaper wordmark: the name set plainly in Instrument Serif, with a
 /// garland grown around it, after Type Garden. Two vines wind through the
-/// words, passing in front of some letters and behind others, curling at
-/// their ends; leaves along them; and roses before Plot, over the T, in a
-/// pair after Twist and one below.
+/// word, passing in front of some letters and behind others (the lower one
+/// threads the tails of both p's), curling at their ends; leaves along them;
+/// and roses before the E, over the first p, in a pair after the r and one
+/// below.
 ///
 /// When it first appears the garland grows: the vines draw themselves, the
 /// leaves unfurl as they pass, and the roses open last. Tapping it grows it again.
@@ -20,7 +21,7 @@ struct Wordmark: View {
             .onTapGesture(perform: replay)
             .sensoryFeedback(.impact(weight: .light), trigger: plays)
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel("Plot Twist")
+            .accessibilityLabel("Endpaper")
             .accessibilityAddTraits(.isHeader)
             .onAppear {
                 guard growth == 0 else { return }
@@ -45,7 +46,8 @@ struct Wordmark: View {
 /// The words and their garland, drawn from `progress` (0…1).
 ///
 /// Everything is laid out in ems of the type size, from where the words start
-/// (x) and their baseline (y, negative is up): "Plot Twist" runs 0 → 3.35 em.
+/// (x) and their baseline (y, negative is up): "Endpaper" runs 0 → 3.34 em,
+/// its capital and the d's ascender rise to −0.74, the p's tails fall to +0.21.
 struct WordmarkGarland: View, Animatable {
     var progress: Double
     var em: CGFloat = DS.Size.wordmark
@@ -68,13 +70,13 @@ struct WordmarkGarland: View, Animatable {
         )
     }
 
-    /// The upper vine: from a curl before Plot, through the P, over the T,
-    /// dipping through the w and rising over the end of Twist.
+    /// The upper vine: from a curl before the E, through it, over the top
+    /// of the d, dipping through the second p's bowl and rising over the r.
     private static let upper = points([
         (-0.46, -0.02), (-0.18, 0.12), (0.1, -0.12), (0.42, -0.58), (0.8, -0.9), (1.18, -0.72), (1.5, -0.98),
         (1.9, -0.9), (2.2, -0.5), (2.56, -0.2), (2.92, -0.46), (3.26, -0.82), (3.6, -0.7), (3.82, -0.4),
     ])
-    /// The lower vine, wandering along under the words.
+    /// The lower vine, wandering along under the word through the p's tails.
     private static let lower = points([
         (0.0, 0.32), (0.4, 0.1), (0.8, 0.24), (1.2, -0.12), (1.6, 0.18), (2.0, 0.24), (2.4, -0.04), (2.8, 0.26), (3.2, 0.18), (3.56, 0.34),
     ])
@@ -84,12 +86,12 @@ struct WordmarkGarland: View, Animatable {
     /// Roses: where (ems), how wide (ems), seed, and when each opens.
     private static let roses: [(x: CGFloat, y: CGFloat, width: CGFloat, seed: Int, opens: Double)] = [
         (-0.4, -0.42, 0.64, 1, 0.42), (1.6, -0.96, 0.56, 3, 0.56),
-        (3.62, -0.8, 0.54, 5, 0.66), (3.66, -0.22, 0.44, 6, 0.72), (2.62, 0.32, 0.34, 4, 0.62),
+        (3.62, -0.8, 0.54, 5, 0.66), (3.66, -0.22, 0.44, 6, 0.72), (2.92, 0.34, 0.34, 4, 0.62),
     ]
 
     var body: some View {
         let ink = GardenInk.current
-        let words = Text(verbatim: "Plot Twist")
+        let words = Text(verbatim: "Endpaper")
             .font(DS.Typography.wordmark(em))
             .foregroundStyle(DS.Colors.ink)
         Canvas { context, _ in

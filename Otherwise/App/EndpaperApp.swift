@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 
 @main
-struct PlotTwistApp: App {
+struct EndpaperApp: App {
     init() {
         DS.registerFonts()
         DS.configureSystemAppearance()
@@ -10,8 +10,8 @@ struct PlotTwistApp: App {
 
     var body: some Scene {
         WindowGroup {
-            LibraryView()
+            RootView()
         }
-        .modelContainer(for: [Version.self, ShelfEntry.self])
+        .modelContainer(Store.container)
     }
 }

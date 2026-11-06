@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The book's plot as a vine: it springs from where the story begins, opens
+/// "What if": the book's plot as a vine: it springs from where the story begins, opens
 /// a rose at every turning point you've reached, carries closed buds for the
 /// ones still ahead, and curls away at the end, by changes that aren't on the map.
 /// Moments beyond the reader's progress are sealed until they choose to reveal them.
@@ -14,16 +14,10 @@ struct StoryMapView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .firstTextBaseline) {
-                Eyebrow("Story map")
-                Spacer()
-                if !map.isCurated {
-                    Hint("drawn by apple intelligence")
-                }
+            SectionHeader(title: "What if") {
+                Hint(map.isCurated ? "pick a moment to change" : "drawn by apple intelligence")
             }
-            .padding(.bottom, DS.Space.xs)
-            Hairline()
-                .padding(.bottom, DS.Space.m)
+            .padding(.bottom, DS.Space.m)
 
             TimelineRow(node: .start, index: 0, isFirst: true, isLast: false) {
                 Hint("where it begins")

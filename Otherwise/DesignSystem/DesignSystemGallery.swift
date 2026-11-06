@@ -7,7 +7,9 @@ struct DesignSystemGallery: View {
     @State private var choice = 0
     @State private var ribbon = true
     @State private var collection = 0
-    @State private var progress: ReadingProgress? = .partway(0.4)
+    @State private var rating = 3.5
+    @State private var liked = true
+    @State private var check = true
     @FocusState private var focused: Bool
 
     private var colors: [(String, Color)] {
@@ -97,7 +99,7 @@ struct DesignSystemGallery: View {
 
                 section("Top bar") {
                     TabSwitcher(
-                        items: [.init(id: 0, title: "Library"), .init(id: 1, title: "Read"), .init(id: 2, title: "Twisted")],
+                        items: [.init(id: 0, title: "Reading"), .init(id: 1, title: "To read"), .init(id: 2, title: "Read")],
                         selection: $collection
                     )
                     PaletteButton {}
@@ -125,7 +127,17 @@ struct DesignSystemGallery: View {
                 }
 
                 section("Reading") {
-                    ReadingGauge(progress: progress) { progress = $0 }
+                    VineGauge(value: 0.42, isFinished: false)
+                    HStack {
+                        RoseRating(value: rating, size: DS.Size.roseRatingLarge) { rating = $0 }
+                        Spacer()
+                        HeartToggle(isOn: liked) { liked.toggle() }
+                    }
+                    RoseRating(value: rating)
+                    RatingGarden(ratings: [5, 4.5, 4, 4, 4, 3.5, 3, 5, 2, 4.5])
+                    CheckRow(title: "Contains spoilers", detail: "Your review stays hidden until it’s tapped.", isOn: $check)
+                    SectionHeader("Section header", hint: "a hint")
+                    DashedButton("Keep a line from this book") {}
                 }
 
                 section("Components") {
@@ -138,12 +150,12 @@ struct DesignSystemGallery: View {
                         }
                     }
                     ComposerField(placeholder: "Describe what happens instead.", text: $text, focus: $focused)
-                    InlineNotice(symbol: "apple.intelligence", title: "Turn on Apple Intelligence", message: "Plot Twist writes every story on your iPhone.")
+                    InlineNotice(symbol: "apple.intelligence", title: "Turn on Apple Intelligence", message: "Endpaper writes every “What if” on your iPhone.")
                     WritingIndicator()
                     PrimaryButton("Rewrite from here", systemImage: "arrow.right") {}
                     SecondaryButton("Try again", systemImage: "arrow.clockwise") {}
                     CircleButton(systemImage: "xmark", label: "Close") {}
-                    ActionRow(Text("Remove from Read"), systemImage: "bookmark.slash", detail: Text("Later moments seal again.")) {}
+                    ActionRow(Text("Remove from shelves"), systemImage: "bookmark.slash", detail: Text("Your diary entries and quotes stay.")) {}
                 }
             }
             .padding(DS.Space.screen)

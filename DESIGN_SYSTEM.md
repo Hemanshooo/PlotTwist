@@ -1,9 +1,11 @@
-# Plot Twist — Design System
+# Endpaper — Design System
 
-Plot Twist lets you change one moment in any book and read how the story would have gone.
+Endpaper is a reading diary: keep track of what you read, rate it in roses, keep the lines that
+stopped you, and show your favourite four. Each book also has a "What if" map, where you can change
+one moment and read how the story would have gone.
 
-**A garden of forking paths, set like a type specimen.** Every story in the app is a fork in a
-path, so a garden grows through it: stems, leaves and roses in two flat colours, after Type Garden.
+**A garden kept between the pages, set like a type specimen.** Every book you read leaves something
+behind, so a garden grows through the app: stems, leaves and roses in two flat colours, after Type Garden.
 Around the garden everything is quiet: a flat ground, a crisp display serif, small mono labels,
 outlined pills and hairlines. There are no gradients, glows or glass, and no drop shadows except
 under the books themselves, which are objects.
@@ -16,7 +18,7 @@ Xcode canvas to see every token and component, and switch palettes from its top.
 
 1. **The story is the interface.** Prose gets the best type, the most space, and nothing competing with it.
 2. **Books are objects.** Covers, spines, ribbons, endpapers and page curls behave like the real thing. A book is drawn as one connected 3D object; it never comes apart mid-motion.
-3. **The garden means something.** A rose is a moment you've reached, a finished book, the choice you've made. A bud is a moment still ahead. A stem is the path a story takes. Nothing grows for decoration alone.
+3. **The garden means something.** A rose is a whole in a rating, a finished book, a moment you've reached, the choice you've made. A bud is a half, or a moment still ahead. A stem is the path a story takes, or how far you've read. Nothing grows for decoration alone.
 4. **Two colours, used flat.** Stems and blooms. Everything else is ground and ink.
 5. **Type does the work.** Instrument Serif for display, Newsreader for reading, DM Mono for the interface. Sections are separated by an eyebrow and a hairline, not by boxes.
 6. **No waiting.** Motion starts the frame you lift your finger, and is driven by one value, so it can't stall between steps.
@@ -25,8 +27,8 @@ Xcode canvas to see every token and component, and switch palettes from its top.
 
 ## Palettes
 
-Plot Twist can be read in four rooms. **Rose noir** is the default. The reader picks another from
-the palette sheet (the two-dot swatch in the top bar), and the whole app recolours at once.
+Endpaper can be read in four rooms. **Rose noir** is the default. The reader picks another from
+the palette sheet (the two-dot swatch at the top of You), and the whole app recolours at once.
 
 | Palette | Ground | Ink | Stem | Bloom | Petal | System chrome |
 |---|---|---|---|---|---|---|
@@ -117,7 +119,7 @@ are alike but each one is always the same.
 
 | Drawing | Where |
 |---|---|
-| `Wordmark` | "Plot Twist" set plainly in Instrument Serif, with a garland grown around it: two vines winding through the words (in front of some letters, behind others) and curling at their ends, leaves along them, and roses before Plot, over the T, in a pair after Twist and one below. `WordmarkGarland` draws it from ems of the type size, so it scales. It grows when the library opens (vines, then leaves, then roses); tapping it grows it again. |
+| `Wordmark` | "Endpaper" set plainly in Instrument Serif, with a garland grown around it: two vines winding through the word (in front of some letters, behind others; the lower one through the tails of both p's) and curling at their ends, leaves along them, and roses before the E, over the first p, in a pair after the r and one below. `WordmarkGarland` draws it from ems of the type size, so it scales. It grows when a main screen first opens (vines, then leaves, then roses); tapping it grows it again. |
 | `Flourish` | A printer's flourish: a rose at the heart of a short stem, leaves either side, tendrils at both ends. Under titles and in the reader. |
 | `VineGauge` | How far you've read: a dotted path for the whole book, the stem grown along it, leaves as it passes, a bud at the tip while you're partway, and a rose when you've finished. |
 | Story map vine | One stem winding down the map; each row's stretch bows once, alternately left and right. A curl and a seed where the story begins, a rose at every moment you've reached, a muted bud at each moment still sealed, and a curl at the end. |
@@ -164,51 +166,89 @@ are alike but each one is always the same.
 
 Page turns use the system page curl. Under Reduce Motion, every custom motion falls back to a fade, or to the finished drawing.
 
-## Home
+## Navigation
 
 | Element | Behaviour |
 |---|---|
-| Top bar | The `Wordmark` sits on the left. On the right are the palette swatch (`PaletteButton`: the current bloom and stem as two overlapping dots) and the `TabSwitcher`: **Library · Read · Twisted** in mono, in an outlined capsule, the chosen one in a solid ink pill that slides between them, like Type Garden's Type / Poster toggle. The tabs are hidden while searching. |
-| Introduction | Above the first book in **Library**: "Pick a book to twist" in the `title` serif, and "Open any book, choose a moment, and change what happens next." in italics. It scrolls away with the books, and the first book's cover tucks up under it. |
-| `BookStack` | Full-width slabs, after the Dumbling.FM stack. Each book lies flat with its spine toward you and its cover tipping into view behind. The spine is panelled like a real one: the pattern on two end panels, foil bands, and a plain centre panel where the title and author are stamped in `Edition.lettering`. A ribbon lies across the spine if you're partway, and a rose is stamped in foil if you've finished. Books near the top lie flat (spine only), lower books show more cover, and distant books recede by the palette's `fog`. **Library** is endless (classics, your books, then Open Library); **Read** is your books. |
-| Scrolling | The books answer the scroll. As the stack starts to move on, their covers lift open a few degrees (as if riffled); moving back, they lie flatter; when it comes to rest they settle with a soft wobble. Each book moves on its own beat, top to bottom, so the lift and the settle ripple down the stack. Off under Reduce Motion. |
-| Press / hold | A finger down brightens the book and deepens its shadow, with a light haptic. A tap opens it; holding for 0.45s (firmer haptic) opens its manage sheet. |
-| **Opening a book** | `BookOpening`, one motion driven by one value. The slab rises toward you, stands up and turns upright in your hands (its spine swinging out of sight) while the rest of the library falls away. The cover swings open onto its endpaper. The first page comes up to fill the screen and becomes the book's screen, whose content arrives beneath it. The lying and upright drawings of the book are identical at the hand-off, so nothing jumps. |
-| Twisted | Your stories as index entries between hairlines: the book's cover, its title in mono capitals, the story's title in the display serif, your change in italics, and the `TwistMark`. Tap to read; hold to read or remove. "Clear all" sits at the end and asks once. |
-| Palette sheet | "Pick a room to read in": four swatches, each drawn in its own palette (its ground, a rose and a leaf, and "Aa" in its ink). Tapping one recolours the app behind the sheet at once. |
-| Manage sheets | The book's cover, title and detail, an outlined close button, then `ActionRow`s. Removing a story asks once; removing a read tag doesn't. |
+| Tab bar (`AppTabBar`) | Floats at the foot of the main screens: **Shelf · Diary · Quotes · You** in mono, in an outlined capsule, the current place in a solid ink pill that slides between them (the same `TabSwitcher` as the shelf's), and a round search button beside it for **Discover**. Flat on the ground with one soft shadow (`dsFloating`), so covers scroll cleanly beneath. It steps away once you open anything (a book, an entry, a quote), while a book is being taken from a stack, and while you type. Each place keeps its own navigation, and stays where you left it. |
+| Top bar | Every main screen has the `Wordmark` at the left (`RootToolbar`), with one thing at the right: the shelf's toggle, a "+" (`AddButton`), or the palette swatch. Screen titles sit in the content, in the `title` serif with an italic line beneath (`ScreenTitle`). |
+| Sections | Mono capitals at the left, a hint or a count at the right, a hairline beneath (`SectionHeader`). |
+
+## Shelf and Discover
+
+| Element | Behaviour |
+|---|---|
+| Shelf | Your books in the stack, switched at the top right between **Reading · To read · Read**. An introduction above the first book counts them ("Reading now · 3 books on the go"). An empty shelf grows a sprig and offers "Find a book". |
+| Discover | A search field (`SearchField`: an outlined capsule, mono prompt, ink outline while you type) over a stack: "Begin with a classic", the twelve mapped classics, then Open Library's endless run. Typing replaces the stack with `BookRow`s, which note the shelf a book is on (in the bloom colour) and "story map" (in the stem colour). |
+| `BookStack` | Full-width slabs, after the Dumbling.FM stack. Each book lies flat with its spine toward you and its cover tipping into view behind. The spine is panelled like a real one: the pattern on two end panels, foil bands, and a plain centre panel where the title and author are stamped in `Edition.lettering`. A ribbon lies across the spine while you're reading it, and a rose is stamped in foil once you've read it. Distant books recede by the palette's `fog`. |
+| Scrolling | The books answer the scroll. Moving on, their covers lift open a few degrees (as if riffled); moving back, they lie flatter; at rest they settle with a soft wobble, rippling down the stack. Off under Reduce Motion. |
+| Press / hold | A finger down brightens the book, with a light haptic. A tap opens it; holding for 0.45s opens its manage sheet. |
+| **Opening a book** | `BookOpening`, one motion driven by one value, drawn over everything (the tab bar too). The slab rises toward you, stands up and turns upright in your hands while the rest falls away. The cover swings open onto its endpaper. The first page comes up to fill the screen and becomes the book's page. |
+| Palette sheet | "Pick a room to read in": four swatches, each drawn in its own palette. Tapping one recolours the app behind the sheet at once. |
 
 ## A book
 
 | Element | Behaviour |
 |---|---|
 | Title page | The byline in mono, the title in `display`, a `Flourish` that grows, and the premise in italics. |
-| `ReadingGauge` | "Your reading" over a hairline, then the numeral (or "How far have you read?" before you've said), the `VineGauge`, and `ChoicePills` (**Finished · Partway · Not yet**), with the chosen one a solid ink pill. Choosing saves straight away; Partway adds a slider in an outline. |
-| Story map | The vine, with outlined cards for turning points (mono chapter, serif title, a two-line summary). Moments beyond your progress are still in bud, with dashed outlines, and ask before revealing spoilers. A dashed card at the end is for a change that isn't on the map. |
-| Moment sheet | The chapter and title, then what happened on a dog-eared page, then the alternatives branching off one stem (`BranchRow` + `ChoiceRow`); the chosen branch opens a rose. Your change is said back in one line above **Rewrite from here**. |
-| Reader | Pages in the palette's `page` and `pageInk`, with mono running heads and folios, chapter labels in `bloom`, serif chapter headings, flourishes, and raised capitals in `bloom`. Pages turn with the page curl, a ribbon drops when the story is saved, and a bookplate closes the book. |
+| Your copy (`ShelfCard`) | `ChoicePills` for **To read · Reading · Read**, and "⋯" for Didn't finish or Remove. While **Reading**: the numeral, the `VineGauge` grown as far as you've read (a bud at its tip) and a slider, with "page 140 of 432" when the pages are known. Once **Read**: your `RoseRating` (drag or tap along it; tap the same rating to clear) and the `HeartToggle`. Then the one primary action: **Log a read**. |
+| Your diary | Each reading of this book: the date, a reread mark, its roses and heart, two lines of the review (or "review hidden" if it has spoilers). |
+| Quotes | Lines you kept from it, each with a bloom rule (`QuoteSnippet`), and a dashed invitation to keep another (`DashedButton`). |
+| What if | The story map: a vine with outlined cards for turning points. Moments beyond how far you've read are still in bud, with dashed outlines, and ask before revealing spoilers. Reading a book opens the whole map. A dashed card at the end is for a change that isn't on the map. |
+| About the book | Open Library's description and a few subjects, in small print. |
+| Log sheet | The cover and title, then **Finished on** (the date in the heading serif; tap for a calendar), **Your rating** (large roses, the heart), **Review** (a `ComposerField`), and two `CheckRow`s: Contains spoilers, I've read it before (ticked already for a second reading). **Save to diary** sits at the foot. |
+| Moment sheet, reader | Unchanged from the "What if" story: what happened on a dog-eared page (with the opening lines of the original scene when the book has a guide), alternatives branching off one stem, and a page-curl reader with raised capitals and a closing bookplate. |
+
+## Diary
+
+| Element | Behaviour |
+|---|---|
+| This year | The count in `statNumeral` ("6 books in 2026"), and, with a goal, a `VineGauge` grown toward it. |
+| Months | `SectionHeader`s ("November", "December 2025"), newest first. |
+| A day (`DiaryRow`) | The day of the month in `dayNumeral`, the weekday in lowercase mono beneath; the small cover; the title in the heading serif and the author in mono; then the roses, the heart, and marks for a reread and a review. |
+| An entry | Set like a page: the cover and title, "Read" or "Reread", the day in full, large roses, and the review opening with a raised capital. A review with spoilers is blurred until tapped. **Edit** reopens the log sheet. |
+
+## Quotes
+
+| Element | Behaviour |
+|---|---|
+| Commonplace book | Every line you kept, newest first, each on a dog-eared slip (`QuoteCard`): a large opening quotation mark in the bloom colour, the line in `commonplace`, a short stem rule, the author in mono capitals and the title and page in italics. |
+| Keeping a line | `QuoteEditor`: the book (chosen from your shelves or any book, `BookPicker`), the line, the page, and a note on why it stayed with you. |
+| Sharing (`QuoteArt`) | The card as it will be shared, in **Post** (4:5, 1080 × 1350) or **Story** (9:16, 1080 × 1920), in any of the four palettes regardless of the app's: the line large in Newsreader, a quotation mark and a corner sprig of roses in the garden's colours, the author and title, and "Endpaper" small at the foot. Rendered at 3× and shared as an image. |
+
+## You
+
+| Element | Behaviour |
+|---|---|
+| Header | Your name in `display` (tap to edit, with a line about you and this year's goal), and a mono line: books read, and how long you've kept a diary. |
+| Favourite four | Four covers across the page (`FavouriteFour`); empty places are dashed outlines with a "+". Choosing them (`FavouritesEditor`) shows four numbered places; tap one to fill it, tap a cover to take it out. |
+| The year | Books, pages and your average rating as three `statNumeral`s, then the goal as a vine, or a dashed "Set a reading goal". |
+| Your roses (`RatingGarden`) | How your ratings fall, drawn as a bed of stems, one for each half-rose from ½ to 5, as tall as the books you gave it, topped with a bud (a half) or a rose (a whole). |
+| Shelves, also yours | Index rows (`IndexRow`): a title in the display serif, a count in mono, an arrow. Each shelf opens as a list; **What if stories** opens your alternate versions. |
 
 ## Components
 
-- **Buttons:** `PrimaryButton` (solid ink capsule, mono label), `SecondaryButton` (outlined capsule), `CircleButton`, `PressableButtonStyle`.
-- **Navigation and choice:** `TabSwitcher`, `PaletteButton`, `ChoicePills`, `VineGauge`, `BranchRow`.
-- **Rows and fields:** `ActionRow`, `ChoiceRow`, `ComposerField`, `InlineNotice`, `MessageView`, `WritingIndicator`.
-- **Text:** `Eyebrow`, `Hint`, `QuoteBlock`, `Hairline`.
-- **Lists:** `BookRow`, `VersionCard`, `TwistMark`.
+- **Buttons:** `PrimaryButton` (solid ink capsule, mono label), `SecondaryButton` (outlined capsule), `CircleButton`, `AddButton`, `DashedButton`, `PressableButtonStyle`.
+- **Navigation and choice:** `AppTabBar`, `TabSwitcher`, `RootToolbar`, `SearchField`, `PaletteButton`, `ChoicePills`, `CheckRow`, `VineGauge`, `BranchRow`.
+- **Rating:** `RoseRating` (rose = whole, bud = half, seed = empty; interactive with `onChange`), `HeartToggle`, `HeartMark`, `RatingGarden`.
+- **Rows and fields:** `ActionRow`, `ChoiceRow`, `ComposerField`, `InlineNotice`, `MessageView`, `WritingIndicator`, `IndexRow`.
+- **Text:** `ScreenTitle`, `SectionHeader`, `Eyebrow`, `Hint`, `QuoteBlock`, `Hairline`.
+- **Lists:** `BookRow`, `DiaryRow`, `QuoteCard`, `QuoteSnippet`, `VersionCard`, `TwistMark`.
+- **Sharing:** `QuoteArt` in `QuoteFormat.post` or `.story`.
 - **Garden:** `Rose`, `Bud`, `Flourish`, `Sprig`, `Growing`, `Wordmark` / `WordmarkGarland`.
-- **Book objects:** `BookCover`, `FlippableCover`, `Endpaper`, `SlabBook` (`SlabCoverFace` + `SlabSpineFace`), `BookmarkRibbon`, `PageCard`, `Ornament` (on covers), `RaisedCapText`.
+- **Book objects:** `BookCover`, `ScaledBookCover`, `FavouriteFour`, `FlippableCover`, `Endpaper`, `SlabBook` (`SlabCoverFace` + `SlabSpineFace`), `BookmarkRibbon`, `PageCard`, `Ornament` (on covers), `RaisedCapText`.
 
 ## App icon
 
-The wordmark with its garland: "Plot Twist" in Instrument Serif on one line, two vines winding through it, roses at both ends and over the T.
+The wordmark with its garland: "Endpaper" in Instrument Serif, two vines winding through it (the lower one threading the tails of both p's), a rose before the E, one over the first p, a pair after the r and one below.
 
 - **Light** home screens get **Paper**: cream ground, black type, navy vines, vermilion roses.
 - **Dark** home screens get **Rose noir**: black ground, white type, cobalt vines, vermilion roses.
 
 ## Voice
 
-- Sentence case for titles and buttons; lowercase for hints ("tap to read · hold to manage").
+- Sentence case for titles and buttons; lowercase for hints ("tap or drag along the roses to rate").
 - Short, plain, second person.
-- Buttons are verbs: "Rewrite from here", "Change another moment".
+- Buttons are verbs: "Log a read", "Keep this line", "Rewrite from here".
 - Errors say what happened and what to do, in two sentences at most.
 - Generated text is always labelled as imagined, never presented as the original book.

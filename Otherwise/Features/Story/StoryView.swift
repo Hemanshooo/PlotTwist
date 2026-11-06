@@ -169,16 +169,16 @@ struct StoryView: View {
                 if model.story.title.isEmpty {
                     // The model sometimes skips the title line; borrow the first chapter's heading.
                     let heading = model.story.chapters.first?.heading ?? ""
-                    model.story.title = heading.isEmpty ? String(localized: "A Plot Twist Edition") : heading
+                    model.story.title = heading.isEmpty ? String(localized: "What If") : heading
                 }
                 withAnimation(DS.Motion.standard) { model.phase = .finished }
                 save(request)
             } catch {
                 guard !Task.isCancelled else { return }
-                print("[PlotTwist] Story failed: \(String(reflecting: error))")
+                print("[Endpaper] Story failed: \(String(reflecting: error))")
                 // If the model ran out of room near the end, keep what it wrote.
                 if model.story.chapters.count >= 3 {
-                    if model.story.title.isEmpty { model.story.title = String(localized: "A Plot Twist Edition") }
+                    if model.story.title.isEmpty { model.story.title = String(localized: "What If") }
                     withAnimation(DS.Motion.standard) { model.phase = .finished }
                     save(request)
                     return

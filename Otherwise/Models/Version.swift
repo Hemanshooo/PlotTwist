@@ -45,33 +45,3 @@ final class Version {
         return Story(title: title, chapters: chapters, ending: ending)
     }
 }
-
-/// A book on the reader's shelf, and how far they've read it.
-/// Only books the reader has started or finished live here.
-@Model
-final class ShelfEntry {
-    @Attribute(.unique) var bookID: String
-    var title: String
-    var author: String?
-    var year: Int?
-    var coverID: Int?
-    /// 0…1. 1 means finished.
-    var progress: Double
-    var updatedAt: Date
-
-    init(book: Book, progress: Double) {
-        self.bookID = book.id
-        self.title = book.title
-        self.author = book.author
-        self.year = book.year
-        self.coverID = book.coverID
-        self.progress = progress
-        self.updatedAt = .now
-    }
-
-    var book: Book {
-        Book(id: bookID, title: title, author: author, year: year, coverID: coverID)
-    }
-
-    var isFinished: Bool { progress >= 0.999 }
-}

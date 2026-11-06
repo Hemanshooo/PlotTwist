@@ -4,7 +4,7 @@ import Foundation
 enum OpenLibrary {
     private static let session: URLSession = {
         let config = URLSessionConfiguration.default
-        config.httpAdditionalHeaders = ["User-Agent": "PlotTwist/1.0 (iOS)"]
+        config.httpAdditionalHeaders = ["User-Agent": "Endpaper/1.0 (iOS)"]
         config.requestCachePolicy = .returnCacheDataElseLoad
         return URLSession(configuration: config)
     }()
@@ -16,12 +16,13 @@ enum OpenLibrary {
         components.queryItems = [
             URLQueryItem(name: "q", value: query),
             URLQueryItem(name: "limit", value: "20"),
-            URLQueryItem(name: "fields", value: "key,title,author_name,first_publish_year,cover_i"),
+            URLQueryItem(name: "fields", value: "key,title,author_name,first_publish_year,cover_i,number_of_pages_median"),
         ]
         let (data, _) = try await session.data(from: components.url!)
         let response = try JSONDecoder().decode(SearchResponse.self, from: data)
         return response.docs.map {
-            Book(id: $0.key, title: $0.title, author: $0.author_name?.first, year: $0.first_publish_year, coverID: $0.cover_i)
+            Book(id: $0.key, title: $0.title, author: $0.author_name?.first, year: $0.first_publish_year, coverID: $0.cover_i,
+                 pages: $0.number_of_pages_median)
         }
     }
 
@@ -39,14 +40,15 @@ enum OpenLibrary {
             URLQueryItem(name: "sort", value: "editions"),
             URLQueryItem(name: "offset", value: String(offset)),
             URLQueryItem(name: "limit", value: String(limit)),
-            URLQueryItem(name: "fields", value: "key,title,author_name,first_publish_year,cover_i"),
+            URLQueryItem(name: "fields", value: "key,title,author_name,first_publish_year,cover_i,number_of_pages_median"),
         ]
         let (data, _) = try await session.data(from: components.url!)
         let response = try JSONDecoder().decode(SearchResponse.self, from: data)
         let books = response.docs.compactMap { doc -> Book? in
             // A book needs an author to be told again.
             guard let author = doc.author_name?.first else { return nil }
-            return Book(id: doc.key, title: doc.title, author: author, year: doc.first_publish_year, coverID: doc.cover_i)
+            return Book(id: doc.key, title: doc.title, author: author, year: doc.first_publish_year, coverID: doc.cover_i,
+                        pages: doc.number_of_pages_median)
         }
         return (books, response.numFound ?? 0)
     }
@@ -96,6 +98,7 @@ enum OpenLibrary {
             let author_name: [String]?
             let first_publish_year: Int?
             let cover_i: Int?
+            let number_of_pages_median: Int?
         }
     }
 

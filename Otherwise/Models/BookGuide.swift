@@ -188,7 +188,7 @@ enum Guides {
                 let guide = try decoder.decode(BookGuide.self, from: Data(contentsOf: url))
                 guides[guide.slug] = guide
             } catch {
-                print("[PlotTwist] Couldn't read \(url.lastPathComponent): \(error)")
+                print("[Endpaper] Couldn't read \(url.lastPathComponent): \(error)")
             }
         }
         return guides.values.sorted { $0.book.title < $1.book.title }

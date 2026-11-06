@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The rooms Plot Twist can be read in. Each is a ground, an ink, and the
+/// The rooms Endpaper can be read in. Each is a ground, an ink, and the
 /// two colours of the garden that grows through the app: the stems (and
 /// leaves), and the blooms.
 ///

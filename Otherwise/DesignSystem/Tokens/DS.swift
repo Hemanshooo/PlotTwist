@@ -1,12 +1,12 @@
 import SwiftUI
 
-/// Plot Twist Design System.
+/// Endpaper Design System.
 ///
 /// Every visual decision in the app resolves to a token in this namespace.
 /// Views never use raw colours, font sizes, paddings, radii or animations.
 /// If something you need isn't here, add a token first, then use it.
 ///
-/// Plot Twist is a garden of forking paths, set like a type specimen: a flat
+/// Endpaper is a garden kept between the pages, set like a type specimen: a flat
 /// ground, a crisp display serif, small mono labels, outlined pills, and one
 /// two-colour illustration that grows through the app (stems, leaves, roses).
 /// There are no gradients, glows or glass. Colour comes from the palette
@@ -71,10 +71,16 @@ extension DS {
         static let title = font(.display, 32, relativeTo: .title)
         /// Chapter headings in the reader.
         static let chapter = font(.display, 28, relativeTo: .title2)
-        /// Titles in lists: moments on the map, twisted stories, search results.
+        /// Titles in lists: diary entries, moments on the map, "What if" stories, search results.
         static let heading = font(.display, 24, relativeTo: .title3)
         /// The reading gauge's numeral.
         static let numeral = font(.display, 84, relativeTo: .largeTitle)
+        /// Figures in your year: books, pages, average.
+        static let statNumeral = font(.display, 44, relativeTo: .largeTitle)
+        /// The day of the month beside a diary entry.
+        static let dayNumeral = font(.display, 34, relativeTo: .title)
+        /// The opening quotation mark on a kept quote.
+        static let quoteMark = font(.display, 72, relativeTo: .largeTitle)
         /// The raised initial that opens every chapter.
         static let raisedCap = font(.display, 62, relativeTo: .largeTitle)
         /// The wordmark at the top of the library: fixed, since the garden is
@@ -91,6 +97,8 @@ extension DS {
         static let blurb = font(.text, 15, relativeTo: .subheadline)
         /// The user's change, quoted; a premise.
         static let quote = font(.textItalic, 17, relativeTo: .body)
+        /// A quote you kept, set large in your commonplace book.
+        static let commonplace = font(.text, 20, relativeTo: .title3)
         /// A short quotation in small print.
         static let quoteSmall = font(.textItalic, 15, relativeTo: .subheadline)
         /// The user's change, while they write it.
@@ -100,8 +108,10 @@ extension DS {
 
         /// Buttons and pills.
         static let label = font(.monoMedium, 13, relativeTo: .subheadline)
-        /// The tabs in the top bar.
+        /// The tabs in the top bar and the tab bar.
         static let tab = font(.monoMedium, 12, relativeTo: .footnote)
+        /// Typing into a search field.
+        static let field = font(.mono, 14, relativeTo: .body)
         /// Bylines, metadata, counts.
         static let meta = font(.mono, 12, relativeTo: .footnote)
         /// Hints, footnotes, small print.
@@ -216,10 +226,19 @@ extension DS {
         static let navItem: CGFloat = 38
         /// Pills (choices).
         static let pill: CGFloat = 36
-        /// The forking mark on a twisted story.
+        /// The forking mark on a "What if" story.
         static let twistMark: CGFloat = 30
         /// Roses on the story map and at the tip of the reading vine.
         static let rose: CGFloat = 20
+        /// A rating in roses, as it shows in lists; and as you give one.
+        static let roseRating: CGFloat = 13
+        static let roseRatingLarge: CGFloat = 34
+        /// The floating tab bar: its height, and the search circle beside it.
+        static let tabBar: CGFloat = 46
+        /// A day in the diary: the numeral's column.
+        static let diaryDay: CGFloat = 52
+        /// The favourite four on your profile: four covers across the screen.
+        static let favouriteGap: CGFloat = 10
         /// Ribbon bookmarks.
         static let ribbonWidth: CGFloat = 14
         static let ribbonLength: CGFloat = 40
@@ -318,8 +337,18 @@ extension DS {
     }
 }
 
+extension DS.Elevation {
+    /// The tab bar, floating over whatever scrolls beneath it.
+    struct Floating: ViewModifier {
+        func body(content: Content) -> some View {
+            content.shadow(color: DS.Colors.shadow.opacity(0.35), radius: 18, x: 0, y: 8)
+        }
+    }
+}
+
 extension View {
     func dsCoverShadow() -> some View { modifier(DS.Elevation.Cover()) }
+    func dsFloating() -> some View { modifier(DS.Elevation.Floating()) }
 }
 
 // MARK: - Helpers

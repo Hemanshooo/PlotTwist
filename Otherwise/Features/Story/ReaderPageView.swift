@@ -138,7 +138,7 @@ private struct TitlePage: View {
     var body: some View {
         VStack(spacing: DS.Space.l) {
             Spacer()
-            Eyebrow("Plot Twist", color: DS.Colors.bloom)
+            Eyebrow("What if", color: DS.Colors.bloom)
             Text(model.story.title.isEmpty ? "An untitled version" : model.story.title)
                 .font(DS.Typography.display)
                 .tracking(DS.Tracking.display)

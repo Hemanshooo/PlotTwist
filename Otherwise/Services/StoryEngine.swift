@@ -27,7 +27,7 @@ enum StoryEngine {
             return Notice(
                 symbol: "apple.intelligence",
                 title: "Turn on Apple Intelligence",
-                message: "Plot Twist writes every story on your iPhone. Turn on Apple Intelligence in Settings to begin."
+                message: "Endpaper writes every “What if” on your iPhone. Turn on Apple Intelligence in Settings to begin."
             )
         case .unavailable(.modelNotReady):
             return Notice(
@@ -39,7 +39,7 @@ enum StoryEngine {
             return Notice(
                 symbol: "iphone.slash",
                 title: "Not available on this iPhone",
-                message: "Plot Twist needs an iPhone that supports Apple Intelligence."
+                message: "“What if” needs an iPhone that supports Apple Intelligence."
             )
         case .unavailable:
             return Notice(
@@ -102,7 +102,7 @@ enum StoryEngine {
                             continuation.yield(StoryParser.parse(raw))
                         }
                         #if DEBUG
-                        print("[PlotTwist] Story text:\n\(raw)")
+                        print("[Endpaper] Story text:\n\(raw)")
                         #endif
                         continuation.finish()
                         return

@@ -2,7 +2,7 @@ import SwiftUI
 
 /// How a book is bound: a cloth colour, a foil colour and a stamped pattern.
 ///
-/// Inspired by clothbound classics, every book in Plot Twist gets its own
+/// Inspired by clothbound classics, every book in Endpaper gets its own
 /// edition. Editions colour the books themselves (covers, spines, endpapers,
 /// the cover that swings open over a story); the rest of the app takes its
 /// colour from the palette.

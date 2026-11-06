@@ -194,7 +194,8 @@
 				DEVELOPMENT_TEAM = L8UNUMNWMT;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Plot Twist";
+				INFOPLIST_KEY_CFBundleDisplayName = Endpaper;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Endpaper uses the camera to scan a book’s barcode, or a line from a page you want to keep.";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.books";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -224,7 +225,8 @@
 				DEVELOPMENT_TEAM = L8UNUMNWMT;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Plot Twist";
+				INFOPLIST_KEY_CFBundleDisplayName = Endpaper;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Endpaper uses the camera to scan a book’s barcode, or a line from a page you want to keep.";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.books";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

@@ -61,7 +61,20 @@ enum Catalog {
     }
 
     private static func book(_ slug: String, _ title: String, _ author: String, _ year: Int) -> Book {
-        Book(id: "catalog/\(slug)", title: title, author: author, year: year, coverID: nil)
+        Book(id: "catalog/\(slug)", title: title, author: author, year: year, coverID: nil, pages: pages[slug])
+    }
+
+    /// Pages in a typical paperback edition, for reading stats.
+    private static let pages: [String: Int] = [
+        "pride-and-prejudice": 432, "the-great-gatsby": 180, "frankenstein": 280, "jane-eyre": 532,
+        "romeo-and-juliet": 128, "dracula": 488, "the-picture-of-dorian-gray": 254, "little-women": 449,
+        "a-christmas-carol": 104, "alices-adventures-in-wonderland": 120, "the-count-of-monte-cristo": 1276,
+        "wuthering-heights": 416,
+    ]
+
+    /// A book's page count: its own, or the catalogue's for a classic saved before page counts were kept.
+    static func pages(for book: Book) -> Int? {
+        book.pages ?? entry(for: book)?.book.pages
     }
 
     // MARK: - Entries

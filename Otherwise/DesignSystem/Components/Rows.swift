@@ -1,9 +1,12 @@
 import SwiftUI
 
 /// A book in search results: its cover, its title in the display serif, a
-/// mono byline, and a note in the stem colour if it has a story map.
+/// mono byline, and small notes: the shelf it's on (in the bloom colour), and
+/// "story map" (in the stem colour) if it has one.
 struct BookRow: View {
     let book: Book
+    /// The shelf it's on, if any.
+    var status: ShelfStatus? = nil
 
     private var isMapped: Bool { Catalog.entry(for: book) != nil }
 
@@ -21,11 +24,20 @@ struct BookRow: View {
                         .foregroundStyle(DS.Colors.inkSecondary)
                         .lineLimit(1)
                 }
-                if isMapped {
-                    Text("story map")
-                        .font(DS.Typography.caption)
-                        .foregroundStyle(DS.Colors.stem)
-                        .padding(.top, 2)
+                if isMapped || status != nil {
+                    HStack(spacing: DS.Space.xs) {
+                        if let status {
+                            Text(status.title)
+                                .foregroundStyle(DS.Colors.bloom)
+                        }
+                        if isMapped {
+                            Text("story map")
+                                .foregroundStyle(DS.Colors.stem)
+                        }
+                    }
+                    .font(DS.Typography.caption)
+                    .textCase(.lowercase)
+                    .padding(.top, 2)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)

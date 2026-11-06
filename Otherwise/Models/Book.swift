@@ -1,6 +1,6 @@
 import Foundation
 
-/// A book as the app knows it: enough to show it and to ground the story.
+/// A book as the app knows it: enough to show it, log it and ground a "What if".
 struct Book: Identifiable, Hashable, Codable {
     /// Open Library work key, e.g. "/works/OL66554W".
     let id: String
@@ -8,6 +8,8 @@ struct Book: Identifiable, Hashable, Codable {
     let author: String?
     let year: Int?
     let coverID: Int?
+    /// Pages in a typical edition, when Open Library knows (for reading stats).
+    var pages: Int? = nil
 
     enum CoverSize: String { case medium = "M", large = "L" }
 

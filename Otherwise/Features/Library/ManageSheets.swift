@@ -3,8 +3,8 @@ import SwiftData
 
 // MARK: - A book in the stack
 
-/// Opened by holding a book in the stack: take it off your Read list, and
-/// remove any versions you've written of it.
+/// Opened by holding a book in a stack: take it off your shelves, and
+/// remove any "What if" stories you've written of it.
 struct BookActionsSheet: View {
     let book: Book
 
@@ -29,7 +29,7 @@ struct BookActionsSheet: View {
             SheetHeader(book: book, title: Text(book.title), detail: book.byline.map { Text($0) }, onClose: { dismiss() })
 
             if entry == nil && versions.isEmpty {
-                Text("Nothing to remove yet. Say how far you’ve read this book, or write a version of it, and you can manage it here.")
+                Text("Nothing to remove yet. Put this book on a shelf, or write a “What if” of it, and you can manage it here.")
                     .font(DS.Typography.blurb)
                     .foregroundStyle(DS.Colors.inkSecondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -37,9 +37,9 @@ struct BookActionsSheet: View {
 
             if let entry {
                 VStack(alignment: .leading, spacing: DS.Space.xs) {
-                    Eyebrow("Reading")
+                    Eyebrow("Your shelves")
                     ActionRow(
-                        Text("Remove from Read"),
+                        Text("Remove from shelves"),
                         systemImage: "bookmark.slash",
                         detail: Text(readingDetail(entry))
                     ) {
@@ -52,7 +52,7 @@ struct BookActionsSheet: View {
 
             if !versions.isEmpty {
                 VStack(alignment: .leading, spacing: DS.Space.xs) {
-                    Eyebrow("Twisted versions")
+                    Eyebrow("What if stories")
                     ForEach(versions) { version in
                         ActionRow(
                             versionTitle(version),
@@ -97,14 +97,18 @@ struct BookActionsSheet: View {
     }
 
     private func readingDetail(_ entry: ShelfEntry) -> LocalizedStringKey {
-        if entry.isFinished { return "Marked as finished. Its turning points seal again." }
-        return "About \(Int((entry.progress * 10).rounded()) * 10)% through. Later turning points seal again."
+        switch entry.status {
+        case .read: "On Read. Your diary entries and quotes stay."
+        case .reading: "Reading, about \(Int((entry.progress * 10).rounded()) * 10) percent through."
+        case .toRead: "On To read."
+        case .didNotFinish: "Put down before the end."
+        }
     }
 }
 
-// MARK: - A story in Twisted
+// MARK: - A "What if" story
 
-/// Opened by holding a story in Twisted: read it, or remove it. The list
+/// Opened by holding a "What if" story: read it, or remove it. The list
 /// that opened it does the removing, once this sheet has closed.
 struct VersionActionsSheet: View {
     let version: Version
@@ -125,7 +129,7 @@ struct VersionActionsSheet: View {
             VStack(alignment: .leading, spacing: DS.Space.xs) {
                 ActionRow(Text("Read this story"), systemImage: "book", detail: Text("“\(version.change)”"), action: onRead)
                 ActionRow(
-                    Text("Remove from Twisted"),
+                    Text("Remove this story"),
                     systemImage: "trash",
                     detail: Text("Deletes this story. The book stays in your library."),
                     isDestructive: true
@@ -149,8 +153,8 @@ struct VersionActionsSheet: View {
 
 // MARK: - Shared
 
-/// The top of a manage sheet: the book's cover, a title, a line of detail, and close.
-private struct SheetHeader: View {
+/// The top of a sheet about a book: its cover, a title, a line of detail, and close.
+struct SheetHeader: View {
     let book: Book
     let title: Text
     let detail: Text?
@@ -192,7 +196,7 @@ extension View {
             Button("Remove", role: .destructive) { perform(item) }
             Button("Keep", role: .cancel) {}
         } message: { _ in
-            Text("The story will be deleted from Twisted. This can’t be undone.")
+            Text("The story will be deleted. This can’t be undone.")
         }
     }
 }

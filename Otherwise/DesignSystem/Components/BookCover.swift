@@ -234,7 +234,7 @@ struct Endpaper: View {
             VStack(spacing: DS.Space.xs) {
                 Text("ex libris")
                     .font(DS.Typography.folio)
-                Text("Plot Twist")
+                Text("Endpaper")
                     .font(DS.Typography.chapter)
             }
             .foregroundStyle(DS.Colors.pageInk)

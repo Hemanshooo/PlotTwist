@@ -6,11 +6,14 @@ struct ComposerField: View {
     let placeholder: String
     @Binding var text: String
     var focus: FocusState<Bool>.Binding
+    /// What the field is, for VoiceOver.
+    var label: LocalizedStringKey = "What changes"
+    var lines: ClosedRange<Int> = 3...8
 
     var body: some View {
         let shape = RoundedRectangle(cornerRadius: DS.Radius.s, style: .continuous)
         TextField(
-            "What changes",
+            label,
             text: $text,
             prompt: Text(placeholder).foregroundStyle(DS.Colors.inkTertiary),
             axis: .vertical
@@ -18,7 +21,7 @@ struct ComposerField: View {
         .font(DS.Typography.compose)
         .foregroundStyle(DS.Colors.ink)
         .lineSpacing(DS.Leading.relaxed)
-        .lineLimit(3...8)
+        .lineLimit(lines)
         .focused(focus)
         .submitLabel(.done)
         .padding(DS.Space.m)
@@ -77,6 +80,50 @@ struct ChoiceRow: View {
                 .frame(width: 14, height: 14)
                 .alignmentGuide(.firstTextBaseline) { $0[VerticalAlignment.center] + 4 }
         }
+    }
+}
+
+/// A yes-or-no line: a square that fills with ink and a tick, its title in
+/// mono and a word of explanation beneath.
+struct CheckRow: View {
+    let title: LocalizedStringKey
+    var detail: LocalizedStringKey?
+    @Binding var isOn: Bool
+
+    var body: some View {
+        Button {
+            isOn.toggle()
+        } label: {
+            HStack(alignment: .center, spacing: DS.Space.s) {
+                RoundedRectangle(cornerRadius: 4, style: .continuous)
+                    .strokeBorder(isOn ? DS.Colors.ink : DS.Colors.inkTertiary, lineWidth: DS.Size.hairline)
+                    .background(RoundedRectangle(cornerRadius: 4, style: .continuous).fill(isOn ? DS.Colors.ink : .clear))
+                    .frame(width: 18, height: 18)
+                    .overlay {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundStyle(DS.Colors.onInk)
+                            .opacity(isOn ? 1 : 0)
+                    }
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(DS.Typography.label)
+                        .foregroundStyle(DS.Colors.ink)
+                    if let detail {
+                        Text(detail)
+                            .font(DS.Typography.caption)
+                            .foregroundStyle(DS.Colors.inkTertiary)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .frame(minHeight: DS.Size.touch)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(PressableButtonStyle())
+        .animation(DS.Motion.quick, value: isOn)
+        .sensoryFeedback(.selection, trigger: isOn)
+        .accessibilityAddTraits(isOn ? [.isButton, .isSelected] : .isButton)
     }
 }
 
@@ -172,7 +219,7 @@ struct WritingIndicator: View {
             ComposerField(placeholder: "Elizabeth accepts Mr. Collins.", text: $text, focus: $focused)
             ChoiceRow(text: "Darcy never writes the letter", isSelected: true) {}
             ChoiceRow(text: "Lydia is found before Wickham marries her", isSelected: false) {}
-            InlineNotice(symbol: "apple.intelligence", title: "Turn on Apple Intelligence", message: "Plot Twist writes every story on your iPhone.")
+            InlineNotice(symbol: "apple.intelligence", title: "Turn on Apple Intelligence", message: "Endpaper writes every “What if” on your iPhone.")
             WritingIndicator()
             MessageView(title: "Nothing read yet", message: "Open any book and say how far you've read.")
                 .frame(height: 320)

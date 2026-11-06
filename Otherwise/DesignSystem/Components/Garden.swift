@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The garden that grows through Plot Twist: stems and leaves in the
+/// The garden that grows through Endpaper: stems and leaves in the
 /// palette's `stem` colour, roses and buds in its `bloom`, with `petal` lines
 /// drawn on each rose. Flat, two colours, a little hand-drawn, after Type Garden.
 ///
@@ -418,7 +418,7 @@ struct Sprig: View, Animatable {
 
 // MARK: - Twist mark
 
-/// The mark for a twisted story: one stem forking in two, a leaf at the end
+/// The mark for a "What if" story: one stem forking in two, a leaf at the end
 /// of one branch and a rose at the end of the other.
 struct TwistDrawing {
     /// Draws into `rect` (square), the rose `open` (0…1).

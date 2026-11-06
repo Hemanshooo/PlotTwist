@@ -1,8 +1,8 @@
 import SwiftUI
 
 /// Words in an outlined capsule, the chosen one in a solid ink pill that
-/// slides between them, like Type Garden's Type | Poster toggle. Switches the
-/// library between Library, Read and Twisted.
+/// slides between them, like Type Garden's Type | Poster toggle. Switches
+/// the shelf between Reading, To read and Read, and is the tab bar.
 struct TabSwitcher<ID: Hashable>: View {
     struct Item: Identifiable {
         let id: ID
@@ -11,6 +11,8 @@ struct TabSwitcher<ID: Hashable>: View {
 
     let items: [Item]
     @Binding var selection: ID
+    /// The pill's height; the capsule is a little taller.
+    var height: CGFloat = DS.Size.tab
 
     @Namespace private var pill
 
@@ -26,8 +28,8 @@ struct TabSwitcher<ID: Hashable>: View {
                         .foregroundStyle(isSelected ? DS.Colors.onInk : DS.Colors.inkSecondary)
                         .lineLimit(1)
                         .fixedSize()
-                        .padding(.horizontal, DS.Space.s - 2)
-                        .frame(height: DS.Size.tab)
+                        .padding(.horizontal, height > DS.Size.tab ? DS.Space.m - 2 : DS.Space.s - 2)
+                        .frame(height: height)
                         .background {
                             if isSelected {
                                 Capsule()
@@ -53,7 +55,7 @@ struct TabSwitcher<ID: Hashable>: View {
 #Preview {
     @Previewable @State var selection = 0
     TabSwitcher(
-        items: [.init(id: 0, title: "Library"), .init(id: 1, title: "Read"), .init(id: 2, title: "Twisted")],
+        items: [.init(id: 0, title: "Reading"), .init(id: 1, title: "To read"), .init(id: 2, title: "Read")],
         selection: $selection
     )
     .frame(maxWidth: .infinity, maxHeight: .infinity)
